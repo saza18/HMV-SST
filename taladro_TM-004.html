@@ -36,18 +36,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             font-size: 11px;
             margin-bottom: 70px; /* Espacio para los botones flotantes */
-        }
-
-        /* ----- SOLUCIÓN BARRA GRIS EN CELULAR ----- */
-        @media (max-width: 900px) {
-            body {
-                display: block; /* Libera el centrado estricto que cortaba el diseño */
-                padding: 10px;
-            }
-            .hoja-blanca {
-                display: inline-block;
-                min-width: max-content; /* Obliga al fondo blanco a cubrir toda la tabla */
-            }
+            position: relative; /* Agregado para posicionar botones flotantes (si es necesario) */
         }
 
         /* ----- BOTONES FLOTANTES PAREJOS ----- */
@@ -224,20 +213,17 @@
 
         /* ----- REGLAS DE IMPRESIÓN (PDF CON MÁRGENES Y SIN TRIÁNGULOS) ----- */
         @media print {
-            @page {
-                margin: 1.5cm; /* Solución para la margen en PC */
-            }
             body {
                 background-color: #fff;
                 padding: 0;
-                display: block;
+                display: block; /* Asegura el flujo normal para impresión */
             }
             .hoja-blanca {
                 box-shadow: none;
                 padding: 0;
-                max-width: 100%;
+                /* ELIMINADA: max-width: 100%;  Esto era lo que forzaba la tabla hasta el borde */
                 display: block;
-                margin: 0;
+                margin: 0 auto; /* Centra la tabla de 900px en la hoja PDF */
             }
             * {
                 -webkit-print-color-adjust: exact !important;
@@ -448,7 +434,7 @@
             <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
         </tr>
 
-        <!-- Firmas diarias (Botones activados) -->
+        <!-- Firmas diarias (Activados los botones para abrir el modal) -->
         <tr>
             <td rowspan="2" style="width: 45%; font-weight: bold; text-align: justify; vertical-align: top; padding: 5px;">
                 Garantizo que el equipo, herramienta y/o maquina ha sido inspeccionada(o) y se encuentra en buen estado para su uso.
@@ -504,9 +490,9 @@
             <td class="bg-header" style="width: 33%;">Firma del responsable de SST:</td>
         </tr>
         <tr>
-            <td style="text-align: center; padding: 10px;"><button class="btn-firmar no-print" data-auth="Ingeniero" type="button" style="width: auto; padding: 8px 20px;">✍️ Firmar (Ingeniero)</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 50px; margin: auto;"></td>
-            <td style="text-align: center; padding: 10px;"><button class="btn-firmar no-print" data-auth="Capataz" type="button" style="width: auto; padding: 8px 20px;">✍️ Firmar (Capataz)</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 50px; margin: auto;"></td>
-            <td style="text-align: center; padding: 10px;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button" style="width: auto; padding: 8px 20px;">✍️ Firmar (SST)</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 50px; margin: auto;"></td>
+            <td style="text-align: center; padding: 10px;"><button class="btn-firmar no-print" data-auth="Ingeniero" type="button" style="width: auto; padding: 8px 20px;">✍️ Firmar (Ingeniero)</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 60px; margin: auto;"></td>
+            <td style="text-align: center; padding: 10px;"><button class="btn-firmar no-print" data-auth="Capataz" type="button" style="width: auto; padding: 8px 20px;">✍️ Firmar (Capataz)</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 60px; margin: auto;"></td>
+            <td style="text-align: center; padding: 10px;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button" style="width: auto; padding: 8px 20px;">✍️ Firmar (SST)</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 60px; margin: auto;"></td>
         </tr>
     </table>
     
@@ -514,7 +500,7 @@
         HMV Ingenieros no autoriza la reproducción total ni parcial de este documento. Quien haga uso de este documento de forma impresa, es responsable de verificar si corresponde a la versión vigente, mediante consulta en la Intranet módulo SIG
     </div>
 
-</div>
+</div> <!-- Fin hoja-blanca -->
 
 <!-- BARRA DE BOTONES FLOTANTES PAREJOS -->
 <div class="botones-flotantes no-print">
@@ -540,6 +526,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+    // 1. CONEXIÓN A FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g",
         authDomain: "sst-hmv.firebaseapp.com",
@@ -561,7 +548,7 @@
     
     const rolUsuario = localStorage.getItem('hmv_user_role') || 'Invitado';
 
-    // MOSTRAR BOTÓN PDF SÓLO AL SST (ahora agrupado abajo)
+    // MOSTRAR BOTÓN PDF SÓLO AL SST EN LA BARRA FLOTANTE
     if(rolUsuario === 'Responsable SST') {
         const btnPDF = document.getElementById('btn-pdf-doc');
         btnPDF.style.display = 'flex';
