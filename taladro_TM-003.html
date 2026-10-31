@@ -36,7 +36,8 @@
             background-color: #ffffff;
             color: #000000;
             width: 100%;
-            max-width: 900px;
+            /* AJUSTE: Reducido de 900px a 820px para hacer las columnas más angostas */
+            max-width: 820px; 
             padding: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             font-size: 11px;
@@ -112,9 +113,26 @@
         .print-fill-row { display: none; }
 
         @media print {
-            body { background-color: #fff; padding: 0; display: block; }
-            .contenedor-principal { display: block; min-width: 100%; }
-            .hoja-blanca { box-shadow: none; margin: 0 auto; display: block; }
+            @page {
+                size: letter;
+                margin: 15mm; 
+            }
+            body, .contenedor-principal { 
+                background-color: #fff; 
+                padding: 0; 
+                margin: 0;
+                display: block; 
+                overflow: visible; 
+            }
+            .hoja-blanca { 
+                box-shadow: none; 
+                margin: 0 auto; 
+                padding: 0; 
+                display: block; 
+                /* AJUSTE: Ocupa el 100% del espacio de la hoja (sin exceder el margen) para que no se corte */
+                width: 100% !important;
+                max-width: 100% !important; 
+            }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             table, tr, td, .top-header { page-break-inside: avoid; }
             .no-print, .botones-flotantes, #firma-modal { display: none !important; }
@@ -381,7 +399,6 @@
         datos.hFin = document.getElementById('hora-fin').value;
         datos.archivo = document.getElementById('archivo').value;
 
-        // Corrección estricta: Rellenar con texto en blanco para evitar romper la matriz en Firebase
         document.querySelectorAll('.save-data').forEach((el, index) => { datos.textos[index] = el.value || ""; });
         document.querySelectorAll('.save-img').forEach((img, index) => { datos.firmas[index] = img.src.length > 100 ? img.src : ""; });
 
