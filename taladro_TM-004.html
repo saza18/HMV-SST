@@ -111,11 +111,11 @@
         
         .print-fill-row { display: none; }
 
-        /* REGLAS DE IMPRESIÓN (MEDIDAS ABSOLUTAS) */
+        /* REGLAS DE IMPRESIÓN (Márgenes idénticas en todas las páginas) */
         @media print {
             @page {
                 size: letter;
-                margin: 0; /* Quitamos el margen del sistema para controlarlo internamente */
+                margin: 12mm; /* Controla el margen simétrico en TODAS las hojas (reducido para no quedar tan ancho) */
             }
             body, .contenedor-principal { 
                 background-color: #fff; 
@@ -127,18 +127,18 @@
             }
             .hoja-blanca { 
                 box-shadow: none; 
+                margin: 0 !important; /* Eliminado el margen manual para que @page haga el trabajo en cada hoja */
                 padding: 0; 
                 display: block; 
-                width: 180mm !important; /* Medida fija para que PC y Celular dibujen el mismo tamaño */
-                max-width: 180mm !important; 
-                margin: 10mm auto !important; /* 10mm arriba/abajo, auto a los lados (genera el margen uniforme) */
+                width: 100% !important; /* Ocupa todo el espacio que deja la margen de 12mm */
+                max-width: 100% !important; 
                 box-sizing: border-box;
             }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             table, tr, td, .top-header { page-break-inside: avoid; }
             .no-print, .botones-flotantes, #firma-modal { display: none !important; }
             .print-fill-row { display: table-row !important; }
-            #tabla-seccion-3 { page-break-before: always; }
+            #tabla-seccion-3 { page-break-before: always; } 
             
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
