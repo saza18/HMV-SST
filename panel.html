@@ -11,7 +11,10 @@
         body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; transition: background-color 0.3s, color 0.3s; }
         
         .navbar { background-color: var(--bg-surface); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); border-bottom: 3px solid var(--hmv-yellow); position: sticky; top: 0; z-index: 100; transition: background-color 0.3s; }
-        .navbar-logo img { height: 45px; object-fit: contain; }
+        .navbar-logo { display: flex; align-items: center; gap: 15px; }
+        .navbar-logo img { height: 40px; object-fit: contain; }
+        .btn-back { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; text-decoration: none; }
+        
         .navbar-user { display: flex; align-items: center; gap: 15px; }
         .user-info { text-align: right; display: none; }
         @media (min-width: 600px) { .user-info { display: block; } }
@@ -64,7 +67,10 @@
     </script>
 
     <nav class="navbar">
-        <div class="navbar-logo"><img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Ingenieros"></div>
+        <div class="navbar-logo">
+            <a href="index.html" class="btn-back">⬅️ Salir</a>
+            <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Ingenieros">
+        </div>
         <div class="navbar-user">
             <div class="user-info">
                 <div class="user-name" id="display-name">Usuario</div>
@@ -113,12 +119,11 @@
         </div>
     </div>
 
-    <!-- Script de Firebase conectado con tus claves -->
+    <!-- Script de Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // TUS CLAVES REALES DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g",
             authDomain: "sst-hmv.firebaseapp.com",
@@ -178,7 +183,6 @@
             grid.insertBefore(nuevaTarjeta, grid.firstChild);
         }
 
-        // LECTURA EN TIEMPO REAL DESDE LA NUBE
         const dbRef = ref(db, 'tarjetas_taladro');
         onValue(dbRef, (snapshot) => {
             document.querySelectorAll('.card:not(#template-card)').forEach(c => c.remove());

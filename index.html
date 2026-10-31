@@ -17,24 +17,33 @@
             --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background-color 0.3s, color 0.3s; }
-        .login-card { background-color: var(--bg-surface); padding: 40px; border-radius: 12px; box-shadow: var(--shadow); width: 100%; max-width: 450px; text-align: center; border-top: 5px solid var(--hmv-blue); transition: background-color 0.3s; }
-        .login-logo { max-width: 200px; margin-bottom: 20px; }
-        .login-title { font-size: 20px; margin-bottom: 30px; color: var(--text-main); }
+        body { background-color: var(--bg-body); color: var(--text-main); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; transition: background-color 0.3s, color 0.3s; padding: 20px;}
+        
+        /* Logo por fuera del cuadro, un poco más grande */
+        .login-logo { max-width: 250px; margin-bottom: 25px; }
+        
+        .login-card { background-color: var(--bg-surface); padding: 40px; border-radius: 12px; box-shadow: var(--shadow); width: 100%; max-width: 450px; text-align: center; border-top: 5px solid var(--hmv-blue); transition: background-color 0.3s; position: relative; }
+        
+        /* Botón de tema dentro del cuadro, esquina superior derecha */
+        #theme-toggle { position: absolute; top: 15px; right: 15px; padding: 6px 10px; border-radius: 4px; border: 1px solid var(--border-color); background: transparent; color: var(--text-main); cursor: pointer; font-size: 11px; font-weight: bold; transition: 0.2s;}
+        #theme-toggle:hover { background: var(--border-color); }
+
+        .login-title { font-size: 20px; margin-top: 10px; margin-bottom: 30px; color: var(--text-main); }
         .role-btn { display: block; width: 100%; padding: 15px; margin-bottom: 12px; background-color: transparent; border: 2px solid var(--border-color); color: var(--text-main); border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; }
         .role-btn:hover { border-color: var(--hmv-blue); background-color: rgba(0, 75, 135, 0.05); transform: translateY(-2px); }
         .role-sst { border-color: var(--hmv-yellow); }
         .role-sst:hover { background-color: var(--hmv-yellow); color: #000; }
-        
-        #theme-toggle { position: absolute; top: 20px; right: 20px; padding: 10px 15px; border-radius: 6px; border: none; background: var(--hmv-blue); color: white; cursor: pointer; font-weight: bold; box-shadow: var(--shadow); }
     </style>
 </head>
 <body>
 
-    <button id="theme-toggle">🌙 Modo Oscuro</button>
+    <!-- Logo fuera del cuadro -->
+    <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Logo" class="login-logo">
 
     <div class="login-card">
-        <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Logo" class="login-logo">
+        <!-- Botón de tema dentro del cuadro -->
+        <button id="theme-toggle">🌙 Oscuro</button>
+        
         <h2 class="login-title">Seleccione su Perfil de Acceso</h2>
         
         <button class="role-btn" onclick="ingresar('Oficial / Auxiliar')">👷 Oficial / Auxiliar</button>
@@ -49,19 +58,18 @@
         
         if (isDark) {
             document.body.classList.add('dark-mode');
-            btnTheme.innerText = '☀️ Modo Claro';
+            btnTheme.innerText = '☀️ Claro';
         }
 
         btnTheme.onclick = () => {
             document.body.classList.toggle('dark-mode');
             isDark = document.body.classList.contains('dark-mode');
             localStorage.setItem('hmv_theme', isDark ? 'dark' : 'light');
-            btnTheme.innerText = isDark ? '☀️ Modo Claro' : '🌙 Modo Oscuro';
+            btnTheme.innerText = isDark ? '☀️ Claro' : '🌙 Oscuro';
         };
 
         function ingresar(rol) {
             localStorage.setItem('hmv_user_role', rol);
-            // Redirige al nuevo nombre del panel
             window.location.href = 'panel.html';
         }
     </script>
