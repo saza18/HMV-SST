@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma SST - HMV Ingenieros</title>
+    <style>
+        :root { --hmv-blue: #004b87; --hmv-yellow: #f2a900; --hmv-yellow-hover: #d19200; --hmv-blue-hover: #003663; --bg-body: #f4f7fa; --bg-surface: #ffffff; --text-main: #333333; --text-muted: #666666; --border-color: #e0e0e0; --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        body.dark-mode { --bg-body: #121212; --bg-surface: #1e1e1e; --text-main: #e0e0e0; --text-muted: #a0a0a0; --border-color: #333333; --shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; transition: background-color 0.3s, color 0.3s; }
+        
+        .navbar { background-color: var(--bg-surface); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); border-bottom: 3px solid var(--hmv-yellow); position: sticky; top: 0; z-index: 100; transition: background-color 0.3s; }
+        .navbar-logo img { height: 45px; object-fit: contain; }
+        .navbar-user { display: flex; align-items: center; gap: 15px; }
+        .user-info { text-align: right; display: none; }
+        @media (min-width: 600px) { .user-info { display: block; } }
+        .user-name { font-weight: bold; font-size: 14px; color: var(--hmv-blue); }
+        .user-role { font-size: 12px; color: var(--text-muted); }
+        .user-avatar { width: 40px; height: 40px; background-color: var(--hmv-blue); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; }
+        
+        .main-container { max-width: 1200px; margin: 30px auto; padding: 0 5%; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+        .page-title h1 { font-size: 24px; } .page-title p { font-size: 14px; color: var(--text-muted); }
+        
+        .btn-primary { background-color: var(--hmv-blue); color: #ffffff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; text-decoration: none; }
+        .btn-primary:hover { background-color: var(--hmv-blue-hover); }
+        
+        .dropdown-menu { display: none; position: absolute; top: 100%; right: 0; background: var(--bg-surface); border: 1px solid var(--border-color); box-shadow: var(--shadow); border-radius: 5px; min-width: 220px; z-index: 10; margin-top: 5px; overflow: hidden; }
+        .dropdown-menu a { display: block; padding: 12px 15px; color: var(--text-main); text-decoration: none; border-bottom: 1px solid var(--border-color); font-size: 14px; transition: 0.2s; cursor: pointer; }
+        .dropdown-menu a:hover { background-color: rgba(0, 75, 135, 0.05); color: var(--hmv-blue); font-weight: bold; }
+        
+        .submenu { display: none; background-color: rgba(0,0,0,0.02); }
+        .submenu a { padding-left: 30px; font-size: 13px; border-bottom: 1px dashed var(--border-color); }
+        body.dark-mode .submenu { background-color: rgba(255,255,255,0.02); }
+
+        .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card { background-color: var(--bg-surface); border-radius: 10px; padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); border-left: 5px solid var(--hmv-blue); transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s; position: relative;}
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 15px; }
+        .status-active { background-color: rgba(242, 169, 0, 0.2); color: #b37d00; }
+        body.dark-mode .status-active { color: var(--hmv-yellow); }
+        .card-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+        .card-details { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+        .card-details span { display: block; margin-bottom: 4px; }
+        .card-actions { display: flex; flex-direction: column; gap: 10px; }
+        
+        .btn-card { flex: 1; text-align: center; padding: 8px 0; border-radius: 5px; font-size: 13px; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.2s; border: none; }
+        .btn-fill { background-color: var(--hmv-yellow); color: #000; border: 1px solid var(--hmv-yellow); display: block; }
+        .btn-fill:hover { background-color: var(--hmv-yellow-hover); }
+        .btn-outline { background-color: transparent; color: var(--hmv-blue); border: 1px solid var(--hmv-blue); }
+        .btn-outline:hover { background-color: var(--hmv-blue); color: #fff; }
+        body.dark-mode .btn-outline { color: #8ab4f8; border-color: #8ab4f8; }
+        body.dark-mode .btn-outline:hover { background-color: #8ab4f8; color: #121212; }
+        
+        .btn-delete { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #ff4444; cursor: pointer; font-size: 16px; display: none;}
+        
+        #template-card { display: none; }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('hmv_theme') === 'dark') document.body.classList.add('dark-mode');
+    </script>
+
+    <nav class="navbar">
+        <div class="navbar-logo"><img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Ingenieros"></div>
+        <div class="navbar-user">
+            <div class="user-info">
+                <div class="user-name" id="display-name">Usuario</div>
+                <div class="user-role" id="display-role">Perfil</div>
+            </div>
+            <div class="user-avatar">👤</div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="page-header">
+            <div class="page-title">
+                <h1>Panel de Inspecciones Preoperacionales</h1>
+                <p>Gestión semanal de herramientas y equipos (Nube Activa)</p>
+            </div>
+            
+            <div style="position: relative; display: inline-block;">
+                <button class="btn-primary" id="btn-nuevo" style="display: none;">+ Nuevo Registro Semanal</button>
+                <div class="dropdown-menu" id="menu-nuevo">
+                    <a id="btn-menu-taladro">📋 Taladro Magnético ▼</a>
+                    <div class="submenu" id="submenu-taladro">
+                        <a class="add-serial" id="menu-TM-001" data-serial="TM-001">➤ Serial: TM-001</a>
+                        <a class="add-serial" id="menu-TM-002" data-serial="TM-002">➤ Serial: TM-002</a>
+                        <a class="add-serial" id="menu-TM-003" data-serial="TM-003">➤ Serial: TM-003</a>
+                        <a class="add-serial" id="menu-TM-004" data-serial="TM-004">➤ Serial: TM-004</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-dashboard" id="main-grid">
+            <div class="card" id="template-card">
+                <button class="btn-delete" title="Borrar registro">✖</button>
+                <div class="status-badge status-active">● SEMANA ACTIVA</div>
+                <div class="card-title">Taladro Magnético</div>
+                <div class="card-details">
+                    <span class="lbl-serial"><strong>Código/Serie:</strong> -</span>
+                    <span class="lbl-fecha"><strong>Fechas:</strong> -</span>
+                    <span><strong>Progreso:</strong> Activo</span>
+                </div>
+                <div class="card-actions">
+                    <a href="#" class="btn-card btn-fill link-doc">📝 Abrir Documento</a>
+                    <button class="btn-card btn-outline btn-pdf-taladro" style="display: none;">⬇️ Descargar PDF Final</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Firebase conectado con tus claves -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // TUS CLAVES REALES DE FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g",
+            authDomain: "sst-hmv.firebaseapp.com",
+            databaseURL: "https://sst-hmv-default-rtdb.firebaseio.com",
+            projectId: "sst-hmv",
+            storageBucket: "sst-hmv.firebasestorage.app",
+            messagingSenderId: "224287433604",
+            appId: "1:224287433604:web:387a81c078875b7fb5b3d1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const rolUsuario = localStorage.getItem('hmv_user_role') || 'Invitado';
+        document.getElementById('display-role').innerText = rolUsuario;
+        
+        function calcularFechasSemana() {
+            const fechaActual = new Date();
+            const diaSemana = fechaActual.getDay();
+            const diffLunes = fechaActual.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
+            const lunes = new Date(fechaActual); lunes.setDate(diffLunes);
+            const domingo = new Date(lunes); domingo.setDate(lunes.getDate() + 6);
+            const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            return `Lun ${lunes.getDate()} ${meses[lunes.getMonth()]} - Dom ${domingo.getDate()} ${meses[domingo.getMonth()]}`;
+        }
+
+        function renderizarTarjeta(serial, fecha) {
+            const grid = document.getElementById('main-grid');
+            const template = document.getElementById('template-card');
+            const nuevaTarjeta = template.cloneNode(true);
+            nuevaTarjeta.removeAttribute('id');
+            nuevaTarjeta.style.display = 'block';
+            
+            nuevaTarjeta.querySelector('.lbl-serial').innerHTML = `<strong>Código/Serie:</strong> ${serial}`;
+            nuevaTarjeta.querySelector('.lbl-fecha').innerHTML = `<strong>Fechas:</strong> ${fecha}`;
+            nuevaTarjeta.querySelector('.link-doc').href = `taladro_${serial}.html?id=${serial}`;
+            
+            if(rolUsuario === 'Responsable SST') {
+                const btnPdf = nuevaTarjeta.querySelector('.btn-pdf-taladro');
+                const btnDel = nuevaTarjeta.querySelector('.btn-delete');
+                btnPdf.style.display = 'block';
+                btnDel.style.display = 'block';
+                
+                btnPdf.onclick = function() { 
+                    if(confirm("⚠️ ATENCIÓN: Al descargar el PDF final, el archivo se reiniciará en la nube y toda la información será borrada para iniciar una semana nueva. ¿Deseas continuar?")) {
+                        window.open(`taladro_${serial}.html?id=${serial}&print=true&reset=true`, '_blank'); 
+                    }
+                };
+
+                btnDel.onclick = async function() { 
+                    if(confirm(`¿Estás seguro de borrar el registro del taladro ${serial} de la base de datos?`)){
+                        await remove(ref(db, 'tarjetas_taladro/' + serial));
+                        await remove(ref(db, 'data_taladro_' + serial));
+                    }
+                };
+            }
+            grid.insertBefore(nuevaTarjeta, grid.firstChild);
+        }
+
+        // LECTURA EN TIEMPO REAL DESDE LA NUBE
+        const dbRef = ref(db, 'tarjetas_taladro');
+        onValue(dbRef, (snapshot) => {
+            document.querySelectorAll('.card:not(#template-card)').forEach(c => c.remove());
+            document.querySelectorAll('.add-serial').forEach(btn => btn.style.display = 'block');
+            
+            const data = snapshot.val();
+            if (data) {
+                Object.values(data).forEach(t => {
+                    renderizarTarjeta(t.serial, t.fecha);
+                    const menuLink = document.getElementById(`menu-${t.serial}`);
+                    if(menuLink) menuLink.style.display = 'none';
+                });
+            }
+        });
+
+        if(rolUsuario === 'Responsable SST' || rolUsuario === 'Oficial / Auxiliar') {
+            const btnNuevo = document.getElementById('btn-nuevo');
+            const menuNuevo = document.getElementById('menu-nuevo');
+            const btnMenuTaladro = document.getElementById('btn-menu-taladro');
+            const submenuTaladro = document.getElementById('submenu-taladro');
+            
+            btnNuevo.style.display = 'inline-block';
+            btnNuevo.onclick = function(e) { e.stopPropagation(); menuNuevo.style.display = menuNuevo.style.display === 'block' ? 'none' : 'block'; submenuTaladro.style.display = 'none'; };
+            btnMenuTaladro.onclick = function(e) { e.stopPropagation(); submenuTaladro.style.display = submenuTaladro.style.display === 'block' ? 'none' : 'block'; };
+            document.addEventListener('click', function(e) { if(!menuNuevo.contains(e.target) && e.target !== btnNuevo) { menuNuevo.style.display = 'none'; submenuTaladro.style.display = 'none'; } });
+            
+            document.querySelectorAll('.add-serial').forEach(boton => {
+                boton.onclick = async function(e) {
+                    e.preventDefault();
+                    const serialElegido = this.getAttribute('data-serial');
+                    const rangoFechas = calcularFechasSemana();
+                    
+                    await set(ref(db, 'tarjetas_taladro/' + serialElegido), {
+                        serial: serialElegido,
+                        fecha: rangoFechas
+                    });
+                    
+                    menuNuevo.style.display = 'none';
+                    submenuTaladro.style.display = 'none';
+                };
+            });
+        }
+    </script>
+</body>
+</html>

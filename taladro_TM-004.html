@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preoperacional Taladro Magnético - HMV</title>
+    <style>
+        :root { --hmv-blue: #004b87; --table-header-bg: #d9d9d9; --border-color: #000000; --text-color: #333333; --bg-body: #555555; }
+        body.dark-mode { --bg-body: #1a1a1a; }
+        
+        body { font-family: Arial, Helvetica, sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px; padding-bottom: 80px; display: flex; flex-direction: column; align-items: center; transition: background-color 0.3s; }
+        
+        .hoja-blanca { background-color: #ffffff; color: #000000; width: 100%; max-width: 900px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-size: 11px; margin-bottom: 20px;}
+
+        .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
+        .logo-box { width: 20%; display: flex; align-items: center; justify-content: center; }
+        .logo-box img { max-width: 100%; max-height: 60px; object-fit: contain; }
+        .center-col { width: 55%; display: flex; flex-direction: column; gap: 6px; }
+        .right-col { width: 25%; display: flex; flex-direction: column; gap: 6px; }
+        .right-bottom-row { display: flex; gap: 6px; height: 100%; }
+        
+        .box-rounded { background-color: var(--table-header-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; color: #000; height: 100%; text-align: center; }
+        .box-text-small { font-size: 10px; line-height: 1.2; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        th, td { border: 1px solid var(--border-color); padding: 4px 6px; vertical-align: middle; }
+        .bg-header { background-color: var(--table-header-bg); font-weight: bold; text-align: center; }
+        .title-row td { background-color: var(--table-header-bg); font-weight: bold; text-align: center; font-size: 12px; padding: 5px; }
+
+        input[type="text"], input[type="date"], input[type="time"], textarea { width: 95%; border: none; background: transparent; font-family: inherit; font-size: 11px; color: #000; outline: none; }
+        .disclaimer-text { font-size: 10px; color: #444; line-height: 1.3; text-align: justify; }
+
+        .check-td { text-align: center; width: 25px; padding: 2px 0; }
+        .criterio-select { width: 100%; border: none; background: transparent; font-size: 12px; text-align: center; text-align-last: center; cursor: pointer; color: #000; outline: none; appearance: none; font-weight: bold; }
+        
+        .btn-firmar { background-color: transparent; border: 1px solid #999; color: #333; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; transition: 0.2s; width: 100%; }
+        .btn-firmar:hover:not(:disabled) { background-color: var(--hmv-blue); color: white; border-color: var(--hmv-blue); }
+        .btn-firmar:disabled { opacity: 0.3; cursor: not-allowed; background-color: #eee; }
+
+        .print-fill-row { display: none; }
+
+        #btn-guardar-doc { position: fixed; bottom: 20px; background-color: var(--hmv-blue); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 1000; transition: transform 0.2s; }
+        #btn-guardar-doc:hover { transform: scale(1.05); }
+
+        @media print {
+            body { background-color: #fff; padding: 0; }
+            .hoja-blanca { box-shadow: none; padding: 0; max-width: 100%; margin-bottom: 0;}
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .no-print { display: none !important; }
+            #tabla-seccion-3 { page-break-before: always; }
+            .print-fill-row { display: table-row; }
+            .print-fill-row td { height: 35px; }
+            #btn-guardar-doc { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('hmv_theme') === 'dark') document.body.classList.add('dark-mode');
+    </script>
+
+<div class="hoja-blanca">
+    <div class="top-header">
+        <div class="logo-box"><img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Logo"></div>
+        <div class="center-col">
+            <div class="box-rounded">SISTEMA INTEGRADO DE GESTIÓN</div>
+            <div class="box-rounded" style="font-size: 14px;">Inspección Pre operacional</div>
+        </div>
+        <div class="right-col">
+            <div class="box-rounded box-text-small" style="font-size: 11px;">3942-00-HS-FR-156</div>
+            <div class="right-bottom-row">
+                <div class="box-rounded box-text-small" style="width: 60%;">Fecha<br>10-12-2025</div>
+                <div class="box-rounded box-text-small" style="width: 40%;">Rev.<br>No: 1</div>
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <tr class="title-row"><td colspan="4">Información del registro</td></tr>
+        <tr>
+            <td style="width: 25%; color: #666;">Fecha de inicio: <input type="date" id="fecha-ini" style="color: #000; width: 60%;"></td>
+            <td style="width: 25%;">Hora inicio: <input type="time" id="hora-ini" style="width: 60%;"></td>
+            <td colspan="2" rowspan="2" style="vertical-align: top; width: 50%;">Archivar en (sede o proyecto): <input type="text" id="archivo" style="width: 50%;"></td>
+        </tr>
+        <tr>
+            <td style="color: #666;">Fecha Final: <input type="date" id="fecha-fin" style="color: #000; width: 60%;"></td>
+            <td>Hora fin: <input type="time" id="hora-fin" style="width: 60%;"></td>
+        </tr>
+    </table>
+
+    <table>
+        <tr class="title-row"><td colspan="3">1. Información general</td></tr>
+        <tr>
+            <td rowspan="3" style="width: 35%; text-align: center; padding: 5px;"><img src="https://maquistoresas.com/wp-content/uploads/2023/04/Taladro-Base-Magnetica-Truper-1.200W-100989-partes-150x150.png.webp" alt="Taladro Magnético" style="max-height: 140px; max-width: 100%; object-fit: contain;"></td>
+            <td style="width: 30%;">Nombre del equipo, herramienta y/o máquina.</td>
+            <td style="text-align: center; width: 35%;">Taladro Magnético</td>
+        </tr>
+        <tr><td>Marca - serie o código</td><td><input type="text" id="inp-serial" value="Cargando..." readonly style="text-align: center; font-weight: bold; background: #eee;"></td></tr>
+        <tr><td>Actividad a realizar</td><td><input type="text" class="save-data"></td></tr>
+    </table>
+
+    <table id="tabla-trabajadores">
+        <tr class="title-row"><td colspan="3">2. Personal autorizado</td></tr>
+        <tr><td colspan="3" class="disclaimer-text">- No se autoriza la operación del equipo, a menos que esta inspección esté debidamente diligenciada por el operador; revisada y aprobada por: encargado de obra, jefe inmediato y responsable de seguridad y salud en el trabajo.<br>- Declaro estar en óptimas condiciones de salud para operar la máquina y/o equipo.</td></tr>
+        <tr>
+            <td class="bg-header" style="width: 50%;">Nombres y Apellidos</td><td class="bg-header" style="width: 25%;">Cédula</td><td class="bg-header" style="width: 25%;">Firma</td>
+        </tr>
+        <tbody id="tbody-trabajadores">
+            <tr>
+                <td><input type="text" class="save-data"></td><td><input type="text" class="save-data"></td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️ Firmar</button>
+                    <img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 35px; margin: auto;">
+                </td>
+            </tr>
+            <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            
+            <tr class="no-print" id="row-btn-agregar">
+                <td colspan="3" style="text-align: center; border: none; padding-top: 5px;"><button id="btn-agregar-trabajador" style="background-color: var(--hmv-blue); color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 3px; font-size: 10px;">+ Agregar Trabajador</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table id="tabla-seccion-3">
+        <tr class="title-row"><td colspan="9">3. Condiciones de máquinas, equipos, herramientas; revisión previa</td></tr>
+        <tr>
+            <td rowspan="2" colspan="2" style="width: 65%; font-weight: bold; text-align: center;">Criterio</td>
+            <td colspan="7" style="font-size: 9px; line-height: 1.1; font-weight: bold; padding: 2px;">Convención para el<br>registro de este formato &nbsp;&nbsp;&nbsp; <span style="font-size: 12px;">✓</span> &nbsp;&nbsp; <span style="font-size: 12px; color: #555;">✖</span> &nbsp;&nbsp; NA</td>
+        </tr>
+        <tr>
+            <td class="bg-header">LUN</td><td class="bg-header">MAR</td><td class="bg-header">MIE</td><td class="bg-header">JUE</td><td class="bg-header">VIE</td><td class="bg-header">SAB</td><td class="bg-header">DOM</td>
+        </tr>
+        
+        <tr>
+            <td colspan="2">El operador cuenta con los elementos de protección personal requeridos para la tarea (botas, gafas, protección auditiva, guantes)</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">Se ajusta la mesa de acuerdo al tamaño de la pieza (verifique el tamaño de la pieza y la altura de la mesa)</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">Se ha puesto la broca con la ayuda de la llave de apriete del taladro (compruebe que se cuenta con llave de apriete del husillo)</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">El mango de sujeción se encuentra sin grietas</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">La carcaza del taladro se encuentra sin grietas, limpia, rejillas de ventilación sin obstrucciones</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">El regulador o botón de velocidad cambia cuando se selecciona una determinada velocidad</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">Se utilizan las brocas adecuadas para el taladro (comprobar que se cuenta con las brocas para el trabajo material a taladrar)</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">El regulador de velocidad automático varia de acuerdo a la presión ejercida</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">Los orificios para el mango auxiliar o portátil se encuentran limpios sin obstrucción</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">El botón de cambio de marcha cambia de rotación al seleccionar el sentido de giro</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">El mandril cierra adecuadamente sobre la broca con la llave de apriete</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">Las escobillas se encuentran en buen estado</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">El cableado eléctrico se encuentra libre de alambres expuestos, empates.</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">Se comprueba que el botón de parada de emergencia funciona correctamente</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+        <tr>
+            <td colspan="2">Clavija de conexión (sin alambres expuestos, con polo a tierra)</td>
+            <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+        </tr>
+
+        <tr>
+            <td rowspan="2" style="width: 45%; font-weight: bold; text-align: justify; vertical-align: top; padding: 5px;">Garantizo que el equipo, herramienta y/o maquina ha sido inspeccionada(o) y se encuentra en buen estado para su uso.</td>
+            <td style="width: 20%; font-size: 10px; color: #555; vertical-align: bottom; padding: 5px; height: 40px;">Firma del operador:</td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+        </tr>
+        <tr>
+            <td style="font-size: 10px; color: #555; vertical-align: bottom; padding: 5px; height: 40px;">Firma responsable SST:</td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+            <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
+        </tr>
+    </table>
+
+    <table>
+        <tr class="title-row"><td>4. Hallazgos</td></tr>
+        <tr><td style="padding: 0;"><textarea class="save-data" style="height: 40px; padding: 5px; resize: none;"></textarea></td></tr>
+    </table>
+
+    <table>
+        <tr class="title-row"><td colspan="3">5. Autorización</td></tr>
+        <tr><td colspan="3" class="disclaimer-text">No se autoriza el uso del equipo, herramienta y/o maquina, sino se encuentra completamente diligenciado los espacios de las firmas</td></tr>
+        <tr>
+            <td class="bg-header" style="width: 33%;">Firma encargado de obra:</td>
+            <td class="bg-header" style="width: 33%;">Firma del jefe inmediato:</td>
+            <td class="bg-header" style="width: 33%;">Firma del responsable de SST:</td>
+        </tr>
+        <tr>
+            <td style="text-align: center; padding: 10px;"><button class="btn-firmar no-print" data-auth="Ingeniero" type="button" style="width: auto; padding: 8px 20px;">✍️ Firmar (Ingeniero)</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 60px; margin: auto;"></td>
+            <td style="text-align: center; padding: 10px;"><button class="btn-firmar no-print" data-auth="Capataz" type="button" style="width: auto; padding: 8px 20px;">✍️ Firmar (Capataz)</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 60px; margin: auto;"></td>
+            <td style="text-align: center; padding: 10px;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button" style="width: auto; padding: 8px 20px;">✍️ Firmar (SST)</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 60px; margin: auto;"></td>
+        </tr>
+    </table>
+    
+    <div style="font-size: 8px; color: #555; margin-top: 5px;">HMV Ingenieros no autoriza la reproducción total ni parcial de este documento. Quien haga uso de este documento de forma impresa, es responsable de verificar si corresponde a la versión vigente, mediante consulta en la Intranet módulo SIG</div>
+</div>
+
+<div id="firma-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
+    <div style="background: #fff; padding: 15px; border-radius: 8px; width: 90%; max-width: 600px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.5);">
+        <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--hmv-blue); font-family: sans-serif; font-size: 14px;">✍️ Espacio de Firma<br><small style="color: #666; font-size: 10px;">(Gire el celular horizontalmente si requiere más espacio)</small></h3>
+        <canvas id="modal-canvas" style="border: 2px dashed #999; width: 100%; height: 250px; background: #fff; cursor: crosshair; touch-action: none; border-radius: 5px;"></canvas>
+        <div style="margin-top: 15px; display: flex; gap: 15px; justify-content: center;">
+            <button id="btn-cancel-firma" type="button" style="padding: 10px 20px; background: #888; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 45%;">Cancelar</button>
+            <button id="btn-save-firma" type="button" style="padding: 10px 20px; background: var(--hmv-blue); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 45%;">Agregar firma</button>
+        </div>
+    </div>
+</div>
+
+<button id="btn-guardar-doc">💾 GUARDAR DOCUMENTO</button>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g",
+        authDomain: "sst-hmv.firebaseapp.com",
+        databaseURL: "https://sst-hmv-default-rtdb.firebaseio.com",
+        projectId: "sst-hmv",
+        storageBucket: "sst-hmv.firebasestorage.app",
+        messagingSenderId: "224287433604",
+        appId: "1:224287433604:web:387a81c078875b7fb5b3d1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const documentSerial = urlParams.get('id') || 'SIN-SERIAL';
+    document.getElementById('inp-serial').value = documentSerial;
+    const rolUsuario = localStorage.getItem('hmv_user_role') || 'Invitado';
+    
+    function aplicarPermisosRoles() {
+        document.querySelectorAll('.btn-firmar').forEach(btn => {
+            const authRequired = btn.getAttribute('data-auth');
+            if (authRequired !== rolUsuario) {
+                btn.disabled = true;
+                btn.title = `Acceso denegado. Casilla exclusiva para: ${authRequired}`;
+            }
+        });
+    }
+    aplicarPermisosRoles();
+
+    const modal = document.getElementById('firma-modal');
+    const modalCanvas = document.getElementById('modal-canvas');
+    const modalCtx = modalCanvas.getContext('2d');
+    let currentSigImg = null, currentSigBtn = null;
+
+    function resizeCanvas() { modalCanvas.width = modalCanvas.offsetWidth; modalCanvas.height = modalCanvas.offsetHeight; modalCtx.lineWidth = 3; modalCtx.lineCap = 'round'; modalCtx.strokeStyle = '#000'; }
+
+    function attachFirmaEvent(btn) {
+        btn.onclick = function() {
+            currentSigBtn = this; currentSigImg = this.nextElementSibling;
+            modal.style.display = 'flex'; resizeCanvas(); modalCtx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
+        };
+    }
+    document.querySelectorAll('.btn-firmar').forEach(attachFirmaEvent);
+
+    document.getElementById('btn-cancel-firma').onclick = () => { modal.style.display = 'none'; };
+    document.getElementById('btn-save-firma').onclick = () => {
+        currentSigImg.src = modalCanvas.toDataURL('image/png');
+        currentSigImg.style.display = 'block'; currentSigBtn.style.display = 'none'; modal.style.display = 'none';
+    };
+
+    let isDrawing = false;
+    function startDrawing(e) { isDrawing = true; draw(e); }
+    function stopDrawing() { isDrawing = false; modalCtx.beginPath(); }
+    function draw(e) {
+        if (!isDrawing) return; e.preventDefault();
+        const rect = modalCanvas.getBoundingClientRect();
+        const x = ((e.clientX || (e.touches && e.touches[0].clientX)) - rect.left) * (modalCanvas.width / rect.width);
+        const y = ((e.clientY || (e.touches && e.touches[0].clientY)) - rect.top) * (modalCanvas.height / rect.height);
+        modalCtx.lineTo(x, y); modalCtx.stroke(); modalCtx.beginPath(); modalCtx.moveTo(x, y);
+    }
+    modalCanvas.addEventListener('mousedown', startDrawing); modalCanvas.addEventListener('mousemove', draw); modalCanvas.addEventListener('mouseup', stopDrawing); modalCanvas.addEventListener('mouseout', stopDrawing);
+    modalCanvas.addEventListener('touchstart', startDrawing, {passive: false}); modalCanvas.addEventListener('touchmove', draw, {passive: false}); modalCanvas.addEventListener('touchend', stopDrawing);
+
+    const btnAgregar = document.getElementById('btn-agregar-trabajador');
+    if (rolUsuario !== 'Oficial / Auxiliar' && rolUsuario !== 'Responsable SST') btnAgregar.style.display = 'none';
+    
+    btnAgregar.onclick = function() {
+        const tbody = document.getElementById('tbody-trabajadores');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><input type="text" class="save-data"></td><td><input type="text" class="save-data"></td><td style="text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️ Firmar</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 35px; margin: auto;"></td>`;
+        const newBtn = tr.querySelector('.btn-firmar');
+        if (rolUsuario !== 'Oficial / Auxiliar') { newBtn.disabled = true; newBtn.title = 'Acceso denegado.'; }
+        attachFirmaEvent(newBtn);
+        tbody.insertBefore(tr, tbody.querySelector('.print-fill-row'));
+    };
+    
+    document.getElementById('btn-guardar-doc').onclick = async function() {
+        let datos = { textos: [], firmas: [], btnAgregarClicks: document.querySelectorAll('#tbody-trabajadores tr').length - 11 }; 
+        datos.fIni = document.getElementById('fecha-ini').value;
+        datos.hIni = document.getElementById('hora-ini').value;
+        datos.fFin = document.getElementById('fecha-fin').value;
+        datos.hFin = document.getElementById('hora-fin').value;
+        datos.archivo = document.getElementById('archivo').value;
+
+        document.querySelectorAll('.save-data').forEach((el, index) => { datos.textos[index] = el.value; });
+        document.querySelectorAll('.save-img').forEach((img, index) => { if(img.src.length > 100) { datos.firmas[index] = img.src; } });
+
+        const originalText = this.innerText;
+        this.innerText = "⏳ GUARDANDO EN LA NUBE...";
+        
+        try {
+            await set(ref(db, `data_taladro_${documentSerial}`), datos);
+            alert("✔️ Documento guardado correctamente en la nube. Ya puedes regresar al panel.");
+        } catch(e) {
+            alert("❌ Error al guardar en la nube: " + e.message);
+        }
+        
+        this.innerText = originalText;
+    };
+
+    async function cargarDatos() {
+        try {
+            const snapshot = await get(ref(db, `data_taladro_${documentSerial}`));
+            if (snapshot.exists()) {
+                const guardado = snapshot.val();
+                
+                for(let i=0; i < guardado.btnAgregarClicks; i++) { btnAgregar.click(); }
+                
+                if(guardado.fIni) document.getElementById('fecha-ini').value = guardado.fIni;
+                if(guardado.hIni) document.getElementById('hora-ini').value = guardado.hIni;
+                if(guardado.fFin) document.getElementById('fecha-fin').value = guardado.fFin;
+                if(guardado.hFin) document.getElementById('hora-fin').value = guardado.hFin;
+                if(guardado.archivo) document.getElementById('archivo').value = guardado.archivo;
+                
+                const inputs = document.querySelectorAll('.save-data');
+                guardado.textos.forEach((val, index) => { if(inputs[index]) inputs[index].value = val; });
+                
+                const imagenes = document.querySelectorAll('.save-img');
+                const botonesF = document.querySelectorAll('.btn-firmar');
+                guardado.firmas.forEach((src, index) => {
+                    if(src && imagenes[index]) {
+                        imagenes[index].src = src; imagenes[index].style.display = 'block';
+                        if(botonesF[index]) botonesF[index].style.display = 'none';
+                    }
+                });
+            }
+        } catch(e) {
+            console.error("Error al cargar los datos desde la nube:", e);
+        }
+    }
+    cargarDatos();
+
+    if(window.location.search.includes('print=true')) {
+        setTimeout(async function() { 
+            window.print(); 
+            if(window.location.search.includes('reset=true')) {
+                await remove(ref(db, `data_taladro_${documentSerial}`));
+            }
+        }, 1500); 
+    }
+</script>
+</body>
+</html>
