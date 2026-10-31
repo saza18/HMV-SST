@@ -10,7 +10,7 @@
         
         body { font-family: Arial, Helvetica, sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px; padding-bottom: 80px; display: flex; flex-direction: column; align-items: center; transition: background-color 0.3s; }
         
-        /* Solución celular: Fuerza el fondo a ser blanco en móviles para que no se vea el borde gris */
+        /* Ajuste de fondo para celular sin tocar la tabla */
         @media (max-width: 800px) {
             body { background-color: #ffffff; padding: 10px; }
             body.dark-mode { background-color: #1a1a1a; }
@@ -19,7 +19,6 @@
 
         .hoja-blanca { background-color: #ffffff; color: #000000; width: 100%; max-width: 900px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-size: 11px; margin-bottom: 20px; position: relative;}
 
-        /* Botón de retroceso fuera de la hoja */
         .btn-regresar-panel { position: absolute; top: -35px; left: 0; background: var(--bg-surface, #ffffff); color: var(--text-main, #333333); text-decoration: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; border: 1px solid #999; }
         
         .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
@@ -49,18 +48,19 @@
 
         .print-fill-row { display: none; }
 
-        #btn-guardar-doc { position: fixed; bottom: 20px; background-color: var(--hmv-blue); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 1000; transition: transform 0.2s; }
-        #btn-guardar-doc:hover { transform: scale(1.05); }
+        #btn-guardar-doc { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: var(--hmv-blue); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 1000; transition: transform 0.2s; }
+        #btn-guardar-doc:hover { transform: translate(-50%, -2px); }
 
+        /* LÓGICA ESTRICTA DE IMPRESIÓN PDF */
         @media print {
+            @page { margin: 1.5cm; } /* Márgenes de hoja profesional */
             body { background-color: #fff; padding: 0; }
-            .hoja-blanca { box-shadow: none !important; padding: 0; max-width: 100%; margin-bottom: 0;}
+            .hoja-blanca { box-shadow: none !important; padding: 0 !important; max-width: 100%; margin: 0 !important;}
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .no-print { display: none !important; }
+            .no-print, #btn-guardar-doc, .btn-regresar-panel, #firma-modal { display: none !important; }
             #tabla-seccion-3 { page-break-before: always; }
-            .print-fill-row { display: table-row; }
+            .print-fill-row { display: table-row !important; }
             .print-fill-row td { height: 35px; }
-            #btn-guardar-doc { display: none !important; }
         }
     </style>
 </head>
@@ -100,15 +100,17 @@
         </tr>
     </table>
 
+    <!-- SECCIÓN 1: AJUSTE DE TAMAÑOS EXACTOS (IMAGEN MÁS GRANDE) -->
     <table>
         <tr class="title-row"><td colspan="3">1. Información general</td></tr>
         <tr>
-            <td rowspan="3" style="width: 35%; text-align: center; padding: 5px;"><img src="https://maquistoresas.com/wp-content/uploads/2023/04/Taladro-Base-Magnetica-Truper-1.200W-100989-partes-150x150.png.webp" alt="Taladro Magnético" style="max-height: 140px; max-width: 100%; object-fit: contain;"></td>
-            <td style="width: 30%;">Nombre del equipo, herramienta y/o máquina.</td>
-            <td style="text-align: center; width: 35%;">Taladro Magnético</td>
+            <!-- Columna de imagen al 45% y max-height ampliado a 170px -->
+            <td rowspan="3" style="width: 45%; text-align: center; padding: 5px;"><img src="https://maquistoresas.com/wp-content/uploads/2023/04/Taladro-Base-Magnetica-Truper-1.200W-100989-partes-150x150.png.webp" alt="Taladro Magnético" style="max-height: 170px; max-width: 100%; object-fit: contain;"></td>
+            <td style="width: 25%;">Nombre del equipo, herramienta y/o máquina.</td>
+            <td style="text-align: center; width: 30%;">Taladro Magnético</td>
         </tr>
-        <tr><td>Marca - serie o código</td><td><input type="text" id="inp-serial" value="Cargando..." readonly style="text-align: center; font-weight: bold; background: #eee;"></td></tr>
-        <tr><td>Actividad a realizar</td><td><input type="text" class="save-data"></td></tr>
+        <tr><td>Marca - serie o código</td><td><input type="text" id="inp-serial" value="Cargando..." readonly style="text-align: center; font-weight: bold; background: transparent; border: none; outline: none; width: 100%;"></td></tr>
+        <tr><td>Actividad a realizar</td><td><input type="text" class="save-data" style="width: 100%;"></td></tr>
     </table>
 
     <table id="tabla-trabajadores">
@@ -269,7 +271,7 @@
     </div>
 </div>
 
-<button id="btn-guardar-doc">💾 GUARDAR DOCUMENTO</button>
+<button id="btn-guardar-doc" class="no-print">💾 GUARDAR DOCUMENTO</button>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -363,7 +365,7 @@
         document.querySelectorAll('.save-img').forEach((img, index) => { if(img.src.length > 100) { datos.firmas[index] = img.src; } });
 
         const originalText = this.innerText;
-        this.innerText = "⏳ GUARDANDO...";
+        this.innerText = "⏳ GUARDANDO EN LA NUBE...";
         
         try {
             await set(ref(db, `data_taladro_${documentSerial}`), datos);
