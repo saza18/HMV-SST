@@ -111,11 +111,11 @@
         
         .print-fill-row { display: none; }
 
-        /* REGLAS DE IMPRESIÓN (Márgenes idénticas en todas las páginas) */
+        /* REGLAS DE IMPRESIÓN UNIFICADAS PARA PC Y CELULAR (93% Y MÁRGENES IDÉNTICAS) */
         @media print {
             @page {
                 size: letter;
-                margin: 12mm; /* Controla el margen simétrico en TODAS las hojas (reducido para no quedar tan ancho) */
+                margin: 10mm; /* Garantiza la misma margen superior, inferior e izquierda/derecha en todas las hojas */
             }
             body, .contenedor-principal { 
                 background-color: #fff; 
@@ -127,18 +127,18 @@
             }
             .hoja-blanca { 
                 box-shadow: none; 
-                margin: 0 !important; /* Eliminado el margen manual para que @page haga el trabajo en cada hoja */
+                margin: 0 auto !important; /* Centrado horizontal sin añadir margen superior extra */
                 padding: 0; 
                 display: block; 
-                width: 100% !important; /* Ocupa todo el espacio que deja la margen de 12mm */
-                max-width: 100% !important; 
+                width: 93% !important; /* Ocupa exactamente el 93% */
+                max-width: 900px !important; 
                 box-sizing: border-box;
             }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             table, tr, td, .top-header { page-break-inside: avoid; }
             .no-print, .botones-flotantes, #firma-modal { display: none !important; }
             .print-fill-row { display: table-row !important; }
-            #tabla-seccion-3 { page-break-before: always; } 
+            #tabla-seccion-3 { page-break-before: always; }
             
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
@@ -166,13 +166,13 @@
         <table>
             <tr class="title-row"><td colspan="4">Información del registro</td></tr>
             <tr>
-                <td style="width: 25%; color: #666;">Fecha de inicio: <input type="date" id="fecha-ini" style="color: #000; width: 60%;"></td>
-                <td style="width: 25%;">Hora inicio: <input type="time" id="hora-ini" style="width: 60%;"></td>
+                <td style="width: 25%; color: #666;">Fecha de inicio: <input type="date" id="fecha-ini" style="color: #000; width: 60%;" class="save-data"></td>
+                <td style="width: 25%;">Hora inicio: <input type="time" id="hora-ini" style="width: 60%;" class="save-data"></td>
                 <td colspan="2" rowspan="2" style="vertical-align: top; width: 50%;">Archivar en (sede o proyecto): <input type="text" id="archivo" style="width: 50%;" class="save-data"></td>
             </tr>
             <tr>
-                <td style="color: #666;">Fecha Final: <input type="date" id="fecha-fin" style="color: #000; width: 60%;"></td>
-                <td>Hora fin: <input type="time" id="hora-fin" style="width: 60%;"></td>
+                <td style="color: #666;">Fecha Final: <input type="date" id="fecha-fin" style="color: #000; width: 60%;" class="save-data"></td>
+                <td>Hora fin: <input type="time" id="hora-fin" style="width: 60%;" class="save-data"></td>
             </tr>
         </table>
 
