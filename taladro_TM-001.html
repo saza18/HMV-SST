@@ -381,8 +381,9 @@
         datos.hFin = document.getElementById('hora-fin').value;
         datos.archivo = document.getElementById('archivo').value;
 
-        document.querySelectorAll('.save-data').forEach((el, index) => { datos.textos[index] = el.value; });
-        document.querySelectorAll('.save-img').forEach((img, index) => { if(img.src.length > 100) { datos.firmas[index] = img.src; } });
+        // Corrección estricta: Rellenar con texto en blanco para evitar romper la matriz en Firebase
+        document.querySelectorAll('.save-data').forEach((el, index) => { datos.textos[index] = el.value || ""; });
+        document.querySelectorAll('.save-img').forEach((img, index) => { datos.firmas[index] = img.src.length > 100 ? img.src : ""; });
 
         const originalText = this.innerText;
         this.innerText = "⏳ GUARDANDO...";
@@ -401,7 +402,8 @@
             const snapshot = await get(ref(db, `data_taladro_${documentSerial}`));
             if (snapshot.exists()) {
                 const guardado = snapshot.val();
-                for(let i=0; i < guardado.btnAgregarClicks; i++) { if(btnAgregar) btnAgregar.click(); }
+                
+                for(let i=0; i < (guardado.btnAgregarClicks || 0); i++) { if(btnAgregar) btnAgregar.click(); }
                 
                 if(guardado.fIni) document.getElementById('fecha-ini').value = guardado.fIni;
                 if(guardado.hIni) document.getElementById('hora-ini').value = guardado.hIni;
@@ -410,22 +412,28 @@
                 if(guardado.archivo) document.getElementById('archivo').value = guardado.archivo;
                 
                 const inputs = document.querySelectorAll('.save-data');
-                guardado.textos.forEach((val, index) => { if(inputs[index]) inputs[index].value = val; });
+                if(guardado.textos) {
+                    for(let i=0; i<inputs.length; i++) {
+                        if(guardado.textos[i]) inputs[i].value = guardado.textos[i];
+                    }
+                }
                 
                 const imagenes = document.querySelectorAll('.save-img');
                 const botonesF = document.querySelectorAll('.btn-firmar');
-                guardado.firmas.forEach((src, index) => {
-                    if(src && imagenes[index]) {
-                        imagenes[index].src = src;
-                        imagenes[index].style.display = 'block';
-                        if(botonesF[index]) botonesF[index].style.display = 'none';
+                if(guardado.firmas) {
+                    for(let i=0; i<imagenes.length; i++) {
+                        const src = guardado.firmas[i];
+                        if(src && src.length > 100) {
+                            imagenes[i].src = src;
+                            imagenes[i].style.display = 'block';
+                            if(botonesF[i]) botonesF[i].style.display = 'none';
+                        }
                     }
-                });
+                }
             }
         } catch(e) { console.error("Error al cargar:", e); }
     }
     cargarDatos();
-
 </script>
 </body>
 </html>
