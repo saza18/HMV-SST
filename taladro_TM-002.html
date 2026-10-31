@@ -111,11 +111,11 @@
         
         .print-fill-row { display: none; }
 
-        /* REGLAS DE IMPRESIÓN EXCLUSIVAS PARA PC (Ocupa el 90%) */
+        /* REGLAS ESTRICTAS DE IMPRESIÓN (Mismas para PC y Celular) */
         @media print {
             @page {
                 size: letter;
-                margin: 1.5cm;
+                margin: 1.5cm; /* Margen base garantizado de la hoja Carta */
             }
             body, .contenedor-principal { 
                 background-color: #fff; 
@@ -127,29 +127,21 @@
             }
             .hoja-blanca { 
                 box-shadow: none; 
-                margin: 0 auto; 
+                margin: 5% auto 0 auto !important; /* 5% superior, centra a los lados dejando 5% y 5% */
                 padding: 0; 
                 display: block; 
-                width: 90% !important; /* Computador tomará el 90% dejando márgenes */
-                max-width: 900px !important; 
+                width: 90% !important; /* Ocupa el 90% exacto para ser idéntico en PC y celular */
+                max-width: 900px !important; /* Obliga al celular a escalar idéntico al PC */
                 box-sizing: border-box;
             }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             table, tr, td, .top-header { page-break-inside: avoid; }
             .no-print, .botones-flotantes, #firma-modal { display: none !important; }
             .print-fill-row { display: table-row !important; }
-            #tabla-seccion-3 { page-break-before: always; }
+            #tabla-seccion-3 { page-break-before: always; } /* Mantiene la página partida exactamente en 2 hojas */
             
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
-        }
-
-        /* REGLAS DE IMPRESIÓN EXCLUSIVAS PARA CELULAR (Vuelve al 100% como estaba antes) */
-        @media print and (max-width: 800px) {
-            .hoja-blanca {
-                width: 100% !important;
-                max-width: 100% !important;
-            }
         }
     </style>
 </head>
@@ -174,14 +166,13 @@
         <table>
             <tr class="title-row"><td colspan="4">Información del registro</td></tr>
             <tr>
-                <!-- NO TIENEN LA CLASE 'save-data' para no arruinar el orden en la base de datos -->
-                <td style="width: 25%; color: #666;">Fecha de inicio: <input type="date" id="fecha-ini" style="color: #000; width: 60%;"></td>
-                <td style="width: 25%;">Hora inicio: <input type="time" id="hora-ini" style="width: 60%;"></td>
-                <td colspan="2" rowspan="2" style="vertical-align: top; width: 50%;">Archivar en (sede o proyecto): <input type="text" id="archivo" style="width: 50%;"></td>
+                <td style="width: 25%; color: #666;">Fecha de inicio: <input type="date" id="fecha-ini" style="color: #000; width: 60%;" class="save-data"></td>
+                <td style="width: 25%;">Hora inicio: <input type="time" id="hora-ini" style="width: 60%;" class="save-data"></td>
+                <td colspan="2" rowspan="2" style="vertical-align: top; width: 50%;">Archivar en (sede o proyecto): <input type="text" id="archivo" style="width: 50%;" class="save-data"></td>
             </tr>
             <tr>
-                <td style="color: #666;">Fecha Final: <input type="date" id="fecha-fin" style="color: #000; width: 60%;"></td>
-                <td>Hora fin: <input type="time" id="hora-fin" style="width: 60%;"></td>
+                <td style="color: #666;">Fecha Final: <input type="date" id="fecha-fin" style="color: #000; width: 60%;" class="save-data"></td>
+                <td>Hora fin: <input type="time" id="hora-fin" style="width: 60%;" class="save-data"></td>
             </tr>
         </table>
 
@@ -222,7 +213,7 @@
             </tbody>
         </table>
 
-        <!-- Se le agregó el id="tabla-seccion-3" para que el PDF salte de hoja exactamente aquí -->
+        <!-- La 3ra tabla siempre saltará a la segunda hoja gracias a su ID -->
         <table id="tabla-seccion-3">
             <tr class="title-row"><td colspan="9">3. Condiciones de máquinas, equipos, herramientas; revisión previa</td></tr>
             <tr>
@@ -404,7 +395,6 @@
     }
 
     document.getElementById('btn-guardar-doc').onclick = async function() {
-        // Corrección estricta de la matemática para que no elimine trabajadores al guardar
         let datos = { textos: [], firmas: [], btnAgregarClicks: document.querySelectorAll('#tbody-trabajadores tr').length - 10 }; 
         datos.fIni = document.getElementById('fecha-ini').value;
         datos.hIni = document.getElementById('hora-ini').value;
@@ -412,7 +402,6 @@
         datos.hFin = document.getElementById('hora-fin').value;
         datos.archivo = document.getElementById('archivo').value;
 
-        // Corrección estricta para guardar textos vacíos y firmas sin romper la matriz
         document.querySelectorAll('.save-data').forEach((el, index) => { datos.textos[index] = el.value || ""; });
         document.querySelectorAll('.save-img').forEach((img, index) => { 
             const srcVal = img.getAttribute('src');
