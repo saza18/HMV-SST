@@ -40,7 +40,7 @@
             padding: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             font-size: 11px;
-            margin-bottom: 20px; 
+            margin-bottom: 70px; 
             position: relative; 
         }
 
@@ -111,28 +111,10 @@
         
         .print-fill-row { display: none; }
 
-        /* EL SECRETO: REGLAS DE IMPRESIÓN PARA COPIAR EXACTAMENTE TU IMAGEN */
         @media print {
-            @page {
-                size: letter;
-                margin: 15mm; /* Margen estándar para que no quede al borde */
-            }
-            body, .contenedor-principal { 
-                background-color: #fff; 
-                padding: 0; 
-                margin: 0;
-                display: block; 
-                overflow: visible; 
-            }
-            .hoja-blanca { 
-                box-shadow: none; 
-                margin: 0 auto; /* Centra el documento */
-                padding: 0; 
-                display: block; 
-                /* ESTO HACE LA MAGIA: Fija la tabla a 900px para que el navegador la escale con márgenes perfectas */
-                width: 900px !important;
-                max-width: 900px !important; 
-            }
+            body { background-color: #fff; padding: 0; display: block; }
+            .contenedor-principal { display: block; min-width: 100%; }
+            .hoja-blanca { box-shadow: none; margin: 0 auto; display: block; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             table, tr, td, .top-header { page-break-inside: avoid; }
             .no-print, .botones-flotantes, #firma-modal { display: none !important; }
@@ -270,7 +252,6 @@
 <div class="botones-flotantes no-print">
     <a href="panel.html" class="btn-flotante btn-regresar">⬅️ Regresar</a>
     <button id="btn-guardar-doc" class="btn-flotante btn-guardar">💾 Guardar</button>
-    <button id="btn-pdf-doc" class="btn-flotante btn-pdf" style="display: none;">📥 PDF</button>
 </div>
 
 <div id="firma-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
@@ -307,12 +288,6 @@
     if(inpSerial) inpSerial.value = documentSerial;
     
     const rolUsuario = localStorage.getItem('hmv_user_role') || 'Invitado';
-
-    if(rolUsuario === 'Responsable SST') {
-        const btnPDF = document.getElementById('btn-pdf-doc');
-        btnPDF.style.display = 'flex';
-        btnPDF.onclick = function() { window.print(); };
-    }
 
     function aplicarPermisosRoles() {
         document.querySelectorAll('.btn-firmar').forEach(btn => {
@@ -451,12 +426,6 @@
     }
     cargarDatos();
 
-    if(window.location.search.includes('print=true')) {
-        setTimeout(async function() { 
-            window.print(); 
-            if(window.location.search.includes('reset=true')) { await remove(ref(db, `data_taladro_${documentSerial}`)); }
-        }, 1500); 
-    }
 </script>
 </body>
 </html>
