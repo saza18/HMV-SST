@@ -111,11 +111,10 @@
         
         .print-fill-row { display: none; }
 
-        /* REGLAS DE IMPRESIÓN UNIFICADAS PARA PC Y CELULAR (93% Y MÁRGENES IDÉNTICAS) */
         @media print {
             @page {
                 size: letter;
-                margin: 10mm; /* Garantiza la misma margen superior, inferior e izquierda/derecha en todas las hojas */
+                margin: 10mm; 
             }
             body, .contenedor-principal { 
                 background-color: #fff; 
@@ -127,13 +126,19 @@
             }
             .hoja-blanca { 
                 box-shadow: none; 
-                margin: 0 auto !important; /* Centrado horizontal sin añadir margen superior extra */
+                margin: 0 auto !important; /* Celular sigue usando 0 arriba/abajo */
                 padding: 0; 
                 display: block; 
-                width: 93% !important; /* Ocupa exactamente el 93% */
+                width: 93% !important; 
                 max-width: 900px !important; 
                 box-sizing: border-box;
             }
+            
+            /* SOLUCIÓN EXCLUSIVA PARA PC: Completa la margen superior/inferior del 93% */
+            .is-pc .hoja-blanca {
+                margin: 3.5% auto !important; 
+            }
+
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             table, tr, td, .top-header { page-break-inside: avoid; }
             .no-print, .botones-flotantes, #firma-modal { display: none !important; }
@@ -286,6 +291,11 @@
 </div>
 
 <script type="module">
+    // SE AGREGA CLASE AL BODY SI ES COMPUTADOR (Pantalla ancha)
+    if (window.innerWidth > 800) {
+        document.body.classList.add('is-pc');
+    }
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
