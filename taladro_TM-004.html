@@ -111,28 +111,27 @@
         
         .print-fill-row { display: none; }
 
-        /* ÚNICO BLOQUE MODIFICADO PARA GARANTIZAR TAMAÑO CARTA Y MÁRGENES */
+        /* EL SECRETO: REGLAS DE IMPRESIÓN PARA COPIAR EXACTAMENTE TU IMAGEN */
         @media print {
             @page {
                 size: letter;
-                margin: 1.5cm;
+                margin: 15mm; /* Margen estándar para que no quede al borde */
             }
             body, .contenedor-principal { 
                 background-color: #fff; 
                 padding: 0; 
                 margin: 0;
                 display: block; 
-                width: 100%;
-                min-width: 100%;
-                overflow: hidden; 
+                overflow: visible; 
             }
             .hoja-blanca { 
                 box-shadow: none; 
-                margin: 0; 
+                margin: 0 auto; /* Centra el documento */
                 padding: 0; 
                 display: block; 
-                width: 100%;
-                max-width: 100%; 
+                /* ESTO HACE LA MAGIA: Fija la tabla a 900px para que el navegador la escale con márgenes perfectas */
+                width: 900px !important;
+                max-width: 900px !important; 
             }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             table, tr, td, .top-header { page-break-inside: avoid; }
