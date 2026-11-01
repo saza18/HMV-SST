@@ -553,7 +553,7 @@
                 transform: translate(-50%, -50%);
                 width: 80%;
                 max-width: 250px;
-                box-shadow: 0 0 0 1000vw rgba(0,0,0,0.6), 0 10px 25px rgba(0,0,0,0.5); /* Oscurece el fondo completo */
+                box-shadow: 0 0 0 1000vw rgba(0,0,0,0.6), 0 10px 25px rgba(0,0,0,0.5); 
                 margin: 0;
                 border-radius: 16px;
                 z-index: 9999;
@@ -578,10 +578,18 @@
 <body id="body-main">
 
 <script>
+    // 1. OBLIGA AL NAVEGADOR A RECARGAR SI DETECTA QUE LA PÁGINA VINO DEL BOTÓN ATRÁS (Evita Caché)
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+
+    // 2. VERIFICACIÓN DE SEGURIDAD CON 'REPLACE' PARA NO DEJAR HISTORIAL
     const userRole = localStorage.getItem('hmv_user_role');
     if (userRole !== 'Administrador Root') {
         alert("ACCESO DENEGADO. Nivel de privilegios insuficiente.");
-        window.location.href = 'index.html';
+        window.location.replace('index.html');
     }
     
     if (localStorage.getItem('hmv_theme') === 'dark') {
@@ -597,7 +605,7 @@
     function cerrarSesion() {
         localStorage.removeItem('hmv_user_role');
         localStorage.removeItem('hmv_user_name');
-        window.location.href = 'index.html';
+        window.location.replace('index.html');
     }
 
     function abrirMenuMovil() {
