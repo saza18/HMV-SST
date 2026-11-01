@@ -85,15 +85,28 @@
 
         .sidebar-logo {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 20px;
+            padding-bottom: 25px;
         }
 
         .sidebar-logo img {
             max-width: 100%;
             max-height: 60px;
             object-fit: contain;
+        }
+
+        .badge-root {
+            display: inline-block;
+            background-color: #a00;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 50px; 
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            margin-top: 15px;
         }
 
         .sidebar-menu {
@@ -180,19 +193,22 @@
             align-items: center;
             gap: 15px;
         }
+        
+        .header-textos {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-        /* Botón hamburguesa (Solo visible en celular) */
+        /* Botón hamburguesa sin fondo azul */
         .btn-hamburguesa {
             display: none;
-            background-color: var(--hmv-blue);
-            color: #ffffff;
+            background-color: transparent;
+            color: var(--text-color);
             border: none;
-            padding: 10px;
-            border-radius: 50%;
+            padding: 5px 10px;
             cursor: pointer;
-            font-size: 18px;
-            width: 42px;
-            height: 42px;
+            font-size: 26px;
             align-items: center;
             justify-content: center;
         }
@@ -202,32 +218,12 @@
             margin: 0;
             font-weight: bold;
             color: var(--text-color);
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
 
-        .top-header h1 span {
+        .saludo-admin {
             font-size: 14px;
             color: var(--text-muted);
             font-weight: normal;
-        }
-
-        .top-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .badge-root {
-            background-color: #a00;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 50px; 
-            font-weight: bold;
-            font-size: 12px;
-            text-transform: uppercase;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         /* BUSCADOR Y FILTROS */
@@ -353,9 +349,12 @@
             gap: 12px;
         }
 
+        /* Modificación estricta: min-width y flex-shrink para evitar óvalos en celular */
         .user-avatar {
             width: 35px;
             height: 35px;
+            min-width: 35px;
+            flex-shrink: 0;
             border-radius: 50%;
             background-color: var(--hmv-blue);
             color: #ffffff;
@@ -443,24 +442,13 @@
         }
         .btn-salir:hover { background-color: #ea5455; color: #ffffff; }
 
-        .btn-tema {
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            padding: 0;
-            font-size: 18px;
-        }
-
         /* MODALES */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
-            z-index: 4000; /* Encima de todo */
+            z-index: 4000;
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(3px);
@@ -501,7 +489,7 @@
             .sidebar { 
                 position: fixed; 
                 top: 0; 
-                left: -100%; /* Oculto por defecto */
+                left: -100%; 
                 width: 100%; 
                 height: 100vh; 
                 margin: 0; 
@@ -511,13 +499,21 @@
             }
 
             .sidebar.open {
-                left: 0; /* Aparece al presionar hamburguesa */
+                left: 0; 
             }
 
             .main-content { padding: 20px; }
-            .top-header { border-radius: 24px; flex-direction: column; text-align: center; gap: 20px; padding: 20px; }
+            
+            /* Ajuste del Header para que el saludo baje de renglón limpio */
+            .top-header { border-radius: 24px; flex-direction: row; justify-content: flex-start; gap: 15px; padding: 20px; }
             .header-title-wrapper { width: 100%; justify-content: flex-start; }
-            .top-actions { width: 100%; justify-content: space-between; }
+            
+            .header-textos {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
             .search-container { border-radius: 24px; }
         }
     </style>
@@ -561,15 +557,18 @@
 
 <div class="app-layout">
     
-    <!-- BARRA LATERAL (SIDEBAR) -->
+    <!-- BARRA LATERAL (SIDEBAR FLOTANTE) -->
     <aside class="sidebar" id="sidebar-menu">
         <button class="btn-cerrar-menu" onclick="cerrarMenuMovil()">✖</button>
         <div class="sidebar-logo">
             <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV INGENIEROS">
+            <div><span class="badge-root">Root</span></div>
         </div>
         <nav class="sidebar-menu">
             <button class="menu-link tab-link active" onclick="abrirPestaña('tab-usuarios')">👥 Usuarios</button>
             <button class="menu-link tab-link" onclick="abrirPestaña('tab-actividades')">📋 Actividades</button>
+            <button class="menu-link" id="btn-abrir-modal-crear">➕ Crear Usuario</button>
+            <button class="menu-link" onclick="toggleTheme()">🌓 Cambiar Tema</button>
         </nav>
         <div class="sidebar-footer">
             <button class="btn btn-salir" onclick="cerrarSesion()">🚪 Salir</button>
@@ -583,11 +582,10 @@
         <header class="top-header">
             <div class="header-title-wrapper">
                 <button class="btn-hamburguesa" onclick="abrirMenuMovil()">☰</button>
-                <h1>Dashboard <span>Hola, <span id="saludo-admin">Usuario Root</span></span></h1>
-            </div>
-            <div class="top-actions">
-                <span class="badge-root">Root</span>
-                <button class="btn btn-tema" onclick="toggleTheme()" title="Cambiar Tema">🌓</button>
+                <div class="header-textos">
+                    <h1>Panel de Control</h1>
+                    <span class="saludo-admin" id="saludo-admin">Hola, Usuario Root</span>
+                </div>
             </div>
         </header>
 
@@ -597,10 +595,9 @@
             <div class="dashboard-card">
                 <div class="card-header">
                     <h2 class="card-title">Usuarios</h2>
-                    <button class="btn btn-amarillo" id="btn-abrir-modal-crear">+ Crear Nuevo Usuario</button>
                 </div>
 
-                <!-- BUSCADORES Y FILTROS -->
+                <!-- BUSCADORES Y FILTROS TOTALMENTE CURVOS -->
                 <div class="search-container">
                     <div class="search-box">
                         <input type="text" id="busqueda-usuario" placeholder="Buscar..." oninput="filtrarUsuarios()">
@@ -716,7 +713,7 @@
 
 <script>
     const nameAdmin = localStorage.getItem('hmv_user_name') || 'Usuario Root';
-    document.getElementById('saludo-admin').innerText = nameAdmin;
+    document.getElementById('saludo-admin').innerText = `Hola, ${nameAdmin}`;
 
     function abrirPestaña(id) {
         document.querySelectorAll('.seccion-panel').forEach(el => el.classList.remove('active'));
