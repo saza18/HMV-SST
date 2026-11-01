@@ -167,8 +167,12 @@
             .print-fill-row { display: table-row !important; }
             /* Las tablas de trabajadores y de criterios pueden partirse entre hojas (fila por fila) */
             #tabla-trabajadores, #tabla-seccion-3 { page-break-inside: auto; break-inside: auto; }
-            /* El salto de hoja antes de la sección 3 solo se aplica cuando el script lo indica (clase salto-hoja) */
-            #tabla-seccion-3.salto-hoja { page-break-before: always; break-before: page; }
+            /* Reemplaza el salto de hoja obligatorio antes de la sección 3: el bloque de la hoja 1 mide lo mismo que
+               una hoja (100vh en impresión = alto útil de la hoja, sea carta, A4 o celular). Si el contenido cabe, la
+               sección 3 arranca en la hoja siguiente; si los trabajadores se pasan, la sección 3 sigue justo debajo. */
+            .pagina-uno { min-height: calc(100vh - 2px); }
+            /* El título y los encabezados de la sección 3 no quedan solos al final de una hoja (van con la 1ra fila de criterios) */
+            #tabla-seccion-3 tr:nth-child(-n+3) { break-after: avoid; page-break-after: avoid; }
             
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
@@ -183,6 +187,7 @@
 <body>
 <div class="contenedor-principal">
     <div class="hoja-blanca">
+        <div class="pagina-uno">
         <div class="top-header">
             <div class="logo-box"><img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Logo"></div>
             <div class="center-col">
@@ -256,6 +261,7 @@
                 </tr>
             </tbody>
         </table>
+        </div><!-- fin pagina-uno -->
 
         <table id="tabla-seccion-3">
             <tr class="title-row"><td colspan="9">3. Condiciones de máquinas, equipos, herramientas; revisión previa</td></tr>
@@ -503,56 +509,6 @@
         } catch(e) { console.error("Error al cargar:", e); }
     }
     cargarDatos();
-</script>
-
-<script>
-// Ajuste automático del salto de hoja antes de la sección 3 (para impresión / PDF).
-// - Si la tabla de trabajadores termina dentro de la 1ra hoja: la sección 3 empieza en la hoja siguiente (diseño original).
-// - Si los trabajadores se pasan a otra hoja: la sección 3 continúa justo debajo y se reparte fila por fila entre hojas.
-(function () {
-    const PAGINA_ALTO = 1010;    // alto útil de una hoja carta en px (279.4 mm - 12 mm de márgenes)
-    const HOJA_ANCHO = 755;      // ancho de .hoja-blanca al imprimir (98% del ancho útil)
-    const ESPACIO_MINIMO = 130;  // espacio mínimo al final de una hoja para que empiece la sección 3
-
-    const estilo = document.createElement('style');
-    estilo.textContent = `
-        body.midiendo-impresion .hoja-blanca { width: ${HOJA_ANCHO}px !important; max-width: none !important; padding: 0 !important; margin: 0 !important; box-sizing: border-box; }
-        body.midiendo-impresion .no-print { display: none !important; }
-        body.midiendo-impresion .print-fill-row { display: table-row !important; }
-    `;
-    document.head.appendChild(estilo);
-
-    function ajustarSaltoImpresion() {
-        const hoja = document.querySelector('.hoja-blanca');
-        const tablaTrab = document.getElementById('tabla-trabajadores');
-        const tabla3 = document.getElementById('tabla-seccion-3');
-        if (!hoja || !tablaTrab || !tabla3) return;
-
-        // Se mide con las medidas de impresión y se restaura de inmediato (no se ve en pantalla)
-        document.body.classList.add('midiendo-impresion');
-        const fin = tablaTrab.getBoundingClientRect().bottom - hoja.getBoundingClientRect().top + 10;
-        document.body.classList.remove('midiendo-impresion');
-
-        const caboEnPrimeraHoja = fin <= PAGINA_ALTO;
-        const caboAlFinalDeHoja = (fin % PAGINA_ALTO) > (PAGINA_ALTO - ESPACIO_MINIMO);
-        tabla3.classList.toggle('salto-hoja', caboEnPrimeraHoja || caboAlFinalDeHoja);
-    }
-
-    let pendiente = false;
-    function programar() {
-        if (pendiente) return;
-        pendiente = true;
-        requestAnimationFrame(function () { pendiente = false; ajustarSaltoImpresion(); });
-    }
-
-    window.addEventListener('beforeprint', ajustarSaltoImpresion);
-    const mqImpresion = window.matchMedia('print');
-    if (mqImpresion.addEventListener) mqImpresion.addEventListener('change', function (e) { if (e.matches) ajustarSaltoImpresion(); });
-    window.addEventListener('load', programar);
-    document.addEventListener('input', programar);
-    if (window.ResizeObserver) new ResizeObserver(programar).observe(document.querySelector('.hoja-blanca'));
-    programar();
-})();
 </script>
 </body>
 </html>
