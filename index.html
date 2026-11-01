@@ -41,21 +41,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* SE QUITA justify-content PARA EVITAR EL RECORTE EN PANTALLAS HORIZONTALES */
             min-height: 100dvh; 
             transition: background-color 0.3s;
             position: relative;
-            overscroll-behavior-y: auto; /* Asegura que el gesto de jalar para recargar funcione */
+            overscroll-behavior-y: auto; 
         }
 
-        /* TRUCO CSS: Centra los elementos verticalmente si caben, si no caben permite el scroll sin recortar arriba */
+        /* TRUCO CSS: Centra los elementos verticalmente si caben */
         body::before, body::after {
             content: '';
             flex: 1;
             min-height: 20px;
         }
 
-        /* ANIMACIÓN FLUIDA DE CARGA DE PÁGINA */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -91,7 +89,6 @@
             transform: scale(0.85); 
         }
 
-        /* MENÚ DESPLEGABLE CON ANIMACIÓN FLUIDA */
         .dropdown-menu {
             visibility: hidden;
             opacity: 0;
@@ -136,7 +133,7 @@
             background-color: var(--input-bg);
         }
 
-        /* LOGO CON ANIMACIÓN DE ENTRADA */
+        /* LOGO */
         .logo-hmv {
             max-width: 300px;
             width: 80%;
@@ -176,7 +173,7 @@
             padding-left: 15px;
         }
 
-        .input-group input {
+        .input-group input, .input-group select {
             width: 100%;
             padding: 14px 20px;
             border: 1px solid var(--input-border);
@@ -190,11 +187,11 @@
             transition: border-color 0.3s;
         }
         
-        .input-group input:focus {
+        .input-group input:focus, .input-group select:focus {
             border-color: var(--hmv-blue);
         }
 
-        /* BOTÓN TIPO PÍLDORA CON ANIMACIÓN TÁCTIL */
+        /* BOTÓN TIPO PÍLDORA */
         .btn-principal {
             background-color: var(--hmv-blue);
             color: white;
@@ -214,7 +211,7 @@
         .btn-principal:hover { background-color: var(--hmv-blue-hover); }
         .btn-principal:active { transform: scale(0.95); } 
 
-        /* ENLACE CON ANIMACIÓN TÁCTIL */
+        /* ENLACE */
         .link-amarillo {
             display: inline-block;
             color: var(--hmv-yellow);
@@ -231,6 +228,33 @@
         }
         .link-amarillo:hover { color: var(--hmv-yellow-hover); }
         .link-amarillo:active { transform: scale(0.90); } 
+
+        /* MODAL DE SEGURIDAD (Nuevo) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        .modal-content {
+            background-color: var(--bg-box);
+            padding: 35px 30px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--input-border);
+        }
 
         /* AJUSTES ESPECÍFICOS PARA CELULAR */
         @media (max-width: 768px) {
@@ -250,6 +274,11 @@
             .login-box {
                 width: 85%;
                 max-width: 300px;
+                border-radius: 36px;
+                padding: 30px 25px;
+            }
+            .modal-content {
+                width: 85%;
                 border-radius: 36px;
                 padding: 30px 25px;
             }
@@ -284,8 +313,32 @@
 
 <a href="recuperar.html" class="link-amarillo" id="link-forgot">¿Olvidó su contraseña?</a>
 
+<!-- MODAL ACTUALIZAR SEGURIDAD -->
+<div class="modal-overlay" id="modal-seguridad">
+    <div class="modal-content">
+        <h3 id="mod-title" style="color: var(--text-color); margin-top: 0; font-size: 20px; text-align: center;">Configuración Inicial</h3>
+        <p id="mod-desc" style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.5;">Por seguridad, debe configurar una pregunta y respuesta personal para recuperar su contraseña en el futuro.</p>
+        
+        <div class="input-group">
+            <label id="lbl-q">Seleccione una pregunta</label>
+            <select id="act-pregunta">
+                <option value="mascota">¿Cuál es el nombre de tu primera mascota?</option>
+                <option value="ciudad">¿En qué ciudad naciste?</option>
+                <option value="madre">¿Cuál es el segundo nombre de tu madre?</option>
+                <option value="colegio">¿Cuál fue tu primer colegio?</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label id="lbl-a">Su nueva respuesta</label>
+            <input type="text" id="act-respuesta" placeholder="Escriba su respuesta secreta">
+        </div>
+        
+        <button id="btn-guardar-seguridad" class="btn-principal" style="margin-top: 5px;">Guardar y Continuar</button>
+    </div>
+</div>
+
 <script>
-    // DICCIONARIO DE TRADUCCIÓN
+    // DICCIONARIO DE TRADUCCIÓN (Actualizado con textos del modal de seguridad)
     const traducciones = {
         es: {
             userLabel: "USUARIO",
@@ -301,7 +354,15 @@
             alertError: "❌ Usuario o contraseña incorrectos.",
             alertNoUsers: "No hay usuarios registrados en el sistema.",
             themeDark: "🌓 Tema Oscuro",
-            themeLight: "☀️ Tema Claro"
+            themeLight: "☀️ Tema Claro",
+            modTitle: "Configuración Inicial",
+            modDesc: "Por seguridad, debe configurar una pregunta y respuesta personal para recuperar su contraseña en el futuro.",
+            lblQ: "SELECCIONE UNA PREGUNTA",
+            lblA: "SU NUEVA RESPUESTA",
+            actPlaceholder: "Escriba su respuesta secreta",
+            btnSaveSec: "Guardar y Continuar",
+            alertInvalidA: "❌ Ingrese una respuesta válida y diferente a la de por defecto.",
+            alertSaving: "Guardando..."
         },
         en: {
             userLabel: "USERNAME",
@@ -317,15 +378,23 @@
             alertError: "❌ Invalid username or password.",
             alertNoUsers: "No users registered in the system.",
             themeDark: "🌓 Dark Theme",
-            themeLight: "☀️ Light Theme"
+            themeLight: "☀️ Light Theme",
+            modTitle: "Initial Setup",
+            modDesc: "For security reasons, you must set up a personal question and answer to recover your password in the future.",
+            lblQ: "SELECT A QUESTION",
+            lblA: "YOUR NEW ANSWER",
+            actPlaceholder: "Type your secret answer",
+            btnSaveSec: "Save and Continue",
+            alertInvalidA: "❌ Please enter a valid answer different from the default.",
+            alertSaving: "Saving..."
         }
     };
 
-    // GESTIÓN DE IDIOMA
     let idiomaActual = localStorage.getItem('hmv_lang') || 'es';
 
     function actualizarTextos() {
         const t = traducciones[idiomaActual];
+        // Textos del Login principal
         document.getElementById('lbl-user').innerText = t.userLabel;
         document.getElementById('log-usuario').placeholder = t.userPlaceholder;
         document.getElementById('lbl-pass').innerText = t.passLabel;
@@ -333,6 +402,15 @@
         document.getElementById('btn-ingresar').innerText = t.btnLogin;
         document.getElementById('link-forgot').innerText = t.btnForgot;
         document.getElementById('btn-lang-text').innerText = t.langText;
+        
+        // Textos del Modal de Seguridad
+        document.getElementById('mod-title').innerText = t.modTitle;
+        document.getElementById('mod-desc').innerText = t.modDesc;
+        document.getElementById('lbl-q').innerText = t.lblQ;
+        document.getElementById('lbl-a').innerText = t.lblA;
+        document.getElementById('act-respuesta').placeholder = t.actPlaceholder;
+        document.getElementById('btn-guardar-seguridad').innerText = t.btnSaveSec;
+
         actualizarTextoTema();
     }
 
@@ -343,7 +421,6 @@
         document.getElementById('login-menu').classList.remove('show');
     }
 
-    // GESTIÓN DE TEMA
     const savedTheme = localStorage.getItem('hmv_theme') || 'light';
     if (savedTheme === 'dark') document.documentElement.classList.add('dark-mode');
 
@@ -365,7 +442,6 @@
         document.getElementById('login-menu').classList.remove('show');
     }
 
-    // GESTIÓN DEL MENÚ DESPLEGABLE (Animación por clase)
     function toggleMenu() {
         const menu = document.getElementById('login-menu');
         menu.classList.toggle('show');
@@ -382,13 +458,12 @@
         }
     }
 
-    // Inicializar textos al cargar
     actualizarTextos();
 </script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g",
@@ -401,6 +476,20 @@
     };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    let usuarioPendiente = null; // Variable para almacenar temporalmente al usuario que debe actualizar datos
+
+    // FUNCIÓN PARA HACER LA REDIRECCIÓN OFICIAL
+    function procederLogin(user) {
+        localStorage.setItem('hmv_user_role', user.rol);
+        localStorage.setItem('hmv_user_name', user.nombre);
+        
+        if (user.rol === 'Administrador Root') {
+            window.location.href = 'panel_root.html';
+        } else {
+            window.location.href = 'panel.html';
+        }
+    }
 
     document.getElementById('btn-ingresar').onclick = async function() {
         const usuarioInput = document.getElementById('log-usuario').value.trim();
@@ -432,14 +521,17 @@
                         return;
                     }
 
-                    localStorage.setItem('hmv_user_role', usuarioValido.rol);
-                    localStorage.setItem('hmv_user_name', usuarioValido.nombre);
-                    
-                    if (usuarioValido.rol === 'Administrador Root') {
-                        window.location.href = 'panel_root.html';
-                    } else {
-                        window.location.href = 'panel.html';
+                    // INTERCEPTOR DE SEGURIDAD: Verifica si la respuesta secreta sigue siendo la que da el Root ("admin")
+                    if (usuarioValido.respuestaSeguridad === 'admin') {
+                        usuarioPendiente = usuarioValido;
+                        document.getElementById('modal-seguridad').style.display = 'flex';
+                        this.innerText = originalText;
+                        return; // Se detiene aquí, no redirige aún
                     }
+
+                    // Si ya la había cambiado antes, pasa directo.
+                    procederLogin(usuarioValido);
+                    
                 } else {
                     alert(t.alertError);
                 }
@@ -448,6 +540,38 @@
             }
         } catch (error) { alert("Error: " + error.message); }
         this.innerText = originalText;
+    };
+
+    // BOTÓN DE GUARDAR EN EL MODAL DE SEGURIDAD
+    document.getElementById('btn-guardar-seguridad').onclick = async function() {
+        const t = traducciones[idiomaActual];
+        const combo = document.getElementById('act-pregunta');
+        const pre = combo.options[combo.selectedIndex].text;
+        const res = document.getElementById('act-respuesta').value.trim().toLowerCase();
+
+        // Evita que ponga datos vacíos o que vuelva a poner la contraseña root "admin"
+        if(!res || res === 'admin') {
+            alert(t.alertInvalidA);
+            return;
+        }
+
+        const originalText = this.innerText;
+        this.innerText = t.alertSaving;
+
+        try {
+            // Actualiza en Firebase
+            await update(ref(db, `usuarios/${usuarioPendiente.documento}`), {
+                preguntaSeguridad: pre,
+                respuestaSeguridad: res
+            });
+            
+            // Si la guardó correctamente, ahora sí entra al sistema.
+            procederLogin(usuarioPendiente);
+
+        } catch (error) {
+            alert("Error: " + error.message);
+            this.innerText = originalText;
+        }
     };
 </script>
 </body>
