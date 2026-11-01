@@ -40,12 +40,19 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            height: 100dvh; 
-            overflow: hidden; 
+            /* SE QUITA justify-content PARA EVITAR EL RECORTE EN PANTALLAS HORIZONTALES */
+            min-height: 100dvh; 
             transition: background-color 0.3s;
             position: relative;
+            overscroll-behavior-y: auto; /* Asegura que el gesto de jalar para recargar funcione */
+        }
+
+        /* TRUCO CSS: Centra los elementos verticalmente si caben, si no caben permite el scroll sin recortar arriba */
+        body::before, body::after {
+            content: '';
+            flex: 1;
+            min-height: 20px;
         }
 
         /* ANIMACIÓN FLUIDA DE CARGA DE PÁGINA */
@@ -90,8 +97,9 @@
             opacity: 0;
             transform: translateY(-10px);
             position: absolute;
-            right: 0;
-            top: 45px;
+            right: 100%;
+            top: 0;
+            margin-right: 15px;
             background-color: var(--bg-box);
             min-width: 160px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
@@ -204,7 +212,7 @@
         }
         
         .btn-principal:hover { background-color: var(--hmv-blue-hover); }
-        .btn-principal:active { transform: scale(0.95); } /* Animación de hundimiento */
+        .btn-principal:active { transform: scale(0.95); } 
 
         /* ENLACE CON ANIMACIÓN TÁCTIL */
         .link-amarillo {
@@ -222,7 +230,7 @@
             animation: fadeIn 0.4s ease-out 0.2s forwards;
         }
         .link-amarillo:hover { color: var(--hmv-yellow-hover); }
-        .link-amarillo:active { transform: scale(0.90); } /* Animación de hundimiento */
+        .link-amarillo:active { transform: scale(0.90); } 
 
         /* AJUSTES ESPECÍFICOS PARA CELULAR */
         @media (max-width: 768px) {
