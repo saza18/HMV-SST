@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SE MODIFICÓ ESTA LÍNEA PARA BLOQUEAR EL ZOOM TÁCTIL -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Acceso - HMV Ingenieros</title>
     <style>
         :root {
@@ -37,7 +38,9 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            /* SE AJUSTÓ LA ALTURA Y SE ELIMINÓ EL SCROLL */
+            height: 100dvh; 
+            overflow: hidden; 
             transition: background-color 0.3s;
             position: relative;
         }
@@ -186,6 +189,19 @@
             transition: color 0.3s;
         }
         .link-amarillo:hover { color: var(--hmv-yellow-hover); }
+
+        /* AJUSTES ESPECÍFICOS PARA CELULAR (Distancias más cortas) */
+        @media (max-width: 768px) {
+            .menu-container {
+                top: 15px;
+                right: 15px;
+            }
+            .logo-hmv {
+                max-width: 250px;
+                margin-top: -40px; /* Acerca el logo al botón de las tres rayitas */
+                margin-bottom: 20px;
+            }
+        }
 
     </style>
 </head>
@@ -337,7 +353,7 @@
     document.getElementById('btn-ingresar').onclick = async function() {
         const usuarioInput = document.getElementById('log-usuario').value.trim();
         const passwordInput = document.getElementById('log-password').value.trim();
-        const t = traducciones[idiomaActual]; // Diccionario actual para las alertas
+        const t = traducciones[idiomaActual]; 
 
         if(!usuarioInput || !passwordInput) return alert(t.alertEmpty);
 
