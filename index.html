@@ -122,7 +122,6 @@
         }
     </style>
     <script>
-        // Aplicar el tema guardado apenas carga la página
         const savedTheme = localStorage.getItem('hmv_theme') || 'light';
         if (savedTheme === 'dark') document.documentElement.classList.add('dark-mode');
     </script>
@@ -145,7 +144,6 @@
     <button id="btn-ingresar" class="btn-principal">Ingresar</button>
 </div>
 
-<!-- Enlace por fuera del recuadro -->
 <a href="recuperar.html" class="link-amarillo">¿Olvidó su contraseña?</a>
 
 <script>
@@ -187,16 +185,30 @@
             if (snapshot.exists()) {
                 const usuarios = snapshot.val();
                 let usuarioValido = null;
+                
                 for (const doc in usuarios) {
                     if (usuarios[doc].usuario === usuarioInput && usuarios[doc].password === passwordInput) {
                         usuarioValido = usuarios[doc];
                         break;
                     }
                 }
+                
                 if (usuarioValido) {
+                    if(usuarioValido.bloqueado) {
+                        alert("❌ Su cuenta ha sido bloqueada por el Administrador.");
+                        this.innerText = originalText;
+                        return;
+                    }
+
                     localStorage.setItem('hmv_user_role', usuarioValido.rol);
                     localStorage.setItem('hmv_user_name', usuarioValido.nombre);
-                    window.location.href = 'panel.html';
+                    
+                    // REDIRECCIÓN CONDICIONAL SEGÚN EL ROL
+                    if (usuarioValido.rol === 'Administrador Root') {
+                        window.location.href = 'panel_root.html';
+                    } else {
+                        window.location.href = 'panel.html';
+                    }
                 } else {
                     alert("❌ Usuario o contraseña incorrectos.");
                 }
