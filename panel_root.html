@@ -52,6 +52,11 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
+        /* Bloqueo de desplazamiento para el menú móvil */
+        body.no-scroll {
+            overflow: hidden;
+        }
+
         /* DISEÑO DE LA APP (LAYOUT) */
         .app-layout {
             display: flex;
@@ -67,15 +72,15 @@
             flex-direction: column;
             padding: 30px 20px;
             box-sizing: border-box;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, left 0.3s ease;
             flex-shrink: 0;
-            /* Ajustes para panel flotante */
             margin: 20px;
             border-radius: 24px;
             height: calc(100vh - 40px);
             position: sticky;
             top: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            z-index: 3000;
         }
 
         .sidebar-logo {
@@ -106,7 +111,7 @@
             border: none;
             color: var(--sidebar-text);
             padding: 14px 20px;
-            border-radius: 50px; /* Bordes totalmente curvos */
+            border-radius: 50px; 
             font-size: 15px;
             font-weight: bold;
             cursor: pointer;
@@ -133,6 +138,19 @@
             padding-top: 20px;
         }
 
+        /* Botón de cierre para el menú móvil */
+        .btn-cerrar-menu {
+            display: none;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--sidebar-text);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
         /* PANEL PRINCIPAL (DASHBOARD) */
         .main-content {
             flex-grow: 1;
@@ -153,8 +171,30 @@
             gap: 15px;
             background-color: var(--bg-card);
             padding: 15px 30px;
-            border-radius: 50px; /* Estilo píldora */
+            border-radius: 50px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .header-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Botón hamburguesa (Solo visible en celular) */
+        .btn-hamburguesa {
+            display: none;
+            background-color: var(--hmv-blue);
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            width: 42px;
+            height: 42px;
+            align-items: center;
+            justify-content: center;
         }
 
         .top-header h1 {
@@ -183,7 +223,7 @@
             background-color: #a00;
             color: white;
             padding: 8px 16px;
-            border-radius: 50px; /* Bordes totalmente curvos */
+            border-radius: 50px; 
             font-weight: bold;
             font-size: 12px;
             text-transform: uppercase;
@@ -196,7 +236,7 @@
             gap: 15px;
             background-color: var(--bg-card);
             padding: 15px 25px;
-            border-radius: 50px; /* Bordes totalmente curvos */
+            border-radius: 50px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             align-items: center;
             flex-wrap: wrap;
@@ -213,7 +253,7 @@
             padding: 12px 20px;
             background-color: var(--bg-input);
             border: 1px solid var(--border-color);
-            border-radius: 50px; /* Bordes totalmente curvos */
+            border-radius: 50px; 
             color: var(--text-color);
             font-size: 14px;
             outline: none;
@@ -227,7 +267,7 @@
             padding: 12px 20px;
             background-color: var(--bg-input);
             border: 1px solid var(--border-color);
-            border-radius: 50px; /* Bordes totalmente curvos */
+            border-radius: 50px; 
             color: var(--text-color);
             font-size: 14px;
             cursor: pointer;
@@ -335,7 +375,7 @@
         .status-badge {
             display: inline-block;
             padding: 6px 14px;
-            border-radius: 50px; /* Bordes totalmente curvos */
+            border-radius: 50px; 
             font-size: 12px;
             font-weight: bold;
             text-align: center;
@@ -355,7 +395,7 @@
             justify-content: center;
             padding: 10px 20px;
             border: none;
-            border-radius: 50px; /* Bordes totalmente curvos */
+            border-radius: 50px; 
             font-weight: bold;
             font-size: 14px;
             cursor: pointer;
@@ -376,7 +416,7 @@
             width: 36px;
             height: 36px;
             padding: 0;
-            border-radius: 50%; /* Botones circulares para acciones */
+            border-radius: 50%; 
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -420,7 +460,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
-            z-index: 2000;
+            z-index: 4000; /* Encima de todo */
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(3px);
@@ -451,18 +491,39 @@
         .seccion-panel { display: none; }
         .seccion-panel.active { display: block; }
         
+        /* AJUSTES RESPONSIVOS Y MENÚ MÓVIL PANTALLA COMPLETA */
         @media (max-width: 768px) {
             .app-layout { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; position: relative; top: 0; margin: 0; border-radius: 0; }
+            
+            .btn-hamburguesa { display: flex; }
+            .btn-cerrar-menu { display: block; }
+
+            .sidebar { 
+                position: fixed; 
+                top: 0; 
+                left: -100%; /* Oculto por defecto */
+                width: 100%; 
+                height: 100vh; 
+                margin: 0; 
+                border-radius: 0; 
+                padding: 40px 30px;
+                z-index: 3500;
+            }
+
+            .sidebar.open {
+                left: 0; /* Aparece al presionar hamburguesa */
+            }
+
             .main-content { padding: 20px; }
-            .top-header { border-radius: 24px; flex-direction: column; text-align: center; }
+            .top-header { border-radius: 24px; flex-direction: column; text-align: center; gap: 20px; padding: 20px; }
+            .header-title-wrapper { width: 100%; justify-content: flex-start; }
+            .top-actions { width: 100%; justify-content: space-between; }
             .search-container { border-radius: 24px; }
         }
     </style>
 </head>
 <body id="body-main">
 
-<!-- CONTROL SEGURO DE CARGA -->
 <script>
     const userRole = localStorage.getItem('hmv_user_role');
     if (userRole !== 'Administrador Root') {
@@ -470,7 +531,6 @@
         window.location.href = 'index.html';
     }
     
-    // Aplicar el tema actual antes de desplegar nada visible
     if (localStorage.getItem('hmv_theme') === 'dark') {
         document.getElementById('body-main').classList.add('dark-mode');
     }
@@ -486,21 +546,33 @@
         localStorage.removeItem('hmv_user_name');
         window.location.href = 'index.html';
     }
+
+    // Funciones del menú móvil
+    function abrirMenuMovil() {
+        document.getElementById('sidebar-menu').classList.add('open');
+        document.body.classList.add('no-scroll');
+    }
+
+    function cerrarMenuMovil() {
+        document.getElementById('sidebar-menu').classList.remove('open');
+        document.body.classList.remove('no-scroll');
+    }
 </script>
 
 <div class="app-layout">
     
-    <!-- BARRA LATERAL (SIDEBAR FLOTANTE) -->
-    <aside class="sidebar">
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar" id="sidebar-menu">
+        <button class="btn-cerrar-menu" onclick="cerrarMenuMovil()">✖</button>
         <div class="sidebar-logo">
             <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV INGENIEROS">
         </div>
         <nav class="sidebar-menu">
-            <button class="menu-link tab-link active" onclick="abrirPestaña('tab-usuarios')">👥 Users</button>
-            <button class="menu-link tab-link" onclick="abrirPestaña('tab-actividades')">📋 Activities</button>
+            <button class="menu-link tab-link active" onclick="abrirPestaña('tab-usuarios')">👥 Usuarios</button>
+            <button class="menu-link tab-link" onclick="abrirPestaña('tab-actividades')">📋 Actividades</button>
         </nav>
         <div class="sidebar-footer">
-            <button class="btn btn-salir" onclick="cerrarSesion()">🚪 Log Out</button>
+            <button class="btn btn-salir" onclick="cerrarSesion()">🚪 Salir</button>
         </div>
     </aside>
 
@@ -509,7 +581,10 @@
         
         <!-- TOP HEADER BAR (TIPO PÍLDORA) -->
         <header class="top-header">
-            <h1>Dashboard <span>Hola, <span id="saludo-admin">Usuario Root</span></span></h1>
+            <div class="header-title-wrapper">
+                <button class="btn-hamburguesa" onclick="abrirMenuMovil()">☰</button>
+                <h1>Dashboard <span>Hola, <span id="saludo-admin">Usuario Root</span></span></h1>
+            </div>
             <div class="top-actions">
                 <span class="badge-root">Root</span>
                 <button class="btn btn-tema" onclick="toggleTheme()" title="Cambiar Tema">🌓</button>
@@ -522,16 +597,16 @@
             <div class="dashboard-card">
                 <div class="card-header">
                     <h2 class="card-title">Usuarios</h2>
-                    <button class="btn btn-amarillo" id="btn-abrir-modal-crear">+ Add New User</button>
+                    <button class="btn btn-amarillo" id="btn-abrir-modal-crear">+ Crear Nuevo Usuario</button>
                 </div>
 
-                <!-- BUSCADORES Y FILTROS TOTALMENTE CURVOS -->
+                <!-- BUSCADORES Y FILTROS -->
                 <div class="search-container">
                     <div class="search-box">
-                        <input type="text" id="busqueda-usuario" placeholder="Search..." oninput="filtrarUsuarios()">
+                        <input type="text" id="busqueda-usuario" placeholder="Buscar..." oninput="filtrarUsuarios()">
                     </div>
                     <select class="filter-select" id="filtro-rol" onchange="filtrarUsuarios()">
-                        <option value="">Filter by Role</option>
+                        <option value="">Filtrar por Rol</option>
                         <option value="Administrador Root">Administrador Root</option>
                         <option value="Administrador Limitado">Administrador Limitado</option>
                         <option value="Responsable SST">Responsable SST</option>
@@ -540,7 +615,7 @@
                         <option value="Oficial / Auxiliar">Oficial / Auxiliar</option>
                     </select>
                     <select class="filter-select" id="filtro-status" onchange="filtrarUsuarios()">
-                        <option value="">Filter by Status</option>
+                        <option value="">Filtrar por Estado</option>
                         <option value="Activo">Activo</option>
                         <option value="Bloqueado">Bloqueado</option>
                     </select>
@@ -648,6 +723,7 @@
         document.querySelectorAll('.tab-link').forEach(el => el.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         event.target.classList.add('active');
+        cerrarMenuMovil(); // Se asegura de ocultar el menú móvil al navegar
     }
 
     function cerrarModal() {
