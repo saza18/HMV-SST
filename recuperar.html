@@ -7,7 +7,6 @@
     <title>Recuperar Contraseña - HMV Ingenieros</title>
     <style>
         :root {
-            /* MODO CLARO CORPORATIVO (Mismo fondo que el login) */
             --bg-body: #d6e0ea; 
             --bg-box: #ffffff;
             --text-color: #1f2937;
@@ -21,7 +20,6 @@
         }
 
         body.dark-mode {
-            /* MODO OSCURO MODERNO */
             --bg-body: #0c101b;
             --bg-box: #1f293d;
             --text-color: #ffffff;
@@ -47,7 +45,6 @@
             overscroll-behavior-y: auto; 
         }
 
-        /* TRUCO CSS PARA CENTRADO PERFECTO SIN CORTAR PANTALLA */
         body::before, body::after {
             content: '';
             flex: 1;
@@ -63,7 +60,7 @@
             max-width: 300px;
             width: 80%;
             height: auto;
-            margin-bottom: 25px;
+            margin-bottom: 15px; /* Reducido para evitar scroll en PC */
             animation: fadeIn 0.4s ease-out forwards;
         }
 
@@ -71,8 +68,8 @@
             background-color: var(--bg-box);
             width: 90%;
             max-width: 350px;
-            padding: 35px 30px;
-            border-radius: 24px; /* Igual al login / panel root */
+            padding: 25px 30px; /* Reducido a lo alto para hacer el cuadro más compacto */
+            border-radius: 24px; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             text-align: center;
             color: var(--text-color);
@@ -83,7 +80,7 @@
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Reducido para ganar espacio vertical */
             text-align: left;
         }
 
@@ -97,12 +94,11 @@
             padding-left: 15px;
         }
 
-        /* INPUTS TIPO PÍLDORA Y ELIMINACIÓN DE FLECHAS DE NÚMEROS */
         .input-group input {
             width: 100%;
             padding: 14px 20px;
             border: 1px solid var(--input-border);
-            border-radius: 50px; /* Bordes totalmente curvos tipo píldora */
+            border-radius: 50px; 
             box-sizing: border-box;
             font-size: 14px;
             font-family: inherit;
@@ -116,7 +112,7 @@
             border-color: var(--hmv-blue);
         }
 
-        /* BLOQUE CSS QUE ELIMINA LAS FLECHAS DE SUBIR/BAJAR EN INPUT NUMBER (PC Y CELULAR) */
+        /* BLOQUE CSS QUE ELIMINA LAS FLECHAS DE SUBIR/BAJAR EN INPUT NUMBER */
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -126,18 +122,17 @@
             -moz-appearance: textfield;
         }
 
-        /* BOTÓN TIPO PÍLDORA */
         .btn-principal {
             background-color: var(--hmv-blue);
             color: white;
             border: none;
             padding: 14px;
             width: 100%;
-            border-radius: 50px; /* Bordes totalmente curvos tipo píldora */
+            border-radius: 50px; 
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 5px; /* Reducido */
             box-shadow: 0 4px 6px rgba(0,0,0,0.15);
             transition: background-color 0.3s, transform 0.15s ease;
             outline: none;
@@ -151,7 +146,7 @@
             color: var(--hmv-yellow);
             font-weight: bold;
             text-decoration: none;
-            margin-top: 25px;
+            margin-top: 15px; /* Reducido para evitar scroll */
             cursor: pointer;
             font-size: 14px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
@@ -163,12 +158,10 @@
         .link-amarillo:hover { color: var(--hmv-yellow-hover); }
         .link-amarillo:active { transform: scale(0.90); } 
 
-        /* CLASE PARA OCULTAR LOS PASOS */
         .seccion-oculta {
             display: none !important;
         }
 
-        /* AJUSTES RESPONSIVOS IDÉNTICOS AL LOGIN */
         @media (max-width: 768px) {
             .logo-hmv {
                 max-width: 250px;
@@ -179,14 +172,14 @@
                 width: 85%;
                 max-width: 300px;
                 border-radius: 36px;
-                padding: 30px 25px;
+                padding: 25px 25px;
             }
         }
     </style>
 </head>
 <body id="body-main">
 
-<!-- SISTEMA DE TEMA AUTOMÁTICO (Sin botón) -->
+<!-- SISTEMA DE TEMA AUTOMÁTICO (Heredado del Login) -->
 <script>
     const savedTheme = localStorage.getItem('hmv_theme') || 'light';
     if (savedTheme === 'dark') {
@@ -198,12 +191,11 @@
 
 <!-- PASO 1: PEDIR NÚMERO DE DOCUMENTO -->
 <div class="login-box" id="paso-1">
-    <h3 style="margin-top:0; color: var(--hmv-blue); font-size: 20px;">Recuperar Contraseña</h3>
-    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Ingrese su número de documento para buscar su cuenta.</p>
+    <h3 id="t-title1" style="margin-top:0; color: var(--hmv-blue); font-size: 20px;">Recuperar Contraseña</h3>
+    <p id="t-desc1" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Ingrese su número de documento para buscar su cuenta.</p>
     
     <div class="input-group">
-        <label>N° Documento</label>
-        <!-- type="number" ya no mostrará flechitas gracias al CSS -->
+        <label id="t-lblDoc">N° Documento</label>
         <input type="number" id="doc-usuario" placeholder="Ej: 1054561032">
     </div>
     
@@ -212,23 +204,98 @@
 
 <!-- PASO 2: PREGUNTA Y NUEVA CONTRASEÑA (Oculto inicialmente) -->
 <div class="login-box seccion-oculta" id="paso-2">
-    <h3 style="margin-top:0; color: var(--hmv-blue); font-size: 20px;">Validación de Seguridad</h3>
-    <p style="font-size: 14px; color: var(--text-color); font-weight: bold; margin-bottom: 20px; line-height: 1.4;" id="texto-pregunta">Cargando pregunta...</p>
+    <h3 id="t-title2" style="margin-top:0; color: var(--hmv-blue); font-size: 20px;">Validación de Seguridad</h3>
+    <p id="texto-pregunta" style="font-size: 14px; color: var(--text-color); font-weight: bold; margin-bottom: 20px; line-height: 1.4;">Cargando pregunta...</p>
     
     <div class="input-group">
-        <label>Su Respuesta Secreta</label>
+        <label id="t-lblAns">Su Respuesta Secreta</label>
         <input type="text" id="respuesta-seguridad" placeholder="Ingrese la respuesta" autocomplete="off">
     </div>
     <div class="input-group">
-        <label>Nueva Contraseña</label>
-        <!-- autocomplete="new-password" prohíbe el autocompletado de claves guardadas -->
+        <label id="t-lblNewPass">Nueva Contraseña</label>
         <input type="password" id="nueva-password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
     </div>
     
     <button id="btn-actualizar" class="btn-principal">Actualizar Contraseña</button>
 </div>
 
-<a href="index.html" class="link-amarillo">Volver al Inicio</a>
+<a href="index.html" class="link-amarillo" id="link-back">Volver al Inicio</a>
+
+<script>
+    // DICCIONARIO DE TRADUCCIÓN PARA RECUPERACIÓN
+    const traduccionesRec = {
+        es: {
+            title1: "Recuperar Contraseña",
+            desc1: "Ingrese su número de documento para buscar su cuenta.",
+            lblDoc: "N° DOCUMENTO",
+            phDoc: "Ej: 1054561032",
+            btnSearch: "Buscar Usuario",
+            title2: "Validación de Seguridad",
+            loadingQ: "Cargando pregunta...",
+            lblAns: "SU RESPUESTA SECRETA",
+            phAns: "Ingrese la respuesta",
+            lblNewPass: "NUEVA CONTRASEÑA",
+            phNewPass: "Mínimo 6 caracteres",
+            btnUpdate: "Actualizar Contraseña",
+            linkBack: "Volver al Inicio",
+            alertEmptyDoc: "Por favor, ingrese su número de documento.",
+            searching: "Buscando...",
+            alertNoUser: "❌ No se encontró ningún usuario registrado con ese documento.",
+            alertEmptyFields: "Por favor, complete su respuesta y la nueva contraseña.",
+            alertWrongAns: "❌ La respuesta de seguridad es incorrecta.",
+            alertShortPass: "⚠️ La contraseña debe tener al menos 6 caracteres por seguridad.",
+            updating: "Actualizando...",
+            alertSuccess: "✅ ¡Contraseña actualizada exitosamente! Ya puede iniciar sesión."
+        },
+        en: {
+            title1: "Recover Password",
+            desc1: "Enter your ID number to search for your account.",
+            lblDoc: "ID NUMBER",
+            phDoc: "E.g. 1054561032",
+            btnSearch: "Search User",
+            title2: "Security Validation",
+            loadingQ: "Loading question...",
+            lblAns: "YOUR SECRET ANSWER",
+            phAns: "Enter your answer",
+            lblNewPass: "NEW PASSWORD",
+            phNewPass: "Minimum 6 characters",
+            btnUpdate: "Update Password",
+            linkBack: "Back to Home",
+            alertEmptyDoc: "Please enter your ID number.",
+            searching: "Searching...",
+            alertNoUser: "❌ No user found registered with that ID number.",
+            alertEmptyFields: "Please complete your answer and the new password.",
+            alertWrongAns: "❌ The security answer is incorrect.",
+            alertShortPass: "⚠️ The password must be at least 6 characters long for security.",
+            updating: "Updating...",
+            alertSuccess: "✅ Password successfully updated! You can now log in."
+        }
+    };
+
+    // APLICAR IDIOMA AUTOMÁTICAMENTE
+    const idiomaActual = localStorage.getItem('hmv_lang') || 'es';
+    
+    function aplicarTextos() {
+        const t = traduccionesRec[idiomaActual];
+        document.getElementById('t-title1').innerText = t.title1;
+        document.getElementById('t-desc1').innerText = t.desc1;
+        document.getElementById('t-lblDoc').innerText = t.lblDoc;
+        document.getElementById('doc-usuario').placeholder = t.phDoc;
+        document.getElementById('btn-buscar').innerText = t.btnSearch;
+        
+        document.getElementById('t-title2').innerText = t.title2;
+        document.getElementById('texto-pregunta').innerText = t.loadingQ;
+        document.getElementById('t-lblAns').innerText = t.lblAns;
+        document.getElementById('respuesta-seguridad').placeholder = t.phAns;
+        document.getElementById('t-lblNewPass').innerText = t.lblNewPass;
+        document.getElementById('nueva-password').placeholder = t.phNewPass;
+        document.getElementById('btn-actualizar').innerText = t.btnUpdate;
+        
+        document.getElementById('link-back').innerText = t.linkBack;
+    }
+
+    aplicarTextos();
+</script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -251,23 +318,24 @@
 
     // BOTÓN 1: BUSCAR AL USUARIO
     document.getElementById('btn-buscar').onclick = async function() {
+        const t = traduccionesRec[idiomaActual];
         const doc = document.getElementById('doc-usuario').value.trim();
-        if(!doc) return alert("Por favor, ingrese su número de documento.");
+        if(!doc) return alert(t.alertEmptyDoc);
 
         const originalText = this.innerText;
-        this.innerText = "Buscando...";
+        this.innerText = t.searching;
 
         try {
             const snap = await get(ref(db, `usuarios/${doc}`));
             if(snap.exists()) {
                 const user = snap.val();
                 documentoActual = doc;
-                respuestaCorrecta = user.respuestaSeguridad.toLowerCase(); // Se guarda minúscula para comparar fácil
+                respuestaCorrecta = user.respuestaSeguridad.toLowerCase();
                 
-                // Mostrar la pregunta real del usuario
+                // Mostrar la pregunta (no se traduce ya que viene de lo que el usuario guardó en la base de datos)
                 document.getElementById('texto-pregunta').innerText = user.preguntaSeguridad;
                 
-                // VACIAR FORZOSAMENTE LOS CAMPOS PARA EVITAR CUALQUIER PRECARGA DEL NAVEGADOR
+                // VACIAR FORZOSAMENTE LOS CAMPOS PARA EVITAR PRECARGA
                 document.getElementById('respuesta-seguridad').value = "";
                 document.getElementById('nueva-password').value = "";
 
@@ -275,42 +343,43 @@
                 document.getElementById('paso-1').classList.add('seccion-oculta');
                 document.getElementById('paso-2').classList.remove('seccion-oculta');
             } else {
-                alert("❌ No se encontró ningún usuario registrado con ese documento.");
+                alert(t.alertNoUser);
             }
         } catch(error) {
-            alert("Error de conexión: " + error.message);
+            alert("Error: " + error.message);
         }
         this.innerText = originalText;
     };
 
     // BOTÓN 2: VALIDAR RESPUESTA Y GUARDAR NUEVA CLAVE
     document.getElementById('btn-actualizar').onclick = async function() {
+        const t = traduccionesRec[idiomaActual];
         const respuestaIngresada = document.getElementById('respuesta-seguridad').value.trim().toLowerCase();
         const nuevaClave = document.getElementById('nueva-password').value.trim();
 
         if(!respuestaIngresada || !nuevaClave) {
-            return alert("Por favor, complete su respuesta y la nueva contraseña.");
+            return alert(t.alertEmptyFields);
         }
 
         if(respuestaIngresada !== respuestaCorrecta) {
-            return alert("❌ La respuesta de seguridad es incorrecta.");
+            return alert(t.alertWrongAns);
         }
 
         if(nuevaClave.length < 6) {
-            return alert("⚠️ La contraseña debe tener al menos 6 caracteres por seguridad.");
+            return alert(t.alertShortPass);
         }
 
         const originalText = this.innerText;
-        this.innerText = "Actualizando...";
+        this.innerText = t.updating;
 
         try {
             await update(ref(db, `usuarios/${documentoActual}`), {
                 password: nuevaClave
             });
-            alert("✅ ¡Contraseña actualizada exitosamente! Ya puede iniciar sesión.");
+            alert(t.alertSuccess);
             window.location.replace('index.html');
         } catch(error) {
-            alert("Error al intentar actualizar la contraseña: " + error.message);
+            alert("Error: " + error.message);
             this.innerText = originalText;
         }
     };
