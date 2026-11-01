@@ -116,7 +116,7 @@
             font-size: 11px; 
             color: #000; 
             outline: none;
-            width: auto; /* Permite que se ajuste al texto */
+            width: auto; 
         }
         
         textarea.auto-expand {
@@ -162,7 +162,11 @@
             }
             
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            table, tr, td, .top-header { page-break-inside: avoid; }
+            
+            /* ÚNICA MODIFICACIÓN: Permitir que las tablas pasen "parte por parte" a la siguiente hoja */
+            tr, td, .top-header { page-break-inside: avoid; }
+            table { page-break-inside: auto; } /* Habilita el salto de renglones entre hojas */
+            
             .no-print, .botones-flotantes, #firma-modal { display: none !important; }
             .print-fill-row { display: table-row !important; }
             #tabla-seccion-3 { page-break-before: always; }
@@ -199,19 +203,19 @@
             <tr class="title-row"><td colspan="4">Información del registro</td></tr>
             <tr>
                 <td style="width: 25%; color: #666; vertical-align: middle;">
-                    Fecha de inicio: <input type="date" id="fecha-ini" style="color: #000;" class="save-data">
+                    Fecha de inicio: <input type="date" id="fecha-ini" style="color: #000; width: 55%;" class="save-data">
                 </td>
                 <td style="width: 25%; color: #666; vertical-align: middle;">
-                    Hora inicio: <input type="time" id="hora-ini" style="color: #000;" class="save-data">
+                    Hora inicio: <input type="time" id="hora-ini" style="color: #000; width: 55%;" class="save-data">
                 </td>
                 <td colspan="2" rowspan="2" style="width: 50%; color: #666;">Archivar en (sede o proyecto):<br><textarea id="archivo" class="save-data auto-expand" rows="1" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea></td>
             </tr>
             <tr>
                 <td style="color: #666; vertical-align: middle;">
-                    Fecha Final: <input type="date" id="fecha-fin" style="color: #000;" class="save-data">
+                    Fecha Final: <input type="date" id="fecha-fin" style="color: #000; width: 55%;" class="save-data">
                 </td>
                 <td style="color: #666; vertical-align: middle;">
-                    Hora fin: <input type="time" id="hora-fin" style="color: #000;" class="save-data">
+                    Hora fin: <input type="time" id="hora-fin" style="color: #000; width: 55%;" class="save-data">
                 </td>
             </tr>
         </table>
