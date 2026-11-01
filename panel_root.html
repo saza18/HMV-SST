@@ -6,7 +6,7 @@
     <title>Panel ROOT - HMV Ingenieros</title>
     <style>
         :root {
-            /* MODO CLARO CORPORATIVO (Fondo azul grisáceo para mejor contraste) */
+            /* MODO CLARO CORPORATIVO */
             --bg-body: #d6e0ea; 
             --bg-sidebar: #004b87;
             --bg-card: #ffffff;
@@ -52,12 +52,8 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Bloqueo de desplazamiento para el menú móvil */
-        body.no-scroll {
-            overflow: hidden;
-        }
+        body.no-scroll { overflow: hidden; }
 
-        /* DISEÑO DE LA APP (LAYOUT) */
         .app-layout {
             display: flex;
             width: 100%;
@@ -94,7 +90,6 @@
             max-width: 100%;
             max-height: 60px;
             object-fit: contain;
-            /* Sombra oscura real para que resalte elegantemente en lugar del resplandor */
             filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.6));
         }
 
@@ -153,7 +148,6 @@
             padding-top: 20px;
         }
 
-        /* Botón de cierre para el menú móvil */
         .btn-cerrar-menu {
             display: none;
             position: absolute;
@@ -166,7 +160,7 @@
             cursor: pointer;
         }
 
-        /* PANEL PRINCIPAL (DASHBOARD) */
+        /* PANEL PRINCIPAL */
         .main-content {
             flex-grow: 1;
             padding: 20px 30px 20px 0;
@@ -177,7 +171,6 @@
             overflow-x: hidden;
         }
 
-        /* HEADER SUPERIOR (TOPBAR) */
         .top-header {
             display: flex;
             justify-content: space-between;
@@ -202,7 +195,6 @@
             gap: 15px;
         }
 
-        /* Botón hamburguesa sin fondo azul */
         .btn-hamburguesa {
             display: none;
             background-color: transparent;
@@ -228,7 +220,6 @@
             font-weight: normal;
         }
 
-        /* BUSCADOR Y FILTROS */
         .search-container {
             display: flex;
             gap: 15px;
@@ -272,7 +263,6 @@
             outline: none;
         }
 
-        /* TARJETA DE CONTENIDO */
         .dashboard-card {
             background-color: var(--bg-card);
             border-radius: 24px;
@@ -298,18 +288,22 @@
             font-weight: bold;
         }
 
-        /* TABLAS */
-        .table-container { overflow-x: auto; }
+        /* TABLAS: Ajuste de padding para hacer la fila más delgada */
+        .table-container { 
+            overflow-x: auto; 
+            position: relative;
+        }
 
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0 8px;
             font-size: 14px;
+            min-width: 800px; /* Asegura el scroll en celulares */
         }
 
         th {
-            padding: 16px;
+            padding: 12px 16px; /* Reducido para filas más delgadas */
             text-align: left;
             color: var(--text-muted);
             font-weight: bold;
@@ -320,7 +314,7 @@
         }
 
         td {
-            padding: 16px;
+            padding: 8px 16px; /* MUY REDUCIDO para hacer la fila más delgada */
             background-color: var(--bg-input);
             border-top: 1px solid transparent;
             border-bottom: 1px solid transparent;
@@ -344,7 +338,7 @@
             background-color: rgba(255, 215, 0, 0.05);
         }
 
-        /* AVATARS */
+        /* AVATARS MÁS PEQUEÑOS */
         .user-cell {
             display: flex;
             align-items: center;
@@ -352,9 +346,9 @@
         }
 
         .user-avatar {
-            width: 35px;
-            height: 35px;
-            min-width: 35px;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
             flex-shrink: 0;
             border-radius: 50%;
             background-color: var(--hmv-blue);
@@ -363,7 +357,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 11px;
             text-transform: uppercase;
             border: 2px solid var(--hmv-yellow);
         }
@@ -371,12 +365,11 @@
         .user-info { display: flex; flex-direction: column; }
         .user-info .name { font-weight: bold; color: var(--text-color); }
 
-        /* BADGES / ESTADOS PASTILLA */
         .status-badge {
             display: inline-block;
-            padding: 6px 14px;
+            padding: 4px 12px; /* Reducido */
             border-radius: 50px; 
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             text-align: center;
             background-color: var(--status-active-bg);
@@ -388,7 +381,7 @@
             color: var(--status-blocked-text);
         }
 
-        /* BOTONES DE ACCIÓN */
+        /* BOTONES GLOBALES */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -405,17 +398,27 @@
         }
 
         .btn:active { transform: scale(0.98); }
-
         .btn-principal { background-color: var(--hmv-blue); color: #ffffff; }
         .btn-principal:hover { background-color: var(--hmv-blue-hover); }
-
         .btn-amarillo { background-color: var(--hmv-yellow); color: #000000; }
         .btn-amarillo:hover { background-color: var(--hmv-yellow-hover); }
+        
+        .btn-salir {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--sidebar-text);
+            width: 100%;
+        }
+        .btn-salir:hover { background-color: #ea5455; color: #ffffff; }
+
+        /* NUEVO BOTÓN MENÚ DE ACCIONES (TRES RAYITAS) */
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
 
         .btn-accion {
-            width: 36px;
-            height: 36px;
-            padding: 0;
+            width: 30px; /* Reducido */
+            height: 30px;
             border-radius: 50%; 
             display: inline-flex;
             align-items: center;
@@ -424,6 +427,7 @@
             background-color: var(--bg-card);
             color: var(--text-color);
             font-size: 14px;
+            cursor: pointer;
             transition: 0.2s;
         }
 
@@ -432,18 +436,39 @@
             color: var(--hmv-blue);
         }
 
-        .btn-bloquear:hover { color: #ff9f43; }
-        .btn-bloquear.desbloquear:hover { color: #28c76f; }
-        .btn-eliminar:hover { color: #ea5455; }
-
-        .btn-salir {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--sidebar-text);
-            width: 100%;
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 100%; /* Se abre hacia la izquierda para no salirse de la pantalla */
+            top: 0;
+            background-color: var(--bg-card);
+            min-width: 140px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-right: 10px;
         }
-        .btn-salir:hover { background-color: #ea5455; color: #ffffff; }
 
-        /* MODALES */
+        .dropdown-menu button {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            background: none;
+            text-align: left;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .dropdown-menu button:hover { background-color: var(--bg-input); }
+        .drop-editar { color: var(--hmv-blue) !important; }
+        .drop-bloquear { color: #ff9f43 !important; }
+        .drop-eliminar { color: #ea5455 !important; }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -480,7 +505,7 @@
         .seccion-panel { display: none; }
         .seccion-panel.active { display: block; }
         
-        /* AJUSTES RESPONSIVOS Y MENÚ MÓVIL PANTALLA COMPLETA */
+        /* AJUSTES RESPONSIVOS (MENÚ MÓVIL Y ESQUINAS FIJAS) */
         @media (max-width: 768px) {
             .app-layout { flex-direction: column; }
             
@@ -493,34 +518,38 @@
                 left: -100%; 
                 width: 100%; 
                 height: 100%; 
-                min-height: 100dvh; /* Asegura cubrir la pantalla real dinámica del celular */
+                min-height: 100dvh; 
                 margin: 0; 
                 border-radius: 0; 
-                padding: 40px 30px 100px 30px; /* Padding extra abajo para evitar que el navegador tape el botón salir */
+                padding: 40px 30px 100px 30px; 
                 z-index: 3500;
-                overflow-y: auto; /* Permite scroll natural */
+                overflow-y: auto; 
             }
 
-            .sidebar.open {
-                left: 0; 
-            }
-
-            .sidebar-footer {
-                margin-top: 40px; /* Quita el margin-top: auto que causa problemas de cálculo en flex móvil y empuja el botón salir muy abajo */
-            }
-
+            .sidebar.open { left: 0; }
+            .sidebar-footer { margin-top: 40px; }
             .main-content { padding: 20px; }
-            
             .top-header { border-radius: 24px; flex-direction: row; justify-content: flex-start; gap: 15px; padding: 20px; }
             .header-title-wrapper { width: 100%; justify-content: flex-start; }
-            
-            .header-textos {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-
+            .header-textos { flex-direction: column; align-items: flex-start; gap: 5px; }
             .search-container { border-radius: 24px; }
+
+            /* SOLUCIÓN ESQUINAS REDONDEADAS FIJAS EN CELULAR (Sticky columns) */
+            th:first-child, td:first-child {
+                position: sticky;
+                left: 0;
+                background-color: var(--bg-input);
+                z-index: 10;
+            }
+            th:last-child, td:last-child {
+                position: sticky;
+                right: 0;
+                background-color: var(--bg-input);
+                z-index: 10;
+            }
+            tr:hover td:first-child, tr:hover td:last-child {
+                background-color: var(--bg-input); /* En móvil es mejor dejar color fijo para que no parpadee al deslizar */
+            }
         }
     </style>
 </head>
@@ -549,7 +578,6 @@
         window.location.href = 'index.html';
     }
 
-    // Funciones del menú móvil
     function abrirMenuMovil() {
         document.getElementById('sidebar-menu').classList.add('open');
         document.body.classList.add('no-scroll');
@@ -558,6 +586,21 @@
     function cerrarMenuMovil() {
         document.getElementById('sidebar-menu').classList.remove('open');
         document.body.classList.remove('no-scroll');
+    }
+
+    // Funciones del Menú Desplegable (Tres rayitas)
+    window.onclick = function(event) {
+        if (!event.target.matches('.btn-accion')) {
+            document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
+        }
+    }
+
+    function toggleActionMenu(id) {
+        document.querySelectorAll('.dropdown-menu').forEach(el => {
+            if (el.id !== id) el.style.display = 'none';
+        });
+        const menu = document.getElementById(id);
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
     }
 </script>
 
@@ -584,7 +627,7 @@
     <!-- TRABAJO Y WORKSPACE (MAIN) -->
     <main class="main-content">
         
-        <!-- TOP HEADER BAR (TIPO PÍLDORA) -->
+        <!-- TOP HEADER BAR -->
         <header class="top-header">
             <div class="header-title-wrapper">
                 <button class="btn-hamburguesa" onclick="abrirMenuMovil()">☰</button>
@@ -597,13 +640,11 @@
 
         <!-- PESTAÑA: GESTIÓN DE USUARIOS -->
         <section id="tab-usuarios" class="seccion-panel active">
-            
             <div class="dashboard-card">
                 <div class="card-header">
                     <h2 class="card-title">Usuarios</h2>
                 </div>
 
-                <!-- BUSCADORES Y FILTROS TOTALMENTE CURVOS -->
                 <div class="search-container">
                     <div class="search-box">
                         <input type="text" id="busqueda-usuario" placeholder="Buscar..." oninput="filtrarUsuarios()">
@@ -633,7 +674,7 @@
                                 <th>Usuario</th>
                                 <th>Perfil / Rol</th>
                                 <th>Estado</th>
-                                <th style="text-align: right; padding-right: 25px;">Acción</th>
+                                <th style="text-align: center;">Acción</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-usuarios-body">
@@ -651,6 +692,24 @@
                     <h2 class="card-title">Registro de Actividades</h2>
                 </div>
                 
+                <!-- BUSCADORES Y FILTROS DE ACTIVIDADES SOLICITADOS -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" id="busqueda-actividad" placeholder="Buscar actividad o autor..." oninput="filtrarActividades()">
+                    </div>
+                    <!-- Filtro Fecha -->
+                    <input type="date" class="filter-select" id="filtro-fecha-act" onchange="filtrarActividades()">
+                    <!-- Filtro Acción -->
+                    <select class="filter-select" id="filtro-accion-act" onchange="filtrarActividades()">
+                        <option value="">Filtrar por Acción</option>
+                        <option value="CREACIÓN DE USUARIO">Creación</option>
+                        <option value="MODIFICACIÓN DE USUARIO">Modificación</option>
+                        <option value="ELIMINACIÓN DE USUARIO">Eliminación</option>
+                        <option value="BLOQUEO CUENTA">Bloqueo</option>
+                        <option value="DESBLOQUEO CUENTA">Desbloqueo</option>
+                    </select>
+                </div>
+
                 <div class="table-container">
                     <table>
                         <thead>
@@ -726,7 +785,7 @@
         document.querySelectorAll('.tab-link').forEach(el => el.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         event.target.classList.add('active');
-        cerrarMenuMovil(); // Se asegura de ocultar el menú móvil al navegar
+        cerrarMenuMovil(); 
     }
 
     function cerrarModal() {
@@ -741,56 +800,81 @@
     const firebaseConfig = { apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g", authDomain: "sst-hmv.firebaseapp.com", databaseURL: "https://sst-hmv-default-rtdb.firebaseio.com", projectId: "sst-hmv", storageBucket: "sst-hmv.firebasestorage.app", messagingSenderId: "224287433604", appId: "1:224287433604:web:387a81c078875b7fb5b3d1" };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
     const adminLogueado = localStorage.getItem('hmv_user_name') || 'Admin ROOT';
 
-    // REGISTRO DE ACTIVIDADES
+    // REGISTRO Y FILTRADO DE ACTIVIDADES
+    let actividadesGlobal = [];
+
     async function registrarActividad(accion, detalle) {
         const fecha = new Date().toLocaleString('es-CO');
         const nuevaActividadRef = push(ref(db, 'actividades_admin'));
-        await set(nuevaActividadRef, {
-            fecha: fecha,
-            autor: adminLogueado + ' (ROOT)',
-            accion: accion,
-            detalle: detalle
-        });
+        await set(nuevaActividadRef, { fecha: fecha, autor: adminLogueado + ' (ROOT)', accion: accion, detalle: detalle });
         cargarActividades();
     }
 
     async function cargarActividades() {
-        const tbody = document.getElementById('tabla-actividades-body');
         try {
             const snap = await get(ref(db, 'actividades_admin'));
             if(snap.exists()) {
-                const acts = snap.val();
-                tbody.innerHTML = '';
-                const actsArray = Object.values(acts).reverse(); 
-                actsArray.forEach(act => {
-                    tbody.innerHTML += `<tr>
-                        <td><b>${act.fecha}</b></td>
-                        <td style="font-weight:bold; color:var(--text-color);">${act.autor}</td>
-                        <td>${act.accion}</td>
-                        <td style="color:var(--text-muted);">${act.detalle}</td>
-                    </tr>`;
-                });
+                actividadesGlobal = Object.values(snap.val()).reverse(); 
+                window.renderizarTablaActividades(actividadesGlobal);
             } else {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay registro de actividades aún.</td></tr>';
+                document.getElementById('tabla-actividades-body').innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay registro de actividades aún.</td></tr>';
             }
         } catch(e) { console.error(e); }
     }
+
+    window.renderizarTablaActividades = function(actsArray) {
+        const tbody = document.getElementById('tabla-actividades-body');
+        tbody.innerHTML = '';
+        if(actsArray.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay coincidencias.</td></tr>';
+            return;
+        }
+        actsArray.forEach(act => {
+            tbody.innerHTML += `<tr>
+                <td><b>${act.fecha}</b></td>
+                <td style="font-weight:bold; color:var(--text-color);">${act.autor}</td>
+                <td>${act.accion}</td>
+                <td style="color:var(--text-muted);">${act.detalle}</td>
+            </tr>`;
+        });
+    };
+
+    window.filtrarActividades = function() {
+        const busqueda = document.getElementById('busqueda-actividad').value.toLowerCase();
+        const fechaFiltro = document.getElementById('filtro-fecha-act').value; // Formato nativo YYYY-MM-DD
+        const accionFiltro = document.getElementById('filtro-accion-act').value;
+
+        let filtradas = actividadesGlobal.filter(act => {
+            const cumpleBusqueda = act.autor.toLowerCase().includes(busqueda) || act.detalle.toLowerCase().includes(busqueda);
+            const cumpleAccion = accionFiltro === "" || act.accion === accionFiltro;
+            
+            let cumpleFecha = true;
+            if (fechaFiltro) {
+                const partsFecha = act.fecha.split(',')[0].trim().split('/'); // Del formato es-CO: D/M/YYYY
+                const dia = partsFecha[0].padStart(2, '0');
+                const mes = partsFecha[1].padStart(2, '0');
+                const anio = partsFecha[2];
+                const actFormatIso = `${anio}-${mes}-${dia}`;
+                cumpleFecha = (actFormatIso === fechaFiltro);
+            }
+            return cumpleBusqueda && cumpleAccion && cumpleFecha;
+        });
+        window.renderizarTablaActividades(filtradas);
+    };
 
     // GESTIÓN DE USUARIOS
     let usuariosActuales = {};
 
     async function cargarUsuarios() {
-        const tbody = document.getElementById('tabla-usuarios-body');
         try {
             const snap = await get(ref(db, 'usuarios'));
             if (snap.exists()) {
                 usuariosActuales = snap.val();
                 window.renderizarTablaUsuarios(usuariosActuales);
             } else {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay usuarios registrados.</td></tr>';
+                document.getElementById('tabla-usuarios-body').innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay usuarios registrados.</td></tr>';
             }
         } catch(e) { console.error(e); }
     }
@@ -804,12 +888,10 @@
             const statusClass = isBlocked ? 'status-badge blocked' : 'status-badge';
             const statusLabel = isBlocked ? 'Bloqueado' : 'Activo';
             
-            const btnBloqueo = isBlocked ? 
-                `<button class="btn-accion btn-bloquear desbloquear" onclick="window.modificarEstado('${doc}', false)" title="Desbloquear">🔓</button>` : 
-                `<button class="btn-accion btn-bloquear" onclick="window.modificarEstado('${doc}', true)" title="Bloquear">🔒</button>`;
-            
             const iniciales = u.nombre.split(' ').map(n => n[0]).slice(0,2).join('');
+            const textoBloqueo = isBlocked ? 'Desbloquear' : 'Bloquear';
 
+            // Menú desplegable con las acciones unificadas
             tbody.innerHTML += `<tr>
                 <td><b>${doc}</b></td>
                 <td>
@@ -823,10 +905,15 @@
                 <td style="color:var(--text-muted);">${u.usuario}</td>
                 <td><span style="font-weight:bold; color:var(--text-color);">${u.rol}</span></td>
                 <td><span class="${statusClass}">${statusLabel}</span></td>
-                <td style="text-align: right; padding-right: 20px;">
-                    <button class="btn-accion" onclick="window.abrirEditar('${doc}')" title="Editar">✏️</button>
-                    ${btnBloqueo}
-                    <button class="btn-accion btn-eliminar" onclick="window.eliminarUsuario('${doc}')" title="Eliminar">🗑️</button>
+                <td style="text-align: center;">
+                    <div class="dropdown-container">
+                        <button class="btn-accion" onclick="toggleActionMenu('drop-${doc}')">☰</button>
+                        <div class="dropdown-menu" id="drop-${doc}">
+                            <button class="drop-editar" onclick="window.abrirEditar('${doc}')">✏️ Editar Perfil</button>
+                            <button class="drop-bloquear" onclick="window.modificarEstado('${doc}', ${!isBlocked})">🔒 ${textoBloqueo}</button>
+                            <button class="drop-eliminar" onclick="window.eliminarUsuario('${doc}')">🗑️ Eliminar</button>
+                        </div>
+                    </div>
                 </td>
             </tr>`;
         }
@@ -836,19 +923,15 @@
         const busqueda = document.getElementById('busqueda-usuario').value.toLowerCase();
         const rolFiltro = document.getElementById('filtro-rol').value;
         const statusFiltro = document.getElementById('filtro-status').value;
-        
         let resultado = {};
+        
         for (let doc in usuariosActuales) {
             const u = usuariosActuales[doc];
             const cumpleBusqueda = u.nombre.toLowerCase().includes(busqueda) || doc.includes(busqueda) || u.usuario.toLowerCase().includes(busqueda);
             const cumpleRol = rolFiltro === "" || u.rol === rolFiltro;
-            const cumpleStatus = statusFiltro === "" || 
-                (statusFiltro === "Activo" && !u.bloqueado) || 
-                (statusFiltro === "Bloqueado" && u.bloqueado);
+            const cumpleStatus = statusFiltro === "" || (statusFiltro === "Activo" && !u.bloqueado) || (statusFiltro === "Bloqueado" && u.bloqueado);
 
-            if (cumpleBusqueda && cumpleRol && cumpleStatus) {
-                resultado[doc] = u;
-            }
+            if (cumpleBusqueda && cumpleRol && cumpleStatus) resultado[doc] = u;
         }
         window.renderizarTablaUsuarios(resultado);
     };
