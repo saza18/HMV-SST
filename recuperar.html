@@ -2,103 +2,317 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Contraseña - HMV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="preload" href="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" as="image">
+    <title>Recuperar Contraseña - HMV Ingenieros</title>
     <style>
-        :root { --hmv-blue: #004b87; --hmv-yellow: #FFD700; --bg-body: #555555; --bg-box: #ffffff; --text-color: #333333; --input-bg: #ffffff; --input-border: #ccc; }
-        body.dark-mode { --bg-body: #1a1a1a; --bg-box: #2c2c2c; --text-color: #f1f1f1; --input-bg: #444444; --input-border: #555555; }
-        body { font-family: Arial, sans-serif; background-color: var(--bg-body); margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; transition: 0.3s; }
-        .logo-hmv { max-width: 250px; margin-bottom: 20px; }
-        .login-box { background-color: var(--bg-box); width: 90%; max-width: 400px; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; color: var(--text-color); }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: var(--text-color); }
-        .input-group input { width: 100%; padding: 10px; border: 1px solid var(--input-border); border-radius: 5px; box-sizing: border-box; background: var(--input-bg); color: var(--text-color); }
-        .btn-principal { background-color: var(--hmv-blue); color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn-principal:hover { background-color: #003666; }
-        .link-amarillo { display: inline-block; color: var(--hmv-yellow); font-weight: bold; text-decoration: none; margin-top: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
-        .btn-tema { position: absolute; top: 20px; right: 20px; background-color: var(--bg-box); color: var(--text-color); border: 2px solid var(--hmv-blue); padding: 8px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; }
-        .titulo-seccion { color: var(--hmv-blue); margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid var(--hmv-yellow); display: inline-block; }
+        :root {
+            /* MODO CLARO CORPORATIVO (Mismo fondo que el login) */
+            --bg-body: #d6e0ea; 
+            --bg-box: #ffffff;
+            --text-color: #1f2937;
+            --text-muted: #6b7280;
+            --input-bg: #f4f7fb;
+            --input-border: #e5e7eb;
+            --hmv-blue: #004b87;
+            --hmv-blue-hover: #003666;
+            --hmv-yellow: #FFD700;
+            --hmv-yellow-hover: #e6c200;
+        }
+
+        body.dark-mode {
+            /* MODO OSCURO MODERNO */
+            --bg-body: #0c101b;
+            --bg-box: #1f293d;
+            --text-color: #ffffff;
+            --text-muted: #889bb0;
+            --input-bg: #141b2d;
+            --input-border: #2a3b5c;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100dvh; 
+            transition: background-color 0.3s;
+            position: relative;
+            overscroll-behavior-y: auto; 
+        }
+
+        /* TRUCO CSS PARA CENTRADO PERFECTO SIN CORTAR PANTALLA */
+        body::before, body::after {
+            content: '';
+            flex: 1;
+            min-height: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-hmv {
+            max-width: 300px;
+            width: 80%;
+            height: auto;
+            margin-bottom: 25px;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .login-box {
+            background-color: var(--bg-box);
+            width: 90%;
+            max-width: 350px;
+            padding: 35px 30px;
+            border-radius: 24px; /* Igual al login / panel root */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            opacity: 0;
+            animation: fadeIn 0.4s ease-out 0.1s forwards;
+            will-change: transform, opacity;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            padding-left: 15px;
+        }
+
+        /* INPUTS TIPO PÍLDORA Y ELIMINACIÓN DE FLECHAS DE NÚMEROS */
+        .input-group input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 1px solid var(--input-border);
+            border-radius: 50px; /* Bordes totalmente curvos tipo píldora */
+            box-sizing: border-box;
+            font-size: 14px;
+            font-family: inherit;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            border-color: var(--hmv-blue);
+        }
+
+        /* BLOQUE CSS QUE ELIMINA LAS FLECHAS DE SUBIR/BAJAR EN INPUT NUMBER (PC Y CELULAR) */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* BOTÓN TIPO PÍLDORA */
+        .btn-principal {
+            background-color: var(--hmv-blue);
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 50px; /* Bordes totalmente curvos tipo píldora */
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            transition: background-color 0.3s, transform 0.15s ease;
+            outline: none;
+        }
+        
+        .btn-principal:hover { background-color: var(--hmv-blue-hover); }
+        .btn-principal:active { transform: scale(0.95); } 
+
+        .link-amarillo {
+            display: inline-block;
+            color: var(--hmv-yellow);
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            transition: color 0.3s, transform 0.15s ease;
+            outline: none;
+            opacity: 0;
+            animation: fadeIn 0.4s ease-out 0.2s forwards;
+        }
+        .link-amarillo:hover { color: var(--hmv-yellow-hover); }
+        .link-amarillo:active { transform: scale(0.90); } 
+
+        /* CLASE PARA OCULTAR LOS PASOS */
+        .seccion-oculta {
+            display: none !important;
+        }
+
+        /* AJUSTES RESPONSIVOS IDÉNTICOS AL LOGIN */
+        @media (max-width: 768px) {
+            .logo-hmv {
+                max-width: 250px;
+                margin-top: 20px; 
+                margin-bottom: 20px;
+            }
+            .login-box {
+                width: 85%;
+                max-width: 300px;
+                border-radius: 36px;
+                padding: 30px 25px;
+            }
+        }
     </style>
 </head>
 <body id="body-main">
 
-<button class="btn-tema" onclick="toggleTheme()">🌓 Tema</button>
-<img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" class="logo-hmv">
-
-<div class="login-box">
-    <h2 class="titulo-seccion">Recuperar Contraseña</h2>
-    
-    <div id="rec-paso-1">
-        <p style="font-size: 12px; margin-bottom: 15px;">Ingrese su documento para validar su pregunta de seguridad.</p>
-        <div class="input-group">
-            <label>Número de Documento</label>
-            <input type="number" id="rec-documento">
-        </div>
-        <button id="btn-buscar-doc" class="btn-principal">Buscar</button>
-    </div>
-
-    <div id="rec-paso-2" style="display: none;">
-        <p id="mostrar-pregunta" style="font-weight: bold; font-size: 14px; color: var(--hmv-blue); margin-bottom: 15px;"></p>
-        <div class="input-group">
-            <label>Su Respuesta</label>
-            <input type="text" id="rec-respuesta">
-        </div>
-        <div class="input-group">
-            <label>Nueva Contraseña</label>
-            <input type="password" id="rec-nueva-password">
-        </div>
-        <button id="btn-cambiar-pass" class="btn-principal">Cambiar Contraseña</button>
-    </div>
-</div>
-
-<a href="index.html" class="link-amarillo">Volver al inicio de sesión</a>
-
+<!-- SISTEMA DE TEMA AUTOMÁTICO (Sin botón) -->
 <script>
-    if (localStorage.getItem('hmv_theme') === 'dark') document.getElementById('body-main').classList.add('dark-mode');
-    function toggleTheme() {
-        const body = document.getElementById('body-main');
-        body.classList.toggle('dark-mode');
-        localStorage.setItem('hmv_theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+    const savedTheme = localStorage.getItem('hmv_theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.getElementById('body-main').classList.add('dark-mode');
     }
 </script>
+
+<img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="Logo HMV" class="logo-hmv">
+
+<!-- PASO 1: PEDIR NÚMERO DE DOCUMENTO -->
+<div class="login-box" id="paso-1">
+    <h3 style="margin-top:0; color: var(--hmv-blue); font-size: 20px;">Recuperar Contraseña</h3>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Ingrese su número de documento para buscar su cuenta.</p>
+    
+    <div class="input-group">
+        <label>N° Documento</label>
+        <!-- type="number" ya no mostrará flechitas gracias al CSS -->
+        <input type="number" id="doc-usuario" placeholder="Ej: 1054561032">
+    </div>
+    
+    <button id="btn-buscar" class="btn-principal">Buscar Usuario</button>
+</div>
+
+<!-- PASO 2: PREGUNTA Y NUEVA CONTRASEÑA (Oculto inicialmente) -->
+<div class="login-box seccion-oculta" id="paso-2">
+    <h3 style="margin-top:0; color: var(--hmv-blue); font-size: 20px;">Validación de Seguridad</h3>
+    <p style="font-size: 14px; color: var(--text-color); font-weight: bold; margin-bottom: 20px; line-height: 1.4;" id="texto-pregunta">Cargando pregunta...</p>
+    
+    <div class="input-group">
+        <label>Su Respuesta Secreta</label>
+        <input type="text" id="respuesta-seguridad" placeholder="Ingrese la respuesta" autocomplete="off">
+    </div>
+    <div class="input-group">
+        <label>Nueva Contraseña</label>
+        <!-- autocomplete="new-password" prohíbe el autocompletado de claves guardadas -->
+        <input type="password" id="nueva-password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+    </div>
+    
+    <button id="btn-actualizar" class="btn-principal">Actualizar Contraseña</button>
+</div>
+
+<a href="index.html" class="link-amarillo">Volver al Inicio</a>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g", authDomain: "sst-hmv.firebaseapp.com", databaseURL: "https://sst-hmv-default-rtdb.firebaseio.com", projectId: "sst-hmv", storageBucket: "sst-hmv.firebasestorage.app", messagingSenderId: "224287433604", appId: "1:224287433604:web:387a81c078875b7fb5b3d1" };
+    const firebaseConfig = {
+        apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g",
+        authDomain: "sst-hmv.firebaseapp.com",
+        databaseURL: "https://sst-hmv-default-rtdb.firebaseio.com",
+        projectId: "sst-hmv",
+        storageBucket: "sst-hmv.firebasestorage.app",
+        messagingSenderId: "224287433604",
+        appId: "1:224287433604:web:387a81c078875b7fb5b3d1"
+    };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    let usuarioEnRecuperacion = null;
 
-    document.getElementById('btn-buscar-doc').onclick = async function() {
-        const doc = document.getElementById('rec-documento').value.trim();
-        if(!doc) return alert("Ingrese un número de documento.");
+    let documentoActual = null;
+    let respuestaCorrecta = null;
+
+    // BOTÓN 1: BUSCAR AL USUARIO
+    document.getElementById('btn-buscar').onclick = async function() {
+        const doc = document.getElementById('doc-usuario').value.trim();
+        if(!doc) return alert("Por favor, ingrese su número de documento.");
+
+        const originalText = this.innerText;
         this.innerText = "Buscando...";
+
         try {
-            const snapshot = await get(ref(db, `usuarios/${doc}`));
-            if (snapshot.exists()) {
-                usuarioEnRecuperacion = snapshot.val();
-                document.getElementById('mostrar-pregunta').innerText = usuarioEnRecuperacion.preguntaSeguridad;
-                document.getElementById('rec-paso-1').style.display = 'none';
-                document.getElementById('rec-paso-2').style.display = 'block';
-            } else alert("❌ No existe un usuario con este documento.");
-        } catch (error) { alert("Error: " + error.message); }
-        this.innerText = "Buscar";
+            const snap = await get(ref(db, `usuarios/${doc}`));
+            if(snap.exists()) {
+                const user = snap.val();
+                documentoActual = doc;
+                respuestaCorrecta = user.respuestaSeguridad.toLowerCase(); // Se guarda minúscula para comparar fácil
+                
+                // Mostrar la pregunta real del usuario
+                document.getElementById('texto-pregunta').innerText = user.preguntaSeguridad;
+                
+                // VACIAR FORZOSAMENTE LOS CAMPOS PARA EVITAR CUALQUIER PRECARGA DEL NAVEGADOR
+                document.getElementById('respuesta-seguridad').value = "";
+                document.getElementById('nueva-password').value = "";
+
+                // Transición al paso 2
+                document.getElementById('paso-1').classList.add('seccion-oculta');
+                document.getElementById('paso-2').classList.remove('seccion-oculta');
+            } else {
+                alert("❌ No se encontró ningún usuario registrado con ese documento.");
+            }
+        } catch(error) {
+            alert("Error de conexión: " + error.message);
+        }
+        this.innerText = originalText;
     };
 
-    document.getElementById('btn-cambiar-pass').onclick = async function() {
-        const respuestaIngresada = document.getElementById('rec-respuesta').value.trim().toLowerCase();
-        const nuevaPass = document.getElementById('rec-nueva-password').value.trim();
-        if(!respuestaIngresada || !nuevaPass) return alert("Ingrese la respuesta y nueva contraseña.");
-        if (respuestaIngresada === usuarioEnRecuperacion.respuestaSeguridad) {
-            this.innerText = "Cambiando...";
-            try {
-                await update(ref(db, `usuarios/${usuarioEnRecuperacion.documento}`), { password: nuevaPass });
-                alert("✅ Contraseña actualizada correctamente.");
-                window.location.href = 'index.html';
-            } catch (error) { alert("Error: " + error.message); }
-        } else alert("❌ Respuesta incorrecta.");
+    // BOTÓN 2: VALIDAR RESPUESTA Y GUARDAR NUEVA CLAVE
+    document.getElementById('btn-actualizar').onclick = async function() {
+        const respuestaIngresada = document.getElementById('respuesta-seguridad').value.trim().toLowerCase();
+        const nuevaClave = document.getElementById('nueva-password').value.trim();
+
+        if(!respuestaIngresada || !nuevaClave) {
+            return alert("Por favor, complete su respuesta y la nueva contraseña.");
+        }
+
+        if(respuestaIngresada !== respuestaCorrecta) {
+            return alert("❌ La respuesta de seguridad es incorrecta.");
+        }
+
+        if(nuevaClave.length < 6) {
+            return alert("⚠️ La contraseña debe tener al menos 6 caracteres por seguridad.");
+        }
+
+        const originalText = this.innerText;
+        this.innerText = "Actualizando...";
+
+        try {
+            await update(ref(db, `usuarios/${documentoActual}`), {
+                password: nuevaClave
+            });
+            alert("✅ ¡Contraseña actualizada exitosamente! Ya puede iniciar sesión.");
+            window.location.replace('index.html');
+        } catch(error) {
+            alert("Error al intentar actualizar la contraseña: " + error.message);
+            this.innerText = originalText;
+        }
     };
 </script>
 </body>
