@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - HMV Ingenieros</title>
+    <style>
+        :root {
+            --hmv-blue: #004b87;
+            --hmv-yellow: #FFD700;
+            --bg-body: #555555;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-box {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+            margin: 20px 0;
+        }
+        .logo-hmv { max-width: 100%; height: auto; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; color: #333; font-weight: bold; margin-bottom: 5px; }
+        .input-group input, .input-group select {
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; font-family: inherit;
+        }
+        .btn-principal {
+            background-color: var(--hmv-blue); color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: background 0.3s;
+        }
+        .btn-principal:hover { background-color: #003666; }
+        .link-amarillo { display: inline-block; color: #d1b000; font-weight: bold; text-decoration: none; margin-top: 15px; cursor: pointer; font-size: 14px; }
+        .link-amarillo:hover { text-decoration: underline; color: #b39700; }
+        .titulo-seccion { color: var(--hmv-blue); margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid var(--hmv-yellow); padding-bottom: 5px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="Logo HMV" class="logo-hmv">
+    <h2 class="titulo-seccion">Registro de Usuario</h2>
+    <div class="input-group">
+        <label>Nombre Completo</label>
+        <input type="text" id="reg-nombre">
+    </div>
+    <div class="input-group">
+        <label>Número de Documento</label>
+        <input type="number" id="reg-documento">
+    </div>
+    <div class="input-group">
+        <label>Cargo / Perfil</label>
+        <select id="reg-rol">
+            <option value="Oficial / Auxiliar">Oficial / Auxiliar</option>
+            <option value="Responsable SST">Responsable SST</option>
+            <option value="Ingeniero">Ingeniero</option>
+            <option value="Capataz">Capataz</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <label>Usuario</label>
+        <input type="text" id="reg-usuario">
+    </div>
+    <div class="input-group">
+        <label>Contraseña</label>
+        <input type="password" id="reg-password">
+    </div>
+    <div class="input-group">
+        <label>Pregunta de Seguridad</label>
+        <select id="reg-pregunta">
+            <option value="mascota">¿Cuál es el nombre de tu primera mascota?</option>
+            <option value="ciudad">¿En qué ciudad naciste?</option>
+            <option value="madre">¿Cuál es el segundo nombre de tu madre?</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <label>Respuesta a la pregunta</label>
+        <input type="text" id="reg-respuesta" placeholder="Escribe tu respuesta">
+    </div>
+    
+    <button id="btn-registrar" class="btn-principal">Crear Cuenta</button>
+    <div><a href="index.html" class="link-amarillo">Volver al inicio de sesión</a></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g",
+        authDomain: "sst-hmv.firebaseapp.com",
+        databaseURL: "https://sst-hmv-default-rtdb.firebaseio.com",
+        projectId: "sst-hmv",
+        storageBucket: "sst-hmv.firebasestorage.app",
+        messagingSenderId: "224287433604",
+        appId: "1:224287433604:web:387a81c078875b7fb5b3d1"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.getElementById('btn-registrar').onclick = async function() {
+        const nombre = document.getElementById('reg-nombre').value.trim();
+        const documento = document.getElementById('reg-documento').value.trim();
+        const rol = document.getElementById('reg-rol').value;
+        const usuario = document.getElementById('reg-usuario').value.trim();
+        const password = document.getElementById('reg-password').value.trim();
+        const pregunta = document.getElementById('reg-pregunta').options[document.getElementById('reg-pregunta').selectedIndex].text;
+        const respuesta = document.getElementById('reg-respuesta').value.trim().toLowerCase();
+
+        if (!nombre || !documento || !usuario || !password || !respuesta) return alert("Complete todos los campos obligatorios.");
+
+        const originalText = this.innerText;
+        this.innerText = "Registrando...";
+        
+        try {
+            const snapshot = await get(ref(db, `usuarios/${documento}`));
+            if (snapshot.exists()) {
+                alert("Este número de documento ya está registrado.");
+                this.innerText = originalText;
+                return;
+            }
+            await set(ref(db, `usuarios/${documento}`), {
+                nombre: nombre, documento: documento, rol: rol, usuario: usuario, password: password, preguntaSeguridad: pregunta, respuestaSeguridad: respuesta
+            });
+            alert("✅ Registro exitoso. Ya puede iniciar sesión.");
+            window.location.href = 'index.html';
+        } catch (error) { alert("❌ Error al registrar: " + error.message); }
+        this.innerText = originalText;
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña - HMV Ingenieros</title>
+    <style>
+        :root {
+            --hmv-blue: #004b87;
+            --hmv-yellow: #FFD700;
+            --bg-body: #555555;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-box {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .logo-hmv { max-width: 100%; height: auto; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; color: #333; font-weight: bold; margin-bottom: 5px; }
+        .input-group input {
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; font-family: inherit;
+        }
+        .btn-principal {
+            background-color: var(--hmv-blue); color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: background 0.3s;
+        }
+        .btn-principal:hover { background-color: #003666; }
+        .link-amarillo { display: inline-block; color: #d1b000; font-weight: bold; text-decoration: none; margin-top: 15px; cursor: pointer; font-size: 14px; }
+        .link-amarillo:hover { text-decoration: underline; color: #b39700; }
+        .titulo-seccion { color: var(--hmv-blue); margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid var(--hmv-yellow); padding-bottom: 5px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="Logo HMV" class="logo-hmv">
+    <h2 class="titulo-seccion">Recuperar Contraseña</h2>
+    
+    <div id="rec-paso-1">
+        <p style="font-size: 12px; color: #555;">Ingrese su documento para validar su pregunta de seguridad.</p>
+        <div class="input-group">
+            <label>Número de Documento</label>
+            <input type="number" id="rec-documento">
+        </div>
+        <button id="btn-buscar-doc" class="btn-principal">Buscar</button>
+    </div>
+
+    <div id="rec-paso-2" style="display: none;">
+        <p id="mostrar-pregunta" style="font-weight: bold; font-size: 14px; color: var(--hmv-blue);"></p>
+        <div class="input-group">
+            <label>Su Respuesta</label>
+            <input type="text" id="rec-respuesta">
+        </div>
+        <div class="input-group">
+            <label>Nueva Contraseña</label>
+            <input type="password" id="rec-nueva-password">
+        </div>
+        <button id="btn-cambiar-pass" class="btn-principal">Cambiar Contraseña</button>
+    </div>
+
+    <div><a href="index.html" class="link-amarillo">Volver al inicio de sesión</a></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g",
+        authDomain: "sst-hmv.firebaseapp.com",
+        databaseURL: "https://sst-hmv-default-rtdb.firebaseio.com",
+        projectId: "sst-hmv",
+        storageBucket: "sst-hmv.firebasestorage.app",
+        messagingSenderId: "224287433604",
+        appId: "1:224287433604:web:387a81c078875b7fb5b3d1"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let usuarioEnRecuperacion = null;
+
+    document.getElementById('btn-buscar-doc').onclick = async function() {
+        const doc = document.getElementById('rec-documento').value.trim();
+        if(!doc) return alert("Ingrese un número de documento.");
+
+        this.innerText = "Buscando...";
+        try {
+            const snapshot = await get(ref(db, `usuarios/${doc}`));
+            if (snapshot.exists()) {
+                usuarioEnRecuperacion = snapshot.val();
+                document.getElementById('mostrar-pregunta').innerText = usuarioEnRecuperacion.preguntaSeguridad;
+                document.getElementById('rec-paso-1').style.display = 'none';
+                document.getElementById('rec-paso-2').style.display = 'block';
+            } else {
+                alert("❌ No existe un usuario con este documento.");
+            }
+        } catch (error) { alert("Error: " + error.message); }
+        this.innerText = "Buscar";
+    };
+
+    document.getElementById('btn-cambiar-pass').onclick = async function() {
+        const respuestaIngresada = document.getElementById('rec-respuesta').value.trim().toLowerCase();
+        const nuevaPass = document.getElementById('rec-nueva-password').value.trim();
+
+        if(!respuestaIngresada || !nuevaPass) return alert("Ingrese la respuesta y su nueva contraseña.");
+
+        if (respuestaIngresada === usuarioEnRecuperacion.respuestaSeguridad) {
+            this.innerText = "Cambiando...";
+            try {
+                await update(ref(db, `usuarios/${usuarioEnRecuperacion.documento}`), { password: nuevaPass });
+                alert("✅ Contraseña actualizada correctamente. Ya puede iniciar sesión.");
+                window.location.href = 'index.html';
+            } catch (error) { alert("Error al actualizar: " + error.message); }
+            this.innerText = "Cambiar Contraseña";
+        } else {
+            alert("❌ La respuesta de seguridad es incorrecta.");
+        }
+    };
+</script>
+</body>
+</html>

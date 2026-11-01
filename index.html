@@ -6,72 +6,147 @@
     <title>Acceso - HMV Ingenieros</title>
     <style>
         :root {
-            --hmv-blue: #004b87; --hmv-yellow: #f2a900;
-            --bg-body: #f4f7fa; --bg-surface: #ffffff;
-            --text-main: #333333; --border-color: #e0e0e0;
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --hmv-blue: #004b87;
+            --hmv-yellow: #FFD700;
+            --bg-body: #555555;
         }
-        body.dark-mode {
-            --bg-body: #121212; --bg-surface: #1e1e1e;
-            --text-main: #e0e0e0; --border-color: #333333;
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-main); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; transition: background-color 0.3s, color 0.3s; padding: 20px;}
-        
-        /* Logo por fuera del cuadro, un poco más grande */
-        .login-logo { max-width: 250px; margin-bottom: 25px; }
-        
-        .login-card { background-color: var(--bg-surface); padding: 40px; border-radius: 12px; box-shadow: var(--shadow); width: 100%; max-width: 450px; text-align: center; border-top: 5px solid var(--hmv-blue); transition: background-color 0.3s; position: relative; }
-        
-        /* Botón de tema dentro del cuadro, esquina superior derecha */
-        #theme-toggle { position: absolute; top: 15px; right: 15px; padding: 6px 10px; border-radius: 4px; border: 1px solid var(--border-color); background: transparent; color: var(--text-main); cursor: pointer; font-size: 11px; font-weight: bold; transition: 0.2s;}
-        #theme-toggle:hover { background: var(--border-color); }
-
-        .login-title { font-size: 20px; margin-top: 10px; margin-bottom: 30px; color: var(--text-main); }
-        .role-btn { display: block; width: 100%; padding: 15px; margin-bottom: 12px; background-color: transparent; border: 2px solid var(--border-color); color: var(--text-main); border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; }
-        .role-btn:hover { border-color: var(--hmv-blue); background-color: rgba(0, 75, 135, 0.05); transform: translateY(-2px); }
-        .role-sst { border-color: var(--hmv-yellow); }
-        .role-sst:hover { background-color: var(--hmv-yellow); color: #000; }
+        .login-box {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .logo-hmv {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .btn-principal {
+            background-color: var(--hmv-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: background 0.3s;
+        }
+        .btn-principal:hover { background-color: #003666; }
+        .link-amarillo {
+            display: inline-block;
+            color: #d1b000;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .link-amarillo:hover { text-decoration: underline; color: #b39700; }
     </style>
 </head>
 <body>
 
-    <!-- Logo fuera del cuadro -->
-    <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Logo" class="login-logo">
-
-    <div class="login-card">
-        <!-- Botón de tema dentro del cuadro -->
-        <button id="theme-toggle">🌙 Oscuro</button>
-        
-        <h2 class="login-title">Seleccione su Perfil de Acceso</h2>
-        
-        <button class="role-btn" onclick="ingresar('Oficial / Auxiliar')">👷 Oficial / Auxiliar</button>
-        <button class="role-btn" onclick="ingresar('Capataz')">🏗️ Capataz</button>
-        <button class="role-btn" onclick="ingresar('Ingeniero')">📐 Ingeniero</button>
-        <button class="role-btn role-sst" onclick="ingresar('Responsable SST')">🛡️ Responsable SST</button>
+<div class="login-box">
+    <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="Logo HMV" class="logo-hmv">
+    <div class="input-group">
+        <label>Usuario</label>
+        <input type="text" id="log-usuario" placeholder="Ingresa tu usuario">
     </div>
+    <div class="input-group">
+        <label>Contraseña</label>
+        <input type="password" id="log-password" placeholder="Ingresa tu contraseña">
+    </div>
+    <button id="btn-ingresar" class="btn-principal">Ingresar</button>
+    
+    <div><a href="registro.html" class="link-amarillo">Registrarse</a></div>
+    <div><a href="recuperar.html" class="link-amarillo">¿Olvidó su contraseña?</a></div>
+</div>
 
-    <script>
-        const btnTheme = document.getElementById('theme-toggle');
-        let isDark = localStorage.getItem('hmv_theme') === 'dark';
-        
-        if (isDark) {
-            document.body.classList.add('dark-mode');
-            btnTheme.innerText = '☀️ Claro';
-        }
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        btnTheme.onclick = () => {
-            document.body.classList.toggle('dark-mode');
-            isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('hmv_theme', isDark ? 'dark' : 'light');
-            btnTheme.innerText = isDark ? '☀️ Claro' : '🌙 Oscuro';
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g",
+        authDomain: "sst-hmv.firebaseapp.com",
+        databaseURL: "https://sst-hmv-default-rtdb.firebaseio.com",
+        projectId: "sst-hmv",
+        storageBucket: "sst-hmv.firebasestorage.app",
+        messagingSenderId: "224287433604",
+        appId: "1:224287433604:web:387a81c078875b7fb5b3d1"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-        function ingresar(rol) {
-            localStorage.setItem('hmv_user_role', rol);
-            window.location.href = 'panel.html';
-        }
-    </script>
+    document.getElementById('btn-ingresar').onclick = async function() {
+        const usuarioInput = document.getElementById('log-usuario').value.trim();
+        const passwordInput = document.getElementById('log-password').value.trim();
+
+        if(!usuarioInput || !passwordInput) return alert("Ingrese su usuario y contraseña.");
+
+        const originalText = this.innerText;
+        this.innerText = "Verificando...";
+
+        try {
+            const snapshot = await get(ref(db, 'usuarios'));
+            if (snapshot.exists()) {
+                const usuarios = snapshot.val();
+                let usuarioValido = null;
+                for (const doc in usuarios) {
+                    if (usuarios[doc].usuario === usuarioInput && usuarios[doc].password === passwordInput) {
+                        usuarioValido = usuarios[doc];
+                        break;
+                    }
+                }
+                if (usuarioValido) {
+                    localStorage.setItem('hmv_user_role', usuarioValido.rol);
+                    localStorage.setItem('hmv_user_name', usuarioValido.nombre);
+                    window.location.href = 'panel.html';
+                } else {
+                    alert("❌ Usuario o contraseña incorrectos.");
+                }
+            } else {
+                alert("No hay usuarios registrados en el sistema.");
+            }
+        } catch (error) { alert("Error al conectar: " + error.message); }
+        this.innerText = originalText;
+    };
+</script>
 </body>
 </html>
