@@ -94,27 +94,35 @@
         .box-text-small { font-size: 10px; line-height: 1.2; }
 
         table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        th, td { border: 1px solid var(--border-color); padding: 4px 6px; vertical-align: top; } /* Alineación superior para celdas multi-línea */
+        th, td { border: 1px solid var(--border-color); padding: 4px 6px; vertical-align: top; } 
         .bg-header { background-color: var(--table-header-bg); font-weight: bold; text-align: center; vertical-align: middle; }
         .title-row td { background-color: var(--table-header-bg); font-weight: bold; text-align: center; font-size: 12px; padding: 5px; vertical-align: middle; }
 
-        /* Ajustes de campos de entrada para que no se corten */
-        input[type="text"], input[type="date"], input[type="time"], textarea { 
-            width: 100%; /* Ocupar todo el ancho disponible */
+        /* AJUSTE: Separados los inputs de texto/textarea de los de date/time para que estos últimos no ocupen el 100% y queden al frente */
+        input[type="text"], textarea { 
+            width: 100%; 
             border: none; 
             background: transparent; 
             font-family: inherit; 
             font-size: 11px; 
             color: #000; 
             outline: none; 
-            box-sizing: border-box; /* Asegurar que el padding no desborde */
+            box-sizing: border-box; 
         }
         
-        /* Estilos específicos para textareas (Cédula proyecto y Actividad) */
+        input[type="date"], input[type="time"] {
+            border: none; 
+            background: transparent; 
+            font-family: inherit; 
+            font-size: 11px; 
+            color: #000; 
+            outline: none; 
+        }
+        
         textarea.auto-expand {
-            resize: none; /* Desactivar resize manual */
-            overflow: hidden; /* Ocultar scrollbar */
-            min-height: 20px; /* Altura mínima inicial */
+            resize: none; 
+            overflow: hidden; 
+            min-height: 20px; 
             display: block;
         }
 
@@ -130,10 +138,11 @@
         
         .print-fill-row { display: none; }
 
+        /* AJUSTE: Restauración exacta a 6mm y 98% para un borde delgado ejecutivo */
         @media print {
             @page {
                 size: letter;
-                margin: 10mm; 
+                margin: 6mm; 
             }
             body, .contenedor-principal { 
                 background-color: #fff; 
@@ -148,15 +157,11 @@
                 margin: 0 auto !important; 
                 padding: 0; 
                 display: block; 
-                width: 93% !important; 
-                max-width: 900px !important; 
+                width: 98% !important; 
+                max-width: 100% !important; 
                 box-sizing: border-box;
             }
             
-            .is-pc .hoja-blanca {
-                margin: 3.5% auto !important; 
-            }
-
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             table, tr, td, .top-header { page-break-inside: avoid; }
             .no-print, .botones-flotantes, #firma-modal { display: none !important; }
@@ -166,7 +171,6 @@
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
             
-            /* Ajuste de textarea para impresión */
             textarea.auto-expand {
                 overflow: visible !important;
                 white-space: pre-wrap;
@@ -195,14 +199,14 @@
         <table>
             <tr class="title-row"><td colspan="4">Información del registro</td></tr>
             <tr>
-                <td style="width: 25%; color: #666; vertical-align: middle;">Fecha de inicio:<br><input type="date" id="fecha-ini" style="color: #000;" class="save-data"></td>
-                <td style="width: 25%; color: #666; vertical-align: middle;">Hora inicio:<br><input type="time" id="hora-ini" style="color: #000;" class="save-data"></td>
-                <!-- Se cambió input text por textarea para permitir múltiples líneas -->
+                <!-- AJUSTE: Eliminado el <br> y agregado width: 55% para mantenerlos al frente -->
+                <td style="width: 25%; color: #666; vertical-align: middle;">Fecha de inicio: <input type="date" id="fecha-ini" style="width: 55%;" class="save-data"></td>
+                <td style="width: 25%; color: #666; vertical-align: middle;">Hora inicio: <input type="time" id="hora-ini" style="width: 55%;" class="save-data"></td>
                 <td colspan="2" rowspan="2" style="width: 50%; color: #666;">Archivar en (sede o proyecto):<br><textarea id="archivo" class="save-data auto-expand" rows="1" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea></td>
             </tr>
             <tr>
-                <td style="color: #666; vertical-align: middle;">Fecha Final:<br><input type="date" id="fecha-fin" style="color: #000;" class="save-data"></td>
-                <td style="color: #666; vertical-align: middle;">Hora fin:<br><input type="time" id="hora-fin" style="color: #000;" class="save-data"></td>
+                <td style="color: #666; vertical-align: middle;">Fecha Final: <input type="date" id="fecha-fin" style="width: 55%;" class="save-data"></td>
+                <td style="color: #666; vertical-align: middle;">Hora fin: <input type="time" id="hora-fin" style="width: 55%;" class="save-data"></td>
             </tr>
         </table>
 
@@ -214,7 +218,6 @@
                 <td style="text-align: center; width: 35%; vertical-align: middle;">Taladro Magnético</td>
             </tr>
             <tr><td style="vertical-align: middle;">Marca - serie o código</td><td style="vertical-align: middle;"><input type="text" id="inp-serial" readonly style="text-align: center; font-weight: bold; background: transparent;"></td></tr>
-            <!-- Se cambió input text por textarea para permitir múltiples líneas -->
             <tr><td style="vertical-align: middle;">Actividad a realizar</td><td style="vertical-align: middle;"><textarea class="save-data auto-expand" rows="1" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea></td></tr>
         </table>
 
@@ -225,7 +228,6 @@
             <tbody id="tbody-trabajadores">
                 <tr>
                     <td><input type="text" class="save-data"></td>
-                    <!-- Alineación centrada para la columna Cédula -->
                     <td><input type="text" class="save-data" style="text-align: center;"></td>
                     <td style="text-align: center; vertical-align: middle;">
                         <button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️ Firmar</button>
@@ -319,7 +321,6 @@
 </div>
 
 <script type="module">
-    // SE AGREGA CLASE AL BODY SI ES COMPUTADOR (Pantalla ancha)
     if (window.innerWidth > 800) {
         document.body.classList.add('is-pc');
     }
