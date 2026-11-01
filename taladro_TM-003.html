@@ -111,11 +111,11 @@
         
         .print-fill-row { display: none; }
 
-        /* REGLAS DE IMPRESIÓN UNIFICADAS PARA CELULAR Y PC */
+        /* REGLAS DE IMPRESIÓN UNIFICADAS CON MARGEN DELGADO EJECUTIVO */
         @media print {
             @page {
                 size: letter;
-                margin: 15mm; /* Margen estándar de documento legal en las 4 caras para todas las páginas */
+                margin: 6mm; /* Margen delgado ejecutivo en los 4 costados para todas las páginas */
             }
             body, .contenedor-principal { 
                 background-color: #fff; 
@@ -130,8 +130,8 @@
                 margin: 0 auto !important; 
                 padding: 0; 
                 display: block; 
-                width: 93% !important; 
-                max-width: 900px !important; 
+                width: 98% !important; 
+                max-width: 100% !important; 
                 box-sizing: border-box;
             }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
