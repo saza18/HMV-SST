@@ -62,13 +62,37 @@
     </style>
 </head>
 <body>
+
+    <!-- BLOQUE DE SEGURIDAD MODIFICADO (Protección botón "Atrás" y Verificación) -->
     <script>
+        // 1. OBLIGA AL NAVEGADOR A RECARGAR SI DETECTA QUE LA PÁGINA VINO DEL BOTÓN ATRÁS (Evita Caché)
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+
+        // 2. VERIFICACIÓN DE SEGURIDAD (Permite a cualquier rol excepto si está vacío/deslogueado)
+        const currentRole = localStorage.getItem('hmv_user_role');
+        if (!currentRole || currentRole === '') {
+            alert("ACCESO DENEGADO. Por favor, inicie sesión.");
+            window.location.replace('index.html'); // REEMPLAZA EL HISTORIAL AL EXPULSAR
+        }
+
         if (localStorage.getItem('hmv_theme') === 'dark') document.body.classList.add('dark-mode');
+
+        // Función para cerrar sesión con protección de historial
+        function cerrarSesionNormal() {
+            localStorage.removeItem('hmv_user_role');
+            localStorage.removeItem('hmv_user_name');
+            window.location.replace('index.html'); // REEMPLAZA EL HISTORIAL AL SALIR
+        }
     </script>
 
     <nav class="navbar">
         <div class="navbar-logo">
-            <a href="index.html" class="btn-back">⬅️ Salir</a>
+            <!-- El botón de salir ahora usa la función segura -->
+            <button onclick="cerrarSesionNormal()" class="btn-back">⬅️ Salir</button>
             <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Ingenieros">
         </div>
         <div class="navbar-user">
@@ -139,6 +163,10 @@
 
         const rolUsuario = localStorage.getItem('hmv_user_role') || 'Invitado';
         document.getElementById('display-role').innerText = rolUsuario;
+        
+        // Poner el nombre del usuario en pantalla (Para mantener consistencia visual)
+        const nombreUsuario = localStorage.getItem('hmv_user_name') || 'Usuario';
+        document.getElementById('display-name').innerText = nombreUsuario;
         
         function calcularFechasSemana() {
             const fechaActual = new Date();
