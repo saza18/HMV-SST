@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel ROOT - HMV Ingenieros</title>
+    <style>
+        :root {
+            --hmv-blue: #004b87;
+            --hmv-yellow: #FFD700;
+            --bg-body: #f4f4f9;
+            --bg-box: #ffffff;
+            --text-color: #333;
+            --border-color: #ddd;
+            --table-header: #004b87;
+            --table-header-text: #fff;
+        }
+
+        body.dark-mode {
+            --bg-body: #1a1a1a;
+            --bg-box: #2c2c2c;
+            --text-color: #f1f1f1;
+            --border-color: #444;
+            --table-header: #002244;
+            --table-header-text: #FFD700;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: 0.3s;
+        }
+
+        /* HEADER Y NAVEGACIÓN */
+        .header-panel {
+            background-color: var(--bg-box);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-bottom: 3px solid #a00; /* Borde rojo oscuro distintivo de ROOT */
+        }
+
+        .header-panel img { max-height: 50px; }
+        
+        .header-info { display: flex; align-items: center; gap: 15px; }
+        
+        .badge-root {
+            background-color: #a00;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            background-color: var(--hmv-blue);
+            padding: 10px 0;
+        }
+
+        .nav-tabs button {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: 0.3s;
+        }
+
+        .nav-tabs button:hover { color: var(--hmv-yellow); }
+        .nav-tabs button.active { border-bottom: 3px solid var(--hmv-yellow); color: var(--hmv-yellow); }
+
+        /* CONTENEDOR PRINCIPAL */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: var(--bg-box);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .seccion-panel { display: none; }
+        .seccion-panel.active { display: block; }
+
+        /* TABLAS */
+        .table-responsive { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th { background-color: var(--table-header); color: var(--table-header-text); }
+        
+        /* BOTONES DE ACCIÓN */
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: 0.2s;
+            color: white;
+        }
+        .btn-crear { background-color: #008f39; font-size: 14px; padding: 10px 15px; margin-bottom: 15px;}
+        .btn-crear:hover { background-color: #005c25; }
+        .btn-editar { background-color: var(--hmv-blue); }
+        .btn-bloquear { background-color: #e68a00; }
+        .btn-eliminar { background-color: #cc0000; }
+        .btn-salir { background-color: #555; }
+        .btn-tema { background-color: transparent; border: 2px solid var(--hmv-blue); color: var(--text-color); }
+
+        .status-activo { color: #008f39; font-weight: bold; }
+        .status-bloqueado { color: #cc0000; font-weight: bold; }
+
+        /* MODALES (Para crear/editar) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+        }
+        .modal-content {
+            background-color: var(--bg-box);
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            border-top: 4px solid #a00;
+        }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: var(--text-color); }
+        .input-group input, .input-group select {
+            width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; box-sizing: border-box; background: var(--bg-body); color: var(--text-color); font-family: inherit;
+        }
+        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    </style>
+</head>
+<body id="body-main">
+
+<!-- VERIFICACIÓN DE SEGURIDAD (Se ejecuta antes de mostrar la página) -->
+<script>
+    const userRole = localStorage.getItem('hmv_user_role');
+    if (userRole !== 'Administrador Root') {
+        alert("ACCESO DENEGADO. Nivel de privilegios insuficiente.");
+        window.location.href = 'index.html';
+    }
+    
+    // Tema
+    if (localStorage.getItem('hmv_theme') === 'dark') document.getElementById('body-main').classList.add('dark-mode');
+    function toggleTheme() {
+        const body = document.getElementById('body-main');
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('hmv_theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+    
+    function cerrarSesion() {
+        localStorage.removeItem('hmv_user_role');
+        localStorage.removeItem('hmv_user_name');
+        window.location.href = 'index.html';
+    }
+</script>
+
+<div class="header-panel">
+    <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV">
+    <div class="header-info">
+        <span class="badge-root">SUPER ADMIN ROOT</span>
+        <span id="nombre-admin-root" style="font-weight: bold;"></span>
+        <button class="btn btn-tema" onclick="toggleTheme()">🌓</button>
+        <button class="btn btn-salir" onclick="cerrarSesion()">Salir</button>
+    </div>
+</div>
+
+<div class="nav-tabs">
+    <button class="tab-link active" onclick="abrirPestaña('tab-usuarios')">👥 Gestión de Usuarios</button>
+    <button class="tab-link" onclick="abrirPestaña('tab-actividades')">📋 Registro de Actividades</button>
+</div>
+
+<div class="container">
+    
+    <!-- ================= PESTAÑA: GESTIÓN DE USUARIOS ================= -->
+    <div id="tab-usuarios" class="seccion-panel active">
+        <h2 style="color: #a00; border-bottom: 2px solid #a00; padding-bottom: 5px;">Control Total de Usuarios</h2>
+        <button class="btn btn-crear" id="btn-abrir-modal-crear">+ Crear Nuevo Usuario</button>
+        
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombre</th>
+                        <th>Usuario</th>
+                        <th>Perfil / Rol</th>
+                        <th>Estado</th>
+                        <th>Acciones ROOT</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-usuarios-body">
+                    <tr><td colspan="6" style="text-align: center;">Cargando usuarios...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================= PESTAÑA: REGISTRO DE ACTIVIDADES ================= -->
+    <div id="tab-actividades" class="seccion-panel">
+        <h2 style="color: var(--hmv-blue); border-bottom: 2px solid var(--hmv-yellow); padding-bottom: 5px;">Historial de Cambios</h2>
+        <p style="font-size: 12px; color: #666;">Muestra las acciones realizadas por los administradores.</p>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Autor (Admin)</th>
+                        <th>Acción Realizada</th>
+                        <th>Detalles</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-actividades-body">
+                    <tr><td colspan="4" style="text-align: center;">Cargando registros...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL CREAR / EDITAR USUARIO -->
+<div class="modal-overlay" id="modal-usuario">
+    <div class="modal-content">
+        <h3 id="modal-titulo" style="color: #a00; margin-top: 0;">Gestionar Usuario</h3>
+        <input type="hidden" id="form-modo" value="crear"> <!-- 'crear' o 'editar' -->
+        
+        <div class="input-group">
+            <label>Número de Documento (ID)</label>
+            <input type="number" id="form-doc">
+        </div>
+        <div class="input-group">
+            <label>Nombre Completo</label>
+            <input type="text" id="form-nombre">
+        </div>
+        <div class="input-group">
+            <label>Usuario (Login)</label>
+            <input type="text" id="form-usuario">
+        </div>
+        <div class="input-group">
+            <label>Contraseña</label>
+            <input type="text" id="form-password" placeholder="Escriba para cambiar/asignar clave">
+        </div>
+        <div class="input-group">
+            <label>Perfil / Cargo (Permisos)</label>
+            <select id="form-rol">
+                <option value="Oficial / Auxiliar">Oficial / Auxiliar</option>
+                <option value="Responsable SST">Responsable SST</option>
+                <option value="Ingeniero">Ingeniero</option>
+                <option value="Capataz">Capataz</option>
+                <option value="Administrador Limitado" style="color: #008f39; font-weight: bold;">Administrador Limitado</option>
+                <option value="Administrador Root" style="color: #a00; font-weight: bold;">Administrador Root (SUPER)</option>
+            </select>
+        </div>
+        
+        <!-- Datos de recuperación por defecto al crear desde panel -->
+        <div id="div-recuperacion" style="display: none;">
+            <p style="font-size: 11px; color: #888;">* Al crear desde panel, la pregunta por defecto es "mascota" y respuesta "admin". El usuario debe cambiarla.</p>
+        </div>
+
+        <div class="modal-buttons">
+            <button class="btn btn-salir" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn btn-crear" id="btn-guardar-usuario" style="margin: 0; background-color: #a00;">Guardar Cambios</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('nombre-admin-root').innerText = localStorage.getItem('hmv_user_name') || 'Usuario Root';
+
+    function abrirPestaña(id) {
+        document.querySelectorAll('.seccion-panel').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-link').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal-usuario').style.display = 'none';
+    }
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, set, update, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g", authDomain: "sst-hmv.firebaseapp.com", databaseURL: "https://sst-hmv-default-rtdb.firebaseio.com", projectId: "sst-hmv", storageBucket: "sst-hmv.firebasestorage.app", messagingSenderId: "224287433604", appId: "1:224287433604:web:387a81c078875b7fb5b3d1" };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const adminLogueado = localStorage.getItem('hmv_user_name') || 'Admin ROOT';
+
+    // ======== 1. FUNCIONES DE REGISTRO DE ACTIVIDAD (LOGS) ========
+    async function registrarActividad(accion, detalle) {
+        const fecha = new Date().toLocaleString('es-CO');
+        const nuevaActividadRef = push(ref(db, 'actividades_admin'));
+        await set(nuevaActividadRef, {
+            fecha: fecha,
+            autor: adminLogueado + ' (ROOT)',
+            accion: accion,
+            detalle: detalle
+        });
+        cargarActividades(); // Recargar tabla
+    }
+
+    async function cargarActividades() {
+        const tbody = document.getElementById('tabla-actividades-body');
+        try {
+            const snap = await get(ref(db, 'actividades_admin'));
+            if(snap.exists()) {
+                const acts = snap.val();
+                tbody.innerHTML = '';
+                // Invertir para mostrar las más recientes arriba
+                const actsArray = Object.values(acts).reverse(); 
+                actsArray.forEach(act => {
+                    tbody.innerHTML += `<tr>
+                        <td>${act.fecha}</td>
+                        <td style="font-weight:bold; color:var(--hmv-blue);">${act.autor}</td>
+                        <td>${act.accion}</td>
+                        <td>${act.detalle}</td>
+                    </tr>`;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay registro de actividades aún.</td></tr>';
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // ======== 2. GESTIÓN DE USUARIOS ========
+    let usuariosActuales = {};
+
+    async function cargarUsuarios() {
+        const tbody = document.getElementById('tabla-usuarios-body');
+        try {
+            const snap = await get(ref(db, 'usuarios'));
+            if (snap.exists()) {
+                usuariosActuales = snap.val();
+                tbody.innerHTML = '';
+                for(let doc in usuariosActuales) {
+                    const u = usuariosActuales[doc];
+                    const estadoText = u.bloqueado ? '<span class="status-bloqueado">Bloqueado 🔒</span>' : '<span class="status-activo">Activo ✓</span>';
+                    const btnBloqueo = u.bloqueado ? 
+                        `<button class="btn btn-bloquear" style="background:#008f39;" onclick="window.modificarEstado('${doc}', false)">Desbloquear</button>` : 
+                        `<button class="btn btn-bloquear" onclick="window.modificarEstado('${doc}', true)">Bloquear</button>`;
+                    
+                    // Resaltar a los Root
+                    const colorFila = u.rol === 'Administrador Root' ? 'background-color: rgba(170,0,0,0.05);' : '';
+
+                    tbody.innerHTML += `<tr style="${colorFila}">
+                        <td><b>${doc}</b></td>
+                        <td>${u.nombre}</td>
+                        <td>${u.usuario}</td>
+                        <td style="font-weight:bold;">${u.rol}</td>
+                        <td>${estadoText}</td>
+                        <td style="display:flex; gap:5px; flex-wrap:wrap;">
+                            <button class="btn btn-editar" onclick="window.abrirEditar('${doc}')">Editar/Clave</button>
+                            ${btnBloqueo}
+                            <button class="btn btn-eliminar" onclick="window.eliminarUsuario('${doc}')">X Eliminar</button>
+                        </td>
+                    </tr>`;
+                }
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay usuarios registrados.</td></tr>';
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // ACCIONES DESDE TABLA (Atachadas al window para poder usarse en el onclick del HTML generado)
+    window.modificarEstado = async function(doc, bloquear) {
+        if(confirm(`¿Estás seguro de ${bloquear ? 'bloquear' : 'desbloquear'} a este usuario?`)) {
+            try {
+                await update(ref(db, `usuarios/${doc}`), { bloqueado: bloquear });
+                registrarActividad(bloquear ? "BLOQUEO CUENTA" : "DESBLOQUEO CUENTA", `Usuario CC: ${doc}`);
+                cargarUsuarios();
+            } catch(e) { alert("Error: " + e.message); }
+        }
+    };
+
+    window.eliminarUsuario = async function(doc) {
+        if(doc === localStorage.getItem('hmv_user_name')) return alert("No puedes eliminar tu propia cuenta mientras estás conectado."); // Protección
+        if(confirm(`⚠️ CUIDADO: ¿Estás seguro de ELIMINAR COMPLETAMENTE a este usuario (CC: ${doc})? Esta acción no se puede deshacer.`)) {
+            try {
+                const nombreEliminado = usuariosActuales[doc].nombre;
+                await remove(ref(db, `usuarios/${doc}`));
+                registrarActividad("ELIMINACIÓN DE USUARIO", `Se eliminó a ${nombreEliminado} (CC: ${doc})`);
+                cargarUsuarios();
+            } catch(e) { alert("Error: " + e.message); }
+        }
+    };
+
+    // ======== 3. MODAL CREAR / EDITAR ========
+    document.getElementById('btn-abrir-modal-crear').onclick = function() {
+        document.getElementById('form-modo').value = 'crear';
+        document.getElementById('modal-titulo').innerText = "Crear Nuevo Usuario";
+        document.getElementById('form-doc').value = '';
+        document.getElementById('form-doc').disabled = false;
+        document.getElementById('form-nombre').value = '';
+        document.getElementById('form-usuario').value = '';
+        document.getElementById('form-password').value = '';
+        document.getElementById('form-rol').value = 'Oficial / Auxiliar';
+        document.getElementById('div-recuperacion').style.display = 'block';
+        document.getElementById('modal-usuario').style.display = 'flex';
+    };
+
+    window.abrirEditar = function(doc) {
+        const u = usuariosActuales[doc];
+        document.getElementById('form-modo').value = 'editar';
+        document.getElementById('modal-titulo').innerText = "Editar Perfil / Contraseña";
+        document.getElementById('form-doc').value = doc;
+        document.getElementById('form-doc').disabled = true; // No se puede cambiar el ID una vez creado
+        document.getElementById('form-nombre').value = u.nombre;
+        document.getElementById('form-usuario').value = u.usuario;
+        document.getElementById('form-password').value = u.password; // Muestra actual, se puede sobreescribir
+        document.getElementById('form-rol').value = u.rol;
+        document.getElementById('div-recuperacion').style.display = 'none';
+        document.getElementById('modal-usuario').style.display = 'flex';
+    };
+
+    document.getElementById('btn-guardar-usuario').onclick = async function() {
+        const modo = document.getElementById('form-modo').value;
+        const doc = document.getElementById('form-doc').value.trim();
+        const nom = document.getElementById('form-nombre').value.trim();
+        const usr = document.getElementById('form-usuario').value.trim();
+        const pwd = document.getElementById('form-password').value.trim();
+        const rol = document.getElementById('form-rol').value;
+
+        if(!doc || !nom || !usr || !pwd) return alert("Complete todos los campos.");
+
+        try {
+            if (modo === 'crear') {
+                const snap = await get(ref(db, `usuarios/${doc}`));
+                if (snap.exists()) return alert("Este documento ya existe en el sistema.");
+                
+                await set(ref(db, `usuarios/${doc}`), {
+                    nombre: nom, documento: doc, rol: rol, usuario: usr, password: pwd,
+                    preguntaSeguridad: "¿Cuál es el nombre de tu primera mascota?",
+                    respuestaSeguridad: "admin",
+                    bloqueado: false
+                });
+                registrarActividad("CREACIÓN DE USUARIO", `Nuevo ${rol}: ${nom} (CC: ${doc})`);
+                alert("Usuario creado exitosamente.");
+            } else {
+                // Editar
+                await update(ref(db, `usuarios/${doc}`), {
+                    nombre: nom, rol: rol, usuario: usr, password: pwd
+                });
+                registrarActividad("MODIFICACIÓN DE USUARIO", `Se modificó datos/permisos de CC: ${doc}`);
+                alert("Cambios guardados.");
+            }
+            cerrarModal();
+            cargarUsuarios();
+        } catch(e) { alert("Error: " + e.message); }
+    };
+
+    // Inicializar cargas
+    cargarUsuarios();
+    cargarActividades();
+</script>
+</body>
+</html>
