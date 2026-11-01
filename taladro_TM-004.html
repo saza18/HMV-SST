@@ -98,7 +98,6 @@
         .bg-header { background-color: var(--table-header-bg); font-weight: bold; text-align: center; vertical-align: middle; }
         .title-row td { background-color: var(--table-header-bg); font-weight: bold; text-align: center; font-size: 12px; padding: 5px; vertical-align: middle; }
 
-        /* AJUSTE: Separados los inputs de texto/textarea de los de date/time para que estos últimos no ocupen el 100% y queden al frente */
         input[type="text"], textarea { 
             width: 100%; 
             border: none; 
@@ -116,7 +115,8 @@
             font-family: inherit; 
             font-size: 11px; 
             color: #000; 
-            outline: none; 
+            outline: none;
+            width: auto; /* Permite que se ajuste al texto */
         }
         
         textarea.auto-expand {
@@ -138,7 +138,6 @@
         
         .print-fill-row { display: none; }
 
-        /* AJUSTE: Restauración exacta a 6mm y 98% para un borde delgado ejecutivo */
         @media print {
             @page {
                 size: letter;
@@ -199,14 +198,21 @@
         <table>
             <tr class="title-row"><td colspan="4">Información del registro</td></tr>
             <tr>
-                <!-- AJUSTE: Eliminado el <br> y agregado width: 55% para mantenerlos al frente -->
-                <td style="width: 25%; color: #666; vertical-align: middle;">Fecha de inicio: <input type="date" id="fecha-ini" style="width: 55%;" class="save-data"></td>
-                <td style="width: 25%; color: #666; vertical-align: middle;">Hora inicio: <input type="time" id="hora-ini" style="width: 55%;" class="save-data"></td>
+                <td style="width: 25%; color: #666; vertical-align: middle;">
+                    Fecha de inicio: <input type="date" id="fecha-ini" style="color: #000;" class="save-data">
+                </td>
+                <td style="width: 25%; color: #666; vertical-align: middle;">
+                    Hora inicio: <input type="time" id="hora-ini" style="color: #000;" class="save-data">
+                </td>
                 <td colspan="2" rowspan="2" style="width: 50%; color: #666;">Archivar en (sede o proyecto):<br><textarea id="archivo" class="save-data auto-expand" rows="1" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea></td>
             </tr>
             <tr>
-                <td style="color: #666; vertical-align: middle;">Fecha Final: <input type="date" id="fecha-fin" style="width: 55%;" class="save-data"></td>
-                <td style="color: #666; vertical-align: middle;">Hora fin: <input type="time" id="hora-fin" style="width: 55%;" class="save-data"></td>
+                <td style="color: #666; vertical-align: middle;">
+                    Fecha Final: <input type="date" id="fecha-fin" style="color: #000;" class="save-data">
+                </td>
+                <td style="color: #666; vertical-align: middle;">
+                    Hora fin: <input type="time" id="hora-fin" style="color: #000;" class="save-data">
+                </td>
             </tr>
         </table>
 
@@ -321,10 +327,6 @@
 </div>
 
 <script type="module">
-    if (window.innerWidth > 800) {
-        document.body.classList.add('is-pc');
-    }
-
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
