@@ -58,21 +58,31 @@
             color: var(--text-color);
             cursor: pointer;
             padding: 5px;
-            transition: color 0.3s;
+            transition: color 0.3s, transform 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
+            /* SE ELIMINA EL PARPADEO AZUL EN CELULARES */
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
         .btn-hamburguesa:hover {
             color: var(--hmv-blue);
         }
 
+        /* NUEVA ANIMACIÓN SUTIL AL TOCAR EL BOTÓN */
+        .btn-hamburguesa:active {
+            transform: scale(0.85); 
+        }
+
         .dropdown-menu {
             display: none;
             position: absolute;
-            right: 0;
-            top: 45px;
+            /* SE ABRE EXACTAMENTE A LA IZQUIERDA (AL FRENTE) DEL BOTÓN */
+            right: 100%; 
+            top: 0; 
+            margin-right: 15px; /* Separación entre el menú y las 3 rayitas */
             background-color: var(--bg-box);
             min-width: 160px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
@@ -194,14 +204,8 @@
                 top: 20px;
                 right: 15px;
             }
-            .dropdown-menu {
-                /* Despliega el menú a la izquierda del botón de hamburguesa (al frente) */
-                top: 0;
-                right: 40px; 
-            }
             .logo-hmv {
                 max-width: 250px;
-                /* Empuja el logo hacia abajo para que el menú no lo tape */
                 margin-top: 20px; 
                 margin-bottom: 20px;
             }
