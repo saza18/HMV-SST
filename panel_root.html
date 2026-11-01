@@ -6,37 +6,39 @@
     <title>Panel ROOT - HMV Ingenieros</title>
     <style>
         :root {
-            /* MODO OSCURO (Predeterminado para encajar con el diseño moderno solicitado) */
-            --bg-body: #0c101b;
-            --bg-sidebar: #002244;
-            --bg-card: #141b2d;
-            --bg-input: #1f293d;
-            --border-color: #2a3b5c;
-            --text-color: #ffffff;
-            --text-muted: #889bb0;
+            /* MODO CLARO CORPORATIVO (Predeterminado) */
+            --bg-body: #eef2f6;
+            --bg-sidebar: #004b87;
+            --bg-card: #ffffff;
+            --bg-input: #f4f7fb;
+            --border-color: #e5e7eb;
+            --text-color: #1f2937;
+            --text-muted: #6b7280;
             --hmv-blue: #004b87;
             --hmv-blue-hover: #003666;
             --hmv-yellow: #FFD700;
             --hmv-yellow-hover: #e6c200;
-            --status-active-bg: rgba(0, 143, 57, 0.2);
-            --status-active-text: #00ff5f;
-            --status-blocked-bg: rgba(204, 0, 0, 0.2);
-            --status-blocked-text: #ff4d4d;
-        }
-
-        body.light-mode {
-            /* MODO CLARO CORPORATIVO */
-            --bg-body: #f4f7fc;
-            --bg-sidebar: #004b87;
-            --bg-card: #ffffff;
-            --bg-input: #f0f3f8;
-            --border-color: #d1d5db;
-            --text-color: #1f2937;
-            --text-muted: #4b5563;
             --status-active-bg: rgba(0, 143, 57, 0.1);
             --status-active-text: #008f39;
             --status-blocked-bg: rgba(204, 0, 0, 0.1);
             --status-blocked-text: #cc0000;
+            --sidebar-text: #ffffff;
+        }
+
+        body.dark-mode {
+            /* MODO OSCURO MODERNO */
+            --bg-body: #0c101b;
+            --bg-sidebar: #141b2d;
+            --bg-card: #1f293d;
+            --bg-input: #141b2d;
+            --border-color: #2a3b5c;
+            --text-color: #ffffff;
+            --text-muted: #889bb0;
+            --status-active-bg: rgba(0, 143, 57, 0.2);
+            --status-active-text: #00ff5f;
+            --status-blocked-bg: rgba(204, 0, 0, 0.2);
+            --status-blocked-text: #ff4d4d;
+            --sidebar-text: #ffffff;
         }
 
         body {
@@ -54,25 +56,32 @@
         .app-layout {
             display: flex;
             width: 100%;
+            min-height: 100vh;
         }
 
-        /* BARRA LATERAL (SIDEBAR) - image_11.png */
+        /* BARRA LATERAL (SIDEBAR FLOTANTE) */
         .sidebar {
             width: 260px;
             background-color: var(--bg-sidebar);
             display: flex;
             flex-direction: column;
-            padding: 25px 20px;
+            padding: 30px 20px;
             box-sizing: border-box;
-            border-right: 1px solid var(--border-color);
             transition: background-color 0.3s;
             flex-shrink: 0;
+            /* Ajustes para panel flotante */
+            margin: 20px;
+            border-radius: 24px;
+            height: calc(100vh - 40px);
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
 
         .sidebar-logo {
             text-align: center;
             margin-bottom: 40px;
-            border-bottom: 2px solid var(--hmv-yellow);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
             padding-bottom: 20px;
         }
 
@@ -85,7 +94,7 @@
         .sidebar-menu {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             flex-grow: 1;
         }
 
@@ -95,31 +104,27 @@
             gap: 15px;
             background: none;
             border: none;
-            color: #ffffff; /* El sidebar siempre conserva texto blanco/claro */
-            padding: 14px 18px;
-            border-radius: 8px;
+            color: var(--sidebar-text);
+            padding: 14px 20px;
+            border-radius: 50px; /* Bordes totalmente curvos */
             font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             text-align: left;
             transition: all 0.3s;
-            opacity: 0.8;
+            opacity: 0.7;
             width: 100%;
         }
 
         .menu-link:hover {
-            background-color: rgba(255, 215, 0, 0.15);
+            background-color: rgba(255, 215, 0, 0.1);
             opacity: 1;
         }
 
         .menu-link.active {
-            background-color: var(--hmv-blue);
-            border-left: 4px solid var(--hmv-yellow);
+            background-color: rgba(255, 255, 255, 0.15);
+            color: var(--hmv-yellow);
             opacity: 1;
-        }
-
-        body.light-mode .menu-link {
-            color: #ffffff;
         }
 
         .sidebar-footer {
@@ -131,7 +136,7 @@
         /* PANEL PRINCIPAL (DASHBOARD) */
         .main-content {
             flex-grow: 1;
-            padding: 30px;
+            padding: 20px 30px 20px 0;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -146,21 +151,26 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
+            background-color: var(--bg-card);
+            padding: 15px 30px;
+            border-radius: 50px; /* Estilo píldora */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         .top-header h1 {
-            font-size: 28px;
+            font-size: 24px;
             margin: 0;
             font-weight: bold;
             color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .top-header h1 span {
-            display: block;
             font-size: 14px;
             color: var(--text-muted);
             font-weight: normal;
-            margin-top: 5px;
         }
 
         .top-actions {
@@ -172,22 +182,22 @@
         .badge-root {
             background-color: #a00;
             color: white;
-            padding: 6px 12px;
-            border-radius: 5px;
+            padding: 8px 16px;
+            border-radius: 50px; /* Bordes totalmente curvos */
             font-weight: bold;
             font-size: 12px;
             text-transform: uppercase;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        /* BUSCADOR Y FILTROS ESTILO image_11.png */
+        /* BUSCADOR Y FILTROS */
         .search-container {
             display: flex;
             gap: 15px;
             background-color: var(--bg-card);
-            padding: 15px 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+            padding: 15px 25px;
+            border-radius: 50px; /* Bordes totalmente curvos */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             align-items: center;
             flex-wrap: wrap;
         }
@@ -200,21 +210,24 @@
 
         .search-box input {
             width: 100%;
-            padding: 10px 15px;
+            padding: 12px 20px;
             background-color: var(--bg-input);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 50px; /* Bordes totalmente curvos */
             color: var(--text-color);
             font-size: 14px;
             outline: none;
             box-sizing: border-box;
+            transition: border-color 0.3s;
         }
+        
+        .search-box input:focus { border-color: var(--hmv-blue); }
 
         .filter-select {
-            padding: 10px 15px;
+            padding: 12px 20px;
             background-color: var(--bg-input);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 50px; /* Bordes totalmente curvos */
             color: var(--text-color);
             font-size: 14px;
             cursor: pointer;
@@ -224,9 +237,8 @@
         /* TARJETA DE CONTENIDO */
         .dashboard-card {
             background-color: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            padding: 25px;
+            border-radius: 24px;
+            padding: 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
@@ -248,15 +260,13 @@
             font-weight: bold;
         }
 
-        /* TABLAS ESTILO image_11.png / image_12.png */
-        .table-container {
-            overflow-x: auto;
-        }
+        /* TABLAS */
+        .table-container { overflow-x: auto; }
 
         table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 8px; /* Separación de filas para el efecto flotante de la imagen */
+            border-spacing: 0 8px;
             font-size: 14px;
         }
 
@@ -273,33 +283,30 @@
 
         td {
             padding: 16px;
-            background-color: var(--bg-input); /* Fondo en cada fila */
+            background-color: var(--bg-input);
             border-top: 1px solid transparent;
             border-bottom: 1px solid transparent;
             vertical-align: middle;
             transition: all 0.2s;
         }
 
-        /* Redondear los bordes laterales de cada fila */
         tr td:first-child {
-            border-top-left-radius: 8px;
-            border-bottom-left-radius: 8px;
-            border-left: 1px solid var(--border-color);
+            border-top-left-radius: 50px;
+            border-bottom-left-radius: 50px;
+            padding-left: 25px;
         }
 
         tr td:last-child {
-            border-top-right-radius: 8px;
-            border-bottom-right-radius: 8px;
-            border-right: 1px solid var(--border-color);
+            border-top-right-radius: 50px;
+            border-bottom-right-radius: 50px;
+            padding-right: 25px;
         }
 
         tr:hover td {
             background-color: rgba(255, 215, 0, 0.05);
-            border-top-color: var(--hmv-yellow);
-            border-bottom-color: var(--hmv-yellow);
         }
 
-        /* AVATARS Y ELEMENTOS VISUALES */
+        /* AVATARS */
         .user-cell {
             display: flex;
             align-items: center;
@@ -307,8 +314,8 @@
         }
 
         .user-avatar {
-            width: 32px;
-            height: 32px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background-color: var(--hmv-blue);
             color: #ffffff;
@@ -318,24 +325,17 @@
             font-weight: bold;
             font-size: 13px;
             text-transform: uppercase;
-            border: 1.5px solid var(--hmv-yellow);
+            border: 2px solid var(--hmv-yellow);
         }
 
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-info .name {
-            font-weight: bold;
-            color: var(--text-color);
-        }
+        .user-info { display: flex; flex-direction: column; }
+        .user-info .name { font-weight: bold; color: var(--text-color); }
 
         /* BADGES / ESTADOS PASTILLA */
         .status-badge {
             display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 6px 14px;
+            border-radius: 50px; /* Bordes totalmente curvos */
             font-size: 12px;
             font-weight: bold;
             text-align: center;
@@ -353,88 +353,62 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 18px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 50px; /* Bordes totalmente curvos */
             font-weight: bold;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
             color: #ffffff;
             gap: 8px;
         }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
+        .btn:active { transform: scale(0.98); }
 
-        .btn-principal {
-            background-color: var(--hmv-blue);
-            color: #ffffff;
-        }
+        .btn-principal { background-color: var(--hmv-blue); color: #ffffff; }
+        .btn-principal:hover { background-color: var(--hmv-blue-hover); }
 
-        .btn-principal:hover {
-            background-color: var(--hmv-blue-hover);
-        }
-
-        .btn-amarillo {
-            background-color: var(--hmv-yellow);
-            color: #000000;
-        }
-
-        .btn-amarillo:hover {
-            background-color: var(--hmv-yellow-hover);
-        }
+        .btn-amarillo { background-color: var(--hmv-yellow); color: #000000; }
+        .btn-amarillo:hover { background-color: var(--hmv-yellow-hover); }
 
         .btn-accion {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             padding: 0;
-            border-radius: 6px;
+            border-radius: 50%; /* Botones circulares para acciones */
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid var(--border-color);
+            border: none;
             background-color: var(--bg-card);
             color: var(--text-color);
             font-size: 14px;
+            transition: 0.2s;
         }
 
         .btn-accion:hover {
-            background-color: var(--bg-input);
-            border-color: var(--hmv-yellow);
+            background-color: var(--bg-body);
+            color: var(--hmv-blue);
         }
 
-        .btn-bloquear {
-            color: #ff9f43;
-        }
-
-        .btn-bloquear.desbloquear {
-            color: #28c76f;
-        }
-
-        .btn-eliminar {
-            color: #ea5455;
-        }
+        .btn-bloquear:hover { color: #ff9f43; }
+        .btn-bloquear.desbloquear:hover { color: #28c76f; }
+        .btn-eliminar:hover { color: #ea5455; }
 
         .btn-salir {
-            background-color: rgba(234, 84, 85, 0.15);
-            color: #ea5455;
-            border: 1px solid rgba(234, 84, 85, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--sidebar-text);
             width: 100%;
         }
-
-        .btn-salir:hover {
-            background-color: #ea5455;
-            color: #ffffff;
-        }
+        .btn-salir:hover { background-color: #ea5455; color: #ffffff; }
 
         .btn-tema {
-            background-color: transparent;
+            background-color: var(--bg-input);
             border: 1px solid var(--border-color);
             color: var(--text-color);
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             padding: 0;
             font-size: 18px;
@@ -455,7 +429,7 @@
         .modal-content {
             background-color: var(--bg-card);
             padding: 30px;
-            border-radius: 12px;
+            border-radius: 24px;
             width: 90%;
             max-width: 500px;
             border: 1px solid var(--border-color);
@@ -466,40 +440,24 @@
             gap: 20px;
         }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .input-group label {
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 12px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; padding-left: 10px; }
         .input-group input, .input-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--bg-input);
-            color: var(--text-color);
-            box-sizing: border-box;
-            outline: none;
-            font-family: inherit;
+            width: 100%; padding: 12px 20px; border: 1px solid var(--border-color); border-radius: 50px; background-color: var(--bg-input); color: var(--text-color); box-sizing: border-box; outline: none; font-family: inherit;
         }
 
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 10px;
-        }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; }
 
         .seccion-panel { display: none; }
         .seccion-panel.active { display: block; }
+        
+        @media (max-width: 768px) {
+            .app-layout { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; top: 0; margin: 0; border-radius: 0; }
+            .main-content { padding: 20px; }
+            .top-header { border-radius: 24px; flex-direction: column; text-align: center; }
+            .search-container { border-radius: 24px; }
+        }
     </style>
 </head>
 <body id="body-main">
@@ -513,12 +471,14 @@
     }
     
     // Aplicar el tema actual antes de desplegar nada visible
-    if (localStorage.getItem('hmv_theme') === 'light') document.documentElement.classList.add('light-mode');
+    if (localStorage.getItem('hmv_theme') === 'dark') {
+        document.getElementById('body-main').classList.add('dark-mode');
+    }
     
     function toggleTheme() {
-        const docEl = document.documentElement;
-        docEl.classList.toggle('light-mode');
-        localStorage.setItem('hmv_theme', docEl.classList.contains('light-mode') ? 'light' : 'dark');
+        const body = document.getElementById('body-main');
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('hmv_theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
     }
     
     function cerrarSesion() {
@@ -530,28 +490,28 @@
 
 <div class="app-layout">
     
-    <!-- BARRA LATERAL (SIDEBAR) -->
+    <!-- BARRA LATERAL (SIDEBAR FLOTANTE) -->
     <aside class="sidebar">
         <div class="sidebar-logo">
             <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV INGENIEROS">
         </div>
         <nav class="sidebar-menu">
-            <button class="menu-link tab-link active" onclick="abrirPestaña('tab-usuarios')">👥 Usuarios</button>
-            <button class="menu-link tab-link" onclick="abrirPestaña('tab-actividades')">📋 Actividades</button>
+            <button class="menu-link tab-link active" onclick="abrirPestaña('tab-usuarios')">👥 Users</button>
+            <button class="menu-link tab-link" onclick="abrirPestaña('tab-actividades')">📋 Activities</button>
         </nav>
         <div class="sidebar-footer">
-            <button class="btn btn-salir" onclick="cerrarSesion()">🚪 Salir</button>
+            <button class="btn btn-salir" onclick="cerrarSesion()">🚪 Log Out</button>
         </div>
     </aside>
 
     <!-- TRABAJO Y WORKSPACE (MAIN) -->
     <main class="main-content">
         
-        <!-- TOP HEADER BAR -->
+        <!-- TOP HEADER BAR (TIPO PÍLDORA) -->
         <header class="top-header">
-            <h1>Dashboard <span id="saludo-admin">Bienvenido, John Stewart</span></h1>
+            <h1>Dashboard <span>Hola, <span id="saludo-admin">Usuario Root</span></span></h1>
             <div class="top-actions">
-                <span class="badge-root">Super Admin Root</span>
+                <span class="badge-root">Root</span>
                 <button class="btn btn-tema" onclick="toggleTheme()" title="Cambiar Tema">🌓</button>
             </div>
         </header>
@@ -559,17 +519,16 @@
         <!-- PESTAÑA: GESTIÓN DE USUARIOS -->
         <section id="tab-usuarios" class="seccion-panel active">
             
-            <!-- TARJETA BASE -->
             <div class="dashboard-card">
                 <div class="card-header">
                     <h2 class="card-title">Usuarios</h2>
                     <button class="btn btn-amarillo" id="btn-abrir-modal-crear">+ Add New User</button>
                 </div>
 
-                <!-- BUSCADORES Y FILTROS ESTILO image_11.png -->
+                <!-- BUSCADORES Y FILTROS TOTALMENTE CURVOS -->
                 <div class="search-container">
                     <div class="search-box">
-                        <input type="text" id="busqueda-usuario" placeholder="Search" oninput="filtrarUsuarios()">
+                        <input type="text" id="busqueda-usuario" placeholder="Search..." oninput="filtrarUsuarios()">
                     </div>
                     <select class="filter-select" id="filtro-rol" onchange="filtrarUsuarios()">
                         <option value="">Filter by Role</option>
@@ -582,12 +541,11 @@
                     </select>
                     <select class="filter-select" id="filtro-status" onchange="filtrarUsuarios()">
                         <option value="">Filter by Status</option>
-                        <option value="Activo">Activos</option>
-                        <option value="Bloqueado">Bloqueados</option>
+                        <option value="Activo">Activo</option>
+                        <option value="Bloqueado">Bloqueado</option>
                     </select>
                 </div>
 
-                <!-- CONTENEDOR TABLA -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -595,9 +553,9 @@
                                 <th>Documento</th>
                                 <th>Nombre</th>
                                 <th>Usuario</th>
-                                <th>Rol / Cargo</th>
+                                <th>Perfil / Rol</th>
                                 <th>Estado</th>
-                                <th style="text-align: right; padding-right: 25px;">Acciones ROOT</th>
+                                <th style="text-align: right; padding-right: 25px;">Acción</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-usuarios-body">
@@ -634,13 +592,12 @@
         </section>
 
     </main>
-
 </div>
 
 <!-- MODAL CREAR / EDITAR USUARIOS -->
 <div class="modal-overlay" id="modal-usuario">
     <div class="modal-content">
-        <h3 id="modal-titulo" style="color: var(--hmv-blue); margin-top: 0; font-size: 20px;">Gestionar Usuario</h3>
+        <h3 id="modal-titulo" style="color: var(--text-color); margin-top: 0; font-size: 20px;">Gestionar Usuario</h3>
         <input type="hidden" id="form-modo" value="crear">
         
         <div class="input-group">
@@ -672,11 +629,11 @@
         </div>
         
         <div id="div-recuperacion" style="display: none;">
-            <p style="font-size: 11px; color: var(--text-muted);">* La pregunta por defecto es "mascota" y respuesta "admin" (el usuario debe cambiarla).</p>
+            <p style="font-size: 11px; color: var(--text-muted); padding-left: 10px;">* La pregunta por defecto es "mascota" y respuesta "admin" (el usuario debe cambiarla).</p>
         </div>
 
         <div class="modal-buttons">
-            <button class="btn" style="background-color: var(--bg-input); color: var(--text-color);" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn" style="background-color: var(--bg-body); color: var(--text-color);" onclick="cerrarModal()">Cancelar</button>
             <button class="btn btn-principal" id="btn-guardar-usuario">Guardar Cambios</button>
         </div>
     </div>
@@ -684,7 +641,7 @@
 
 <script>
     const nameAdmin = localStorage.getItem('hmv_user_name') || 'Usuario Root';
-    document.getElementById('saludo-admin').innerText = `Hola, ${nameAdmin}`;
+    document.getElementById('saludo-admin').innerText = nameAdmin;
 
     function abrirPestaña(id) {
         document.querySelectorAll('.seccion-panel').forEach(el => el.classList.remove('active'));
@@ -732,7 +689,7 @@
                 actsArray.forEach(act => {
                     tbody.innerHTML += `<tr>
                         <td><b>${act.fecha}</b></td>
-                        <td style="font-weight:bold; color:var(--hmv-blue);">${act.autor}</td>
+                        <td style="font-weight:bold; color:var(--text-color);">${act.autor}</td>
                         <td>${act.accion}</td>
                         <td style="color:var(--text-muted);">${act.detalle}</td>
                     </tr>`;
@@ -759,7 +716,6 @@
         } catch(e) { console.error(e); }
     }
 
-    // Renderizar para busqueda/filtrado dinamico
     window.renderizarTablaUsuarios = function(data) {
         const tbody = document.getElementById('tabla-usuarios-body');
         tbody.innerHTML = '';
@@ -767,13 +723,12 @@
             const u = data[doc];
             const isBlocked = u.bloqueado ? true : false;
             const statusClass = isBlocked ? 'status-badge blocked' : 'status-badge';
-            const statusLabel = isBlocked ? 'Bloqueado 🔒' : 'Activo ✓';
+            const statusLabel = isBlocked ? 'Bloqueado' : 'Activo';
             
             const btnBloqueo = isBlocked ? 
                 `<button class="btn-accion btn-bloquear desbloquear" onclick="window.modificarEstado('${doc}', false)" title="Desbloquear">🔓</button>` : 
                 `<button class="btn-accion btn-bloquear" onclick="window.modificarEstado('${doc}', true)" title="Bloquear">🔒</button>`;
             
-            // Generar Iniciales para el avatar de la imagen image_11.png
             const iniciales = u.nombre.split(' ').map(n => n[0]).slice(0,2).join('');
 
             tbody.innerHTML += `<tr>
@@ -786,8 +741,8 @@
                         </div>
                     </div>
                 </td>
-                <td>${u.usuario}</td>
-                <td><span style="font-weight:bold; color:var(--hmv-yellow);">${u.rol}</span></td>
+                <td style="color:var(--text-muted);">${u.usuario}</td>
+                <td><span style="font-weight:bold; color:var(--text-color);">${u.rol}</span></td>
                 <td><span class="${statusClass}">${statusLabel}</span></td>
                 <td style="text-align: right; padding-right: 20px;">
                     <button class="btn-accion" onclick="window.abrirEditar('${doc}')" title="Editar">✏️</button>
@@ -798,7 +753,6 @@
         }
     };
 
-    // FILTRADO DINÁMICO CLIENTE-SIDE
     window.filtrarUsuarios = function() {
         const busqueda = document.getElementById('busqueda-usuario').value.toLowerCase();
         const rolFiltro = document.getElementById('filtro-rol').value;
@@ -820,7 +774,6 @@
         window.renderizarTablaUsuarios(resultado);
     };
 
-    // Acciones de tabla
     window.modificarEstado = async function(doc, bloquear) {
         if(confirm(`¿Estás seguro de ${bloquear ? 'bloquear' : 'desbloquear'} a este usuario?`)) {
             try {
@@ -843,7 +796,6 @@
         }
     };
 
-    // Acciones del modal
     document.getElementById('btn-abrir-modal-crear').onclick = function() {
         document.getElementById('form-modo').value = 'crear';
         document.getElementById('modal-titulo').innerText = "Crear Nuevo Usuario";
@@ -906,7 +858,6 @@
         } catch(e) { alert("Error: " + e.message); }
     };
 
-    // Carga inicial
     cargarUsuarios();
     cargarActividades();
 </script>
