@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- SE MODIFICÓ ESTA LÍNEA PARA BLOQUEAR EL ZOOM TÁCTIL -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Acceso - HMV Ingenieros</title>
     <style>
@@ -38,7 +37,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            /* SE AJUSTÓ LA ALTURA Y SE ELIMINÓ EL SCROLL */
             height: 100dvh; 
             overflow: hidden; 
             transition: background-color 0.3s;
@@ -111,13 +109,13 @@
             margin-bottom: 25px;
         }
 
-        /* CAJA PRINCIPAL CON ESQUINAS MÁS REDONDEADAS (Como en el Root) */
+        /* CAJA PRINCIPAL CON ESQUINAS MÁS REDONDEADAS */
         .login-box {
             background-color: var(--bg-box);
             width: 90%;
             max-width: 350px;
             padding: 35px 30px;
-            border-radius: 24px; /* Esquinas de panel */
+            border-radius: 24px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             text-align: center;
             color: var(--text-color);
@@ -139,12 +137,12 @@
             padding-left: 15px;
         }
 
-        /* INPUTS TIPO PÍLDORA (Curva continua total) */
+        /* INPUTS TIPO PÍLDORA */
         .input-group input {
             width: 100%;
             padding: 14px 20px;
             border: 1px solid var(--input-border);
-            border-radius: 50px; /* Curva Total */
+            border-radius: 50px; 
             box-sizing: border-box;
             font-size: 14px;
             font-family: inherit;
@@ -165,7 +163,7 @@
             border: none;
             padding: 14px;
             width: 100%;
-            border-radius: 50px; /* Curva Total */
+            border-radius: 50px; 
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
@@ -190,15 +188,21 @@
         }
         .link-amarillo:hover { color: var(--hmv-yellow-hover); }
 
-        /* AJUSTES ESPECÍFICOS PARA CELULAR (Distancias más cortas) */
+        /* AJUSTES ESPECÍFICOS PARA CELULAR */
         @media (max-width: 768px) {
             .menu-container {
-                top: 15px;
+                top: 20px;
                 right: 15px;
+            }
+            .dropdown-menu {
+                /* Despliega el menú a la izquierda del botón de hamburguesa (al frente) */
+                top: 0;
+                right: 40px; 
             }
             .logo-hmv {
                 max-width: 250px;
-                margin-top: -40px; /* Acerca el logo al botón de las tres rayitas */
+                /* Empuja el logo hacia abajo para que el menú no lo tape */
+                margin-top: 20px; 
                 margin-bottom: 20px;
             }
         }
