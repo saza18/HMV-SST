@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- PRECARGA DEL LOGO PARA OPTIMIZAR LA VELOCIDAD -->
+    <link rel="preload" href="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" as="image">
     <title>Acceso - HMV Ingenieros</title>
     <style>
         :root {
-            /* MODO CLARO CORPORATIVO (Fondo idéntico al panel root) */
             --bg-body: #d6e0ea; 
             --bg-box: #ffffff;
             --text-color: #1f2937;
@@ -20,13 +21,17 @@
         }
 
         body.dark-mode {
-            /* MODO OSCURO MODERNO */
             --bg-body: #0c101b;
             --bg-box: #1f293d;
             --text-color: #ffffff;
             --text-muted: #889bb0;
             --input-bg: #141b2d;
             --input-border: #2a3b5c;
+        }
+
+        /* ELIMINA EL RESPLANDOR AZUL EN TODOS LOS ELEMENTOS TÁCTILES */
+        * {
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -37,10 +42,16 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            /* SE ELIMINÓ OVERFLOW: HIDDEN PARA PERMITIR EL GESTO DE RECARGA HACIA ABAJO */
-            min-height: 100dvh; 
+            height: 100dvh; 
+            overflow: hidden; 
             transition: background-color 0.3s;
             position: relative;
+        }
+
+        /* ANIMACIÓN FLUIDA DE CARGA DE PÁGINA */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* MENÚ HAMBURGUESA Y DESPLEGABLE EN LA ESQUINA */
@@ -58,11 +69,10 @@
             color: var(--text-color);
             cursor: pointer;
             padding: 5px;
-            transition: color 0.3s, transform 0.2s;
+            transition: color 0.3s, transform 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            -webkit-tap-highlight-color: transparent;
             outline: none;
         }
 
@@ -74,18 +84,28 @@
             transform: scale(0.85); 
         }
 
+        /* MENÚ DESPLEGABLE CON ANIMACIÓN FLUIDA */
         .dropdown-menu {
-            display: none;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(-10px);
             position: absolute;
-            right: 100%; 
-            top: 0; 
-            margin-right: 15px; 
+            right: 0;
+            top: 45px;
             background-color: var(--bg-box);
             min-width: 160px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
             border-radius: 12px;
             border: 1px solid var(--input-border);
             overflow: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+            will-change: transform, opacity;
+        }
+
+        .dropdown-menu.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .dropdown-menu button {
@@ -108,15 +128,16 @@
             background-color: var(--input-bg);
         }
 
-        /* LOGO */
+        /* LOGO CON ANIMACIÓN DE ENTRADA */
         .logo-hmv {
             max-width: 300px;
             width: 80%;
             height: auto;
             margin-bottom: 25px;
+            animation: fadeIn 0.4s ease-out forwards;
         }
 
-        /* CAJA PRINCIPAL CON ESQUINAS MÁS REDONDEADAS */
+        /* CAJA PRINCIPAL */
         .login-box {
             background-color: var(--bg-box);
             width: 90%;
@@ -127,6 +148,9 @@
             text-align: center;
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
+            opacity: 0;
+            animation: fadeIn 0.4s ease-out 0.1s forwards;
+            will-change: transform, opacity;
         }
 
         .input-group {
@@ -144,7 +168,6 @@
             padding-left: 15px;
         }
 
-        /* INPUTS TIPO PÍLDORA */
         .input-group input {
             width: 100%;
             padding: 14px 20px;
@@ -163,7 +186,7 @@
             border-color: var(--hmv-blue);
         }
 
-        /* BOTÓN TIPO PÍLDORA */
+        /* BOTÓN TIPO PÍLDORA CON ANIMACIÓN TÁCTIL */
         .btn-principal {
             background-color: var(--hmv-blue);
             color: white;
@@ -176,12 +199,14 @@
             cursor: pointer;
             margin-top: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-            transition: background-color 0.3s, transform 0.1s;
+            transition: background-color 0.3s, transform 0.15s ease;
+            outline: none;
         }
         
-        .btn-principal:active { transform: scale(0.98); }
         .btn-principal:hover { background-color: var(--hmv-blue-hover); }
+        .btn-principal:active { transform: scale(0.95); } /* Animación de hundimiento */
 
+        /* ENLACE CON ANIMACIÓN TÁCTIL */
         .link-amarillo {
             display: inline-block;
             color: var(--hmv-yellow);
@@ -191,9 +216,13 @@
             cursor: pointer;
             font-size: 14px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            transition: color 0.3s;
+            transition: color 0.3s, transform 0.15s ease;
+            outline: none;
+            opacity: 0;
+            animation: fadeIn 0.4s ease-out 0.2s forwards;
         }
         .link-amarillo:hover { color: var(--hmv-yellow-hover); }
+        .link-amarillo:active { transform: scale(0.90); } /* Animación de hundimiento */
 
         /* AJUSTES ESPECÍFICOS PARA CELULAR */
         @media (max-width: 768px) {
@@ -210,7 +239,6 @@
                 margin-top: 20px; 
                 margin-bottom: 20px;
             }
-            /* SE AJUSTÓ EL CUADRO DE LOGIN PARA CELULAR: MÁS ANGOSTO Y MÁS CURVO */
             .login-box {
                 width: 85%;
                 max-width: 300px;
@@ -304,7 +332,7 @@
         idiomaActual = (idiomaActual === 'es') ? 'en' : 'es';
         localStorage.setItem('hmv_lang', idiomaActual);
         actualizarTextos();
-        document.getElementById('login-menu').style.display = 'none';
+        document.getElementById('login-menu').classList.remove('show');
     }
 
     // GESTIÓN DE TEMA
@@ -326,21 +354,21 @@
         body.classList.toggle('dark-mode');
         localStorage.setItem('hmv_theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
         actualizarTextoTema();
-        document.getElementById('login-menu').style.display = 'none';
+        document.getElementById('login-menu').classList.remove('show');
     }
 
-    // GESTIÓN DEL MENÚ DESPLEGABLE
+    // GESTIÓN DEL MENÚ DESPLEGABLE (Animación por clase)
     function toggleMenu() {
         const menu = document.getElementById('login-menu');
-        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        menu.classList.toggle('show');
     }
 
     window.onclick = function(event) {
         if (!event.target.matches('.btn-hamburguesa')) {
             const dropdowns = document.getElementsByClassName("dropdown-menu");
             for (let i = 0; i < dropdowns.length; i++) {
-                if (dropdowns[i].style.display === 'block') {
-                    dropdowns[i].style.display = 'none';
+                if (dropdowns[i].classList.contains('show')) {
+                    dropdowns[i].classList.remove('show');
                 }
             }
         }
