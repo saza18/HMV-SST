@@ -165,7 +165,14 @@
             table, tr, td, .top-header { page-break-inside: avoid; }
             .no-print, .botones-flotantes, #firma-modal { display: none !important; }
             .print-fill-row { display: table-row !important; }
-            #tabla-seccion-3 { page-break-before: always; }
+            /* Las tablas de trabajadores y de criterios pueden partirse entre hojas (fila por fila) */
+            #tabla-trabajadores, #tabla-seccion-3 { page-break-inside: auto; break-inside: auto; }
+            /* Reemplaza el salto de hoja obligatorio antes de la sección 3: el bloque de la hoja 1 mide lo mismo que
+               una hoja (100vh en impresión = alto útil de la hoja, sea carta, A4 o celular). Si el contenido cabe, la
+               sección 3 arranca en la hoja siguiente; si los trabajadores se pasan, la sección 3 sigue justo debajo. */
+            .pagina-uno { min-height: calc(100vh - 2px); }
+            /* El título y los encabezados de la sección 3 no quedan solos al final de una hoja (van con la 1ra fila de criterios) */
+            #tabla-seccion-3 tr:nth-child(-n+3) { break-after: avoid; page-break-after: avoid; }
             
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
@@ -180,6 +187,7 @@
 <body>
 <div class="contenedor-principal">
     <div class="hoja-blanca">
+        <div class="pagina-uno">
         <div class="top-header">
             <div class="logo-box"><img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Logo"></div>
             <div class="center-col">
@@ -253,6 +261,7 @@
                 </tr>
             </tbody>
         </table>
+        </div><!-- fin pagina-uno -->
 
         <table id="tabla-seccion-3">
             <tr class="title-row"><td colspan="9">3. Condiciones de máquinas, equipos, herramientas; revisión previa</td></tr>
