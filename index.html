@@ -9,50 +9,76 @@
             --hmv-blue: #004b87;
             --hmv-yellow: #FFD700;
             --bg-body: #555555;
+            --bg-box: #ffffff;
+            --text-color: #333333;
+            --input-bg: #ffffff;
+            --input-border: #ccc;
         }
+
+        body.dark-mode {
+            --bg-body: #1a1a1a;
+            --bg-box: #2c2c2c;
+            --text-color: #f1f1f1;
+            --input-bg: #444444;
+            --input-border: #555555;
+        }
+
         body {
             font-family: Arial, Helvetica, sans-serif;
             background-color: var(--bg-body);
             margin: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            transition: background-color 0.3s;
         }
+
+        .logo-hmv {
+            max-width: 300px;
+            width: 80%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
         .login-box {
-            background-color: #ffffff;
+            background-color: var(--bg-box);
             width: 90%;
-            max-width: 400px;
+            max-width: 350px;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             text-align: center;
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
-        .logo-hmv {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 20px;
-        }
+
         .input-group {
             margin-bottom: 15px;
             text-align: left;
         }
+
         .input-group label {
             display: block;
             font-size: 12px;
-            color: #333;
             font-weight: bold;
             margin-bottom: 5px;
+            color: var(--text-color);
         }
+
         .input-group input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--input-border);
             border-radius: 5px;
             box-sizing: border-box;
             font-size: 14px;
             font-family: inherit;
+            background-color: var(--input-bg);
+            color: var(--text-color);
         }
+
         .btn-principal {
             background-color: var(--hmv-blue);
             color: white;
@@ -68,22 +94,46 @@
             transition: background 0.3s;
         }
         .btn-principal:hover { background-color: #003666; }
+
         .link-amarillo {
             display: inline-block;
-            color: #d1b000;
+            color: var(--hmv-yellow);
             font-weight: bold;
             text-decoration: none;
-            margin-top: 15px;
+            margin-top: 20px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
-        .link-amarillo:hover { text-decoration: underline; color: #b39700; }
+        .link-amarillo:hover { text-decoration: underline; color: #e6c200; }
+
+        .btn-tema {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--bg-box);
+            color: var(--text-color);
+            border: 2px solid var(--hmv-blue);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
     </style>
+    <script>
+        // Aplicar el tema guardado apenas carga la página
+        const savedTheme = localStorage.getItem('hmv_theme') || 'light';
+        if (savedTheme === 'dark') document.documentElement.classList.add('dark-mode');
+    </script>
 </head>
-<body>
+<body id="body-main">
+
+<button class="btn-tema" onclick="toggleTheme()">🌓 Tema</button>
+
+<img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="Logo HMV" class="logo-hmv">
 
 <div class="login-box">
-    <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="Logo HMV" class="logo-hmv">
     <div class="input-group">
         <label>Usuario</label>
         <input type="text" id="log-usuario" placeholder="Ingresa tu usuario">
@@ -93,10 +143,19 @@
         <input type="password" id="log-password" placeholder="Ingresa tu contraseña">
     </div>
     <button id="btn-ingresar" class="btn-principal">Ingresar</button>
-    
-    <div><a href="registro.html" class="link-amarillo">Registrarse</a></div>
-    <div><a href="recuperar.html" class="link-amarillo">¿Olvidó su contraseña?</a></div>
 </div>
+
+<!-- Enlace por fuera del recuadro -->
+<a href="recuperar.html" class="link-amarillo">¿Olvidó su contraseña?</a>
+
+<script>
+    if (localStorage.getItem('hmv_theme') === 'dark') document.getElementById('body-main').classList.add('dark-mode');
+    function toggleTheme() {
+        const body = document.getElementById('body-main');
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('hmv_theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+</script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";

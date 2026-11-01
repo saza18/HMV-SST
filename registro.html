@@ -137,5 +137,109 @@
         this.innerText = originalText;
     };
 </script>
+</body><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Básico - HMV</title>
+    <style>
+        :root { --hmv-blue: #004b87; --hmv-yellow: #FFD700; --bg-body: #555555; --bg-box: #ffffff; --text-color: #333333; --input-bg: #ffffff; --input-border: #ccc; }
+        body.dark-mode { --bg-body: #1a1a1a; --bg-box: #2c2c2c; --text-color: #f1f1f1; --input-bg: #444444; --input-border: #555555; }
+        body { font-family: Arial, sans-serif; background-color: var(--bg-body); margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; transition: 0.3s; }
+        .logo-hmv { max-width: 200px; margin-bottom: 20px; }
+        .login-box { background-color: var(--bg-box); width: 100%; max-width: 450px; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; color: var(--text-color); }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: var(--text-color); }
+        .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid var(--input-border); border-radius: 5px; box-sizing: border-box; background: var(--input-bg); color: var(--text-color); }
+        .btn-principal { background-color: var(--hmv-blue); color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-principal:hover { background-color: #003666; }
+        .link-amarillo { display: inline-block; color: var(--hmv-yellow); font-weight: bold; text-decoration: none; margin-top: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .btn-tema { position: absolute; top: 20px; right: 20px; background-color: var(--bg-box); color: var(--text-color); border: 2px solid var(--hmv-blue); padding: 8px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .titulo-seccion { color: var(--hmv-blue); margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid var(--hmv-yellow); display: inline-block; }
+    </style>
+</head>
+<body id="body-main">
+
+<button class="btn-tema" onclick="toggleTheme()">🌓 Tema</button>
+<img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" class="logo-hmv">
+
+<div class="login-box">
+    <h2 class="titulo-seccion">Registro de Usuario</h2>
+    <div class="input-group">
+        <label>Nombre Completo</label><input type="text" id="reg-nombre">
+    </div>
+    <div class="input-group">
+        <label>Número de Documento</label><input type="number" id="reg-documento">
+    </div>
+    <div class="input-group">
+        <label>Cargo / Perfil</label>
+        <select id="reg-rol">
+            <option value="Oficial / Auxiliar">Oficial / Auxiliar</option>
+            <option value="Responsable SST">Responsable SST</option>
+            <option value="Ingeniero">Ingeniero</option>
+            <option value="Capataz">Capataz</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <label>Usuario</label><input type="text" id="reg-usuario">
+    </div>
+    <div class="input-group">
+        <label>Contraseña</label><input type="password" id="reg-password">
+    </div>
+    <div class="input-group">
+        <label>Pregunta de Seguridad</label>
+        <select id="reg-pregunta">
+            <option value="mascota">¿Cuál es el nombre de tu primera mascota?</option>
+            <option value="ciudad">¿En qué ciudad naciste?</option>
+            <option value="madre">¿Cuál es el segundo nombre de tu madre?</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <label>Respuesta a la pregunta</label><input type="text" id="reg-respuesta">
+    </div>
+    <button id="btn-registrar" class="btn-principal">Crear Cuenta</button>
+</div>
+
+<a href="index.html" class="link-amarillo">Volver al inicio de sesión</a>
+
+<script>
+    if (localStorage.getItem('hmv_theme') === 'dark') document.getElementById('body-main').classList.add('dark-mode');
+    function toggleTheme() {
+        const body = document.getElementById('body-main');
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('hmv_theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyD-VxIU8Ngayhb2-Tq5dcY42AG6Spp6f1g", authDomain: "sst-hmv.firebaseapp.com", databaseURL: "https://sst-hmv-default-rtdb.firebaseio.com", projectId: "sst-hmv", storageBucket: "sst-hmv.firebasestorage.app", messagingSenderId: "224287433604", appId: "1:224287433604:web:387a81c078875b7fb5b3d1" };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.getElementById('btn-registrar').onclick = async function() {
+        const doc = document.getElementById('reg-documento').value.trim();
+        const nom = document.getElementById('reg-nombre').value.trim();
+        const usr = document.getElementById('reg-usuario').value.trim();
+        const pwd = document.getElementById('reg-password').value.trim();
+        const rol = document.getElementById('reg-rol').value;
+        const pre = document.getElementById('reg-pregunta').options[document.getElementById('reg-pregunta').selectedIndex].text;
+        const res = document.getElementById('reg-respuesta').value.trim().toLowerCase();
+
+        if (!doc || !nom || !usr || !pwd || !res) return alert("Llene todos los campos.");
+        this.innerText = "Registrando...";
+        try {
+            const snap = await get(ref(db, `usuarios/${doc}`));
+            if (snap.exists()) { alert("Documento ya registrado."); this.innerText="Crear Cuenta"; return; }
+            await set(ref(db, `usuarios/${doc}`), { nombre: nom, documento: doc, rol: rol, usuario: usr, password: pwd, preguntaSeguridad: pre, respuestaSeguridad: res });
+            alert("✅ Registro exitoso.");
+            window.location.href = 'index.html';
+        } catch (error) { alert("❌ Error: " + error.message); }
+    };
+</script>
 </body>
+</html>
 </html>
