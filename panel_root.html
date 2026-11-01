@@ -6,7 +6,7 @@
     <title>Panel ROOT - HMV Ingenieros</title>
     <style>
         :root {
-            /* MODO CLARO CORPORATIVO */
+            /* MODO CLARO CORPORATIVO (Fondo azul grisáceo para mejor contraste) */
             --bg-body: #d6e0ea; 
             --bg-sidebar: #004b87;
             --bg-card: #ffffff;
@@ -52,8 +52,12 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        body.no-scroll { overflow: hidden; }
+        /* Bloqueo de desplazamiento para el menú móvil */
+        body.no-scroll {
+            overflow: hidden;
+        }
 
+        /* DISEÑO DE LA APP (LAYOUT) */
         .app-layout {
             display: flex;
             width: 100%;
@@ -148,6 +152,7 @@
             padding-top: 20px;
         }
 
+        /* Botón de cierre para el menú móvil */
         .btn-cerrar-menu {
             display: none;
             position: absolute;
@@ -160,7 +165,7 @@
             cursor: pointer;
         }
 
-        /* PANEL PRINCIPAL */
+        /* PANEL PRINCIPAL (DASHBOARD) */
         .main-content {
             flex-grow: 1;
             padding: 20px 30px 20px 0;
@@ -171,6 +176,7 @@
             overflow-x: hidden;
         }
 
+        /* HEADER SUPERIOR (TOPBAR) */
         .top-header {
             display: flex;
             justify-content: space-between;
@@ -195,6 +201,7 @@
             gap: 15px;
         }
 
+        /* Botón hamburguesa sin fondo azul */
         .btn-hamburguesa {
             display: none;
             background-color: transparent;
@@ -220,6 +227,7 @@
             font-weight: normal;
         }
 
+        /* BUSCADOR Y FILTROS */
         .search-container {
             display: flex;
             gap: 15px;
@@ -263,6 +271,7 @@
             outline: none;
         }
 
+        /* TARJETA DE CONTENIDO */
         .dashboard-card {
             background-color: var(--bg-card);
             border-radius: 24px;
@@ -288,10 +297,11 @@
             font-weight: bold;
         }
 
-        /* TABLAS: Ajuste de padding para hacer la fila más delgada */
+        /* TABLAS: Padding bottom agregado para que el menú dropdown no genere scroll vertical */
         .table-container { 
             overflow-x: auto; 
             position: relative;
+            padding-bottom: 90px;
         }
 
         table {
@@ -299,11 +309,11 @@
             border-collapse: separate;
             border-spacing: 0 8px;
             font-size: 14px;
-            min-width: 800px; /* Asegura el scroll en celulares */
+            min-width: 800px;
         }
 
         th {
-            padding: 12px 16px; /* Reducido para filas más delgadas */
+            padding: 12px 16px;
             text-align: left;
             color: var(--text-muted);
             font-weight: bold;
@@ -314,7 +324,7 @@
         }
 
         td {
-            padding: 8px 16px; /* MUY REDUCIDO para hacer la fila más delgada */
+            padding: 8px 16px;
             background-color: var(--bg-input);
             border-top: 1px solid transparent;
             border-bottom: 1px solid transparent;
@@ -367,7 +377,7 @@
 
         .status-badge {
             display: inline-block;
-            padding: 4px 12px; /* Reducido */
+            padding: 4px 12px; 
             border-radius: 50px; 
             font-size: 11px;
             font-weight: bold;
@@ -417,7 +427,7 @@
         }
 
         .btn-accion {
-            width: 30px; /* Reducido */
+            width: 30px; 
             height: 30px;
             border-radius: 50%; 
             display: inline-flex;
@@ -436,30 +446,31 @@
             color: var(--hmv-blue);
         }
 
+        /* Menú reducido en tamaño para no salirse (Computador) */
         .dropdown-menu {
             display: none;
             position: absolute;
-            right: 100%; /* Se abre hacia la izquierda para no salirse de la pantalla */
+            right: 100%; 
             top: 0;
             background-color: var(--bg-card);
-            min-width: 140px;
+            min-width: 120px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            border-radius: 12px;
+            border-radius: 10px;
             z-index: 1000;
             border: 1px solid var(--border-color);
             overflow: hidden;
-            margin-right: 10px;
+            margin-right: 5px;
         }
 
         .dropdown-menu button {
             width: 100%;
-            padding: 12px 15px;
+            padding: 8px 12px; 
             border: none;
             background: none;
             text-align: left;
             color: var(--text-color);
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px; 
             font-weight: bold;
             transition: 0.2s;
         }
@@ -505,7 +516,7 @@
         .seccion-panel { display: none; }
         .seccion-panel.active { display: block; }
         
-        /* AJUSTES RESPONSIVOS (MENÚ MÓVIL Y ESQUINAS FIJAS) */
+        /* AJUSTES RESPONSIVOS (CELULAR) */
         @media (max-width: 768px) {
             .app-layout { flex-direction: column; }
             
@@ -534,21 +545,32 @@
             .header-textos { flex-direction: column; align-items: flex-start; gap: 5px; }
             .search-container { border-radius: 24px; }
 
-            /* SOLUCIÓN ESQUINAS REDONDEADAS FIJAS EN CELULAR (Sticky columns) */
-            th:first-child, td:first-child {
-                position: sticky;
-                left: 0;
-                background-color: var(--bg-input);
-                z-index: 10;
+            /* Menú de acciones tipo Modal Centrado para Celular */
+            .dropdown-menu {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 80%;
+                max-width: 250px;
+                box-shadow: 0 0 0 1000vw rgba(0,0,0,0.6), 0 10px 25px rgba(0,0,0,0.5); /* Oscurece el fondo completo */
+                margin: 0;
+                border-radius: 16px;
+                z-index: 9999;
+                text-align: center;
+                display: none;
             }
-            th:last-child, td:last-child {
-                position: sticky;
-                right: 0;
-                background-color: var(--bg-input);
-                z-index: 10;
+
+            .dropdown-menu button {
+                padding: 16px;
+                font-size: 15px;
+                text-align: center;
+                border-bottom: 1px solid var(--border-color);
+                justify-content: center;
             }
-            tr:hover td:first-child, tr:hover td:last-child {
-                background-color: var(--bg-input); /* En móvil es mejor dejar color fijo para que no parpadee al deslizar */
+
+            .dropdown-menu button:last-child {
+                border-bottom: none;
             }
         }
     </style>
@@ -640,11 +662,13 @@
 
         <!-- PESTAÑA: GESTIÓN DE USUARIOS -->
         <section id="tab-usuarios" class="seccion-panel active">
+            
             <div class="dashboard-card">
                 <div class="card-header">
                     <h2 class="card-title">Usuarios</h2>
                 </div>
 
+                <!-- BUSCADORES Y FILTROS -->
                 <div class="search-container">
                     <div class="search-box">
                         <input type="text" id="busqueda-usuario" placeholder="Buscar..." oninput="filtrarUsuarios()">
@@ -692,14 +716,11 @@
                     <h2 class="card-title">Registro de Actividades</h2>
                 </div>
                 
-                <!-- BUSCADORES Y FILTROS DE ACTIVIDADES SOLICITADOS -->
                 <div class="search-container">
                     <div class="search-box">
                         <input type="text" id="busqueda-actividad" placeholder="Buscar actividad o autor..." oninput="filtrarActividades()">
                     </div>
-                    <!-- Filtro Fecha -->
                     <input type="date" class="filter-select" id="filtro-fecha-act" onchange="filtrarActividades()">
-                    <!-- Filtro Acción -->
                     <select class="filter-select" id="filtro-accion-act" onchange="filtrarActividades()">
                         <option value="">Filtrar por Acción</option>
                         <option value="CREACIÓN DE USUARIO">Creación</option>
