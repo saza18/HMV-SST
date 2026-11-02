@@ -195,15 +195,14 @@
         .perfil-info h2 { margin: 0 0 5px 0; font-size: 22px; color: var(--text-color); }
         .perfil-info p { margin: 0; font-size: 14px; color: var(--text-muted); }
         
-        /* Toggles (Interruptores tipo iOS) MODIFICADOS SEGÚN LA ORDEN */
         .permiso-categoria { 
             font-size: 13px; font-weight: bold; color: var(--hmv-blue); 
             margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; 
-            border-bottom: 1px solid var(--border-color); padding-bottom: 8px; /* Línea separadora solo para categorías */
+            border-bottom: 1px solid var(--border-color); padding-bottom: 8px;
         }
         .permiso-item { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px 0; /* Se eliminó el border-bottom individual */
+            padding: 10px 0;
         }
         .permiso-item span { font-size: 14px; color: var(--text-color); }
 
@@ -212,13 +211,11 @@
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
         
-        /* Comportamiento del Switch al encenderse (Modo Claro) */
         input:checked + .slider { background-color: var(--hmv-blue); }
         input:checked + .slider:before { transform: translateX(18px); }
         
-        /* Comportamiento del Switch en MODO OSCURO (Corrección aplicada) */
-        body.dark-mode .slider { background-color: #4a5b7d; } /* Color de apagado en oscuro */
-        body.dark-mode input:checked + .slider { background-color: #3b82f6; } /* Color azul brillante al activarlo en oscuro */
+        body.dark-mode .slider { background-color: #4a5b7d; }
+        body.dark-mode input:checked + .slider { background-color: #3b82f6; }
 
         @media (max-width: 768px) {
             .app-layout { flex-direction: column; }
@@ -236,7 +233,6 @@
             .dropdown-menu button { padding: 16px; font-size: 15px; text-align: center; border-bottom: 1px solid var(--border-color); justify-content: center; }
             .dropdown-menu button:last-child { border-bottom: none; }
             
-            /* Ajustes perfil celular */
             .perfil-cabecera { flex-direction: column; text-align: center; gap: 10px; border-bottom: none;}
         }
     </style>
@@ -548,10 +544,15 @@
         
         document.getElementById(id).classList.add('active');
         
-        if(event && event.target && event.target.classList.contains('tab-link')) {
+        // CORRECCIÓN DEL ERROR DE 'contains' AL GUARDAR PERMISOS
+        if(typeof event !== 'undefined' && event && event.target && event.target.classList && event.target.classList.contains('tab-link')) {
             event.target.classList.add('active');
         } else if (id === 'tab-usuarios') {
-            document.querySelector('.tab-link[onclick="abrirPestaña(\'tab-usuarios\')"]').classList.add('active');
+            const btnUsuarios = document.querySelector('.tab-link[onclick="abrirPestaña(\'tab-usuarios\')"]');
+            if(btnUsuarios) btnUsuarios.classList.add('active');
+        } else if (id === 'tab-actividades') {
+            const btnActividades = document.querySelector('.tab-link[onclick="abrirPestaña(\'tab-actividades\')"]');
+            if(btnActividades) btnActividades.classList.add('active');
         }
         cerrarMenuMovil(); 
     }
