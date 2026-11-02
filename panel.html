@@ -5,50 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plataforma SST - HMV Ingenieros</title>
     <style>
-        :root { --hmv-blue: #004b87; --hmv-yellow: #f2a900; --hmv-yellow-hover: #d19200; --hmv-blue-hover: #003663; --bg-body: #f4f7fa; --bg-surface: #ffffff; --text-main: #333333; --text-muted: #666666; --border-color: #e0e0e0; --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
-        body.dark-mode { --bg-body: #121212; --bg-surface: #1e1e1e; --text-main: #e0e0e0; --text-muted: #a0a0a0; --border-color: #333333; --shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        :root { 
+            --hmv-blue: #004b87; 
+            --hmv-yellow: #f2a900; 
+            --hmv-yellow-hover: #d19200; 
+            --hmv-blue-hover: #003663; 
+            --bg-body: #d6e0ea; 
+            --bg-surface: #ffffff; 
+            --text-main: #1f2937; 
+            --text-muted: #6b7280; 
+            --border-color: #e5e7eb; 
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+        }
+        body.dark-mode { 
+            --bg-body: #0c101b; 
+            --bg-surface: #1f293d; 
+            --text-main: #ffffff; 
+            --text-muted: #889bb0; 
+            --border-color: #2a3b5c; 
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.3); 
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-tap-highlight-color: transparent !important; outline: none; }
         body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; transition: background-color 0.3s, color 0.3s; }
         
-        .navbar { background-color: var(--bg-surface); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); border-bottom: 3px solid var(--hmv-yellow); position: sticky; top: 0; z-index: 100; transition: background-color 0.3s; }
-        .navbar-logo { display: flex; align-items: center; gap: 15px; }
-        .navbar-logo img { height: 40px; object-fit: contain; }
-        .btn-back { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; text-decoration: none; }
+        /* NAVBAR / ENCABEZADO SUPERIOR */
+        .navbar { 
+            background-color: var(--bg-surface); padding: 15px 30px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            box-shadow: var(--shadow); position: sticky; top: 0; z-index: 1000; 
+            transition: background-color 0.3s; border-radius: 0 0 24px 24px; margin-bottom: 30px;
+        }
         
-        .navbar-user { display: flex; align-items: center; gap: 15px; }
-        .user-info { text-align: right; display: none; }
-        @media (min-width: 600px) { .user-info { display: block; } }
-        .user-name { font-weight: bold; font-size: 14px; color: var(--hmv-blue); }
-        .user-role { font-size: 12px; color: var(--text-muted); }
-        .user-avatar { width: 40px; height: 40px; background-color: var(--hmv-blue); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; }
+        .navbar-left { display: flex; align-items: center; gap: 30px; }
+        .navbar-logo img { height: 45px; object-fit: contain; filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.15)); }
         
-        .main-container { max-width: 1200px; margin: 30px auto; padding: 0 5%; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
-        .page-title h1 { font-size: 24px; } .page-title p { font-size: 14px; color: var(--text-muted); }
-        
-        .btn-primary { background-color: var(--hmv-blue); color: #ffffff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; text-decoration: none; }
-        .btn-primary:hover { background-color: var(--hmv-blue-hover); }
-        
-        .dropdown-menu { display: none; position: absolute; top: 100%; right: 0; background: var(--bg-surface); border: 1px solid var(--border-color); box-shadow: var(--shadow); border-radius: 5px; min-width: 220px; z-index: 10; margin-top: 5px; overflow: hidden; }
-        .dropdown-menu a { display: block; padding: 12px 15px; color: var(--text-main); text-decoration: none; border-bottom: 1px solid var(--border-color); font-size: 14px; transition: 0.2s; cursor: pointer; }
-        .dropdown-menu a:hover { background-color: rgba(0, 75, 135, 0.05); color: var(--hmv-blue); font-weight: bold; }
-        
-        .submenu { display: none; background-color: rgba(0,0,0,0.02); }
-        .submenu a { padding-left: 30px; font-size: 13px; border-bottom: 1px dashed var(--border-color); }
-        body.dark-mode .submenu { background-color: rgba(255,255,255,0.02); }
+        /* MENÚ ESCRITORIO (SOLO TEXTO) */
+        .desktop-nav-links { display: flex; align-items: center; gap: 20px; }
+        .nav-text-btn { 
+            background: transparent; border: none; color: var(--text-main); 
+            font-weight: bold; font-size: 14px; cursor: pointer; transition: color 0.2s; 
+        }
+        .nav-text-btn:hover { color: var(--hmv-blue); }
 
-        .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .card { background-color: var(--bg-surface); border-radius: 10px; padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); border-left: 5px solid var(--hmv-blue); transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s; position: relative;}
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 15px; }
+        /* PERFIL DE USUARIO Y AVATAR */
+        .navbar-right { display: flex; align-items: center; gap: 15px; position: relative; }
+        .user-info { display: flex; flex-direction: column; text-align: right; }
+        .user-name { font-weight: bold; font-size: 14px; color: var(--text-main); }
+        .user-role { font-size: 12px; color: var(--text-muted); }
+        .user-avatar { 
+            width: 42px; height: 42px; border-radius: 50%; background-color: var(--hmv-blue); 
+            color: #fff; display: flex; align-items: center; justify-content: center; 
+            font-weight: bold; font-size: 14px; border: 2px solid var(--hmv-yellow); 
+            cursor: pointer; flex-shrink: 0; transition: transform 0.2s;
+        }
+        .user-avatar:active { transform: scale(0.9); }
+
+        /* MENÚ DESPLEGABLE DEL AVATAR (CELULAR) */
+        .mobile-menu-dropdown { 
+            display: none; position: absolute; top: 100%; right: 0; 
+            background: var(--bg-surface); border: 1px solid var(--border-color); 
+            border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+            min-width: 220px; margin-top: 15px; overflow: hidden; z-index: 2000;
+        }
+        .mobile-menu-dropdown.show { display: block; }
+        .mobile-menu-dropdown button { 
+            width: 100%; text-align: left; padding: 15px 20px; border: none; background: none; 
+            color: var(--text-main); font-weight: bold; font-size: 14px; cursor: pointer; 
+            border-bottom: 1px solid var(--border-color); transition: 0.2s;
+        }
+        .mobile-menu-dropdown button:hover { background-color: var(--bg-body); color: var(--hmv-blue); }
+        .mobile-menu-dropdown button:last-child { border-bottom: none; }
+        
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 0 5%; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+        .page-title h1 { font-size: 24px; font-weight: bold; margin-bottom: 5px; } 
+        .page-title p { font-size: 14px; color: var(--text-muted); }
+        
+        /* MODAL FLOTANTE (NUEVO REGISTRO) */
+        .dropdown-menu { 
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--bg-surface); border: 1px solid var(--border-color); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 0 100vw rgba(0,0,0,0.5); 
+            border-radius: 16px; min-width: 280px; z-index: 3000; overflow: hidden; 
+        }
+        .dropdown-menu a { display: block; padding: 16px 20px; color: var(--text-main); text-decoration: none; border-bottom: 1px solid var(--border-color); font-size: 15px; transition: 0.2s; cursor: pointer; font-weight: bold; text-align: center; }
+        .dropdown-menu a:hover { background-color: var(--bg-body); color: var(--hmv-blue); }
+        .submenu { display: none; background-color: var(--bg-body); }
+        .submenu a { padding-left: 20px; font-size: 14px; font-weight: normal; border-bottom: 1px dashed var(--border-color); text-align: left;}
+
+        /* TARJETAS (CURVAS DE 24PX) */
+        .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding-bottom: 40px;}
+        .card { 
+            background-color: var(--bg-surface); border-radius: 24px; padding: 30px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); 
+            border-left: 6px solid var(--hmv-blue); transition: transform 0.2s, box-shadow 0.2s; position: relative;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: bold; margin-bottom: 15px; }
         .status-active { background-color: rgba(242, 169, 0, 0.2); color: #b37d00; }
         body.dark-mode .status-active { color: var(--hmv-yellow); }
-        .card-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
-        .card-details { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
-        .card-details span { display: block; margin-bottom: 4px; }
-        .card-actions { display: flex; flex-direction: column; gap: 10px; }
+        .card-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+        .card-details { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.6; }
+        .card-details span { display: block; }
+        .card-actions { display: flex; flex-direction: column; gap: 12px; }
         
-        .btn-card { flex: 1; text-align: center; padding: 8px 0; border-radius: 5px; font-size: 13px; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.2s; border: none; }
+        /* BOTONES DE LA TARJETA (TOTALMENTE CURVOS - 50PX) */
+        .btn-card { 
+            flex: 1; text-align: center; padding: 12px 0; border-radius: 50px; 
+            font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; 
+            transition: 0.2s; border: none; 
+        }
         .btn-fill { background-color: var(--hmv-yellow); color: #000; border: 1px solid var(--hmv-yellow); display: block; }
         .btn-fill:hover { background-color: var(--hmv-yellow-hover); }
         .btn-outline { background-color: transparent; color: var(--hmv-blue); border: 1px solid var(--hmv-blue); }
@@ -56,9 +123,20 @@
         body.dark-mode .btn-outline { color: #8ab4f8; border-color: #8ab4f8; }
         body.dark-mode .btn-outline:hover { background-color: #8ab4f8; color: #121212; }
         
-        .btn-delete { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #ff4444; cursor: pointer; font-size: 16px; display: none;}
+        .btn-delete { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: #ff4444; cursor: pointer; font-size: 18px; display: none;}
         
         #template-card { display: none; }
+
+        /* AJUSTES CELULAR */
+        @media (max-width: 768px) {
+            .desktop-nav-links { display: none; } /* Oculta botones de texto en celular */
+            .navbar { padding: 15px 20px; border-radius: 0 0 16px 16px; }
+            .navbar-logo img { height: 35px; }
+            .user-name { font-size: 13px; }
+            .user-role { font-size: 11px; }
+            .user-avatar { width: 38px; height: 38px; font-size: 12px; }
+            .dropdown-menu { width: 85%; max-width: 300px; }
+        }
     </style>
 </head>
 <body>
@@ -100,37 +178,50 @@
     </script>
 
     <nav class="navbar">
-        <div class="navbar-logo">
-            <button onclick="cerrarSesionNormal()" class="btn-back">⬅️ Salir</button>
-            <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Ingenieros">
+        <div class="navbar-left">
+            <img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Ingenieros" class="navbar-logo">
+            
+            <!-- MENÚ ESCRITORIO (Solo Texto) -->
+            <div class="desktop-nav-links">
+                <button class="nav-text-btn" id="btn-nuevo-desktop" style="display: none;">Nuevo Registro Semanal</button>
+                <button class="nav-text-btn" onclick="cerrarSesionNormal()">Salir</button>
+            </div>
         </div>
-        <div class="navbar-user">
+        
+        <div class="navbar-right">
+            <!-- INFO DEL USUARIO (Visible en PC y Celular) -->
             <div class="user-info">
                 <div class="user-name" id="display-name">Usuario</div>
                 <div class="user-role" id="display-role">Perfil</div>
             </div>
-            <div class="user-avatar">👤</div>
+            
+            <!-- AVATAR TIPO ROOT CON INICIALES -->
+            <div class="user-avatar" id="nav-avatar" onclick="toggleMobileMenu(event)" title="Abrir Menú">UI</div>
+            
+            <!-- MENÚ DESPLEGABLE CELULAR (Se activa al tocar el avatar) -->
+            <div class="mobile-menu-dropdown" id="mobile-menu">
+                <button id="btn-nuevo-movil" style="display: none;">Nuevo Registro Semanal</button>
+                <button onclick="cerrarSesionNormal()">Salir</button>
+            </div>
         </div>
     </nav>
+
+    <!-- MODAL DE NUEVO REGISTRO (CENTRALIZADO) -->
+    <div class="dropdown-menu" id="menu-nuevo">
+        <a id="btn-menu-taladro">📋 Taladro Magnético ▼</a>
+        <div class="submenu" id="submenu-taladro">
+            <a class="add-serial" id="menu-TM-001" data-serial="TM-001">➤ Serial: TM-001</a>
+            <a class="add-serial" id="menu-TM-002" data-serial="TM-002">➤ Serial: TM-002</a>
+            <a class="add-serial" id="menu-TM-003" data-serial="TM-003">➤ Serial: TM-003</a>
+            <a class="add-serial" id="menu-TM-004" data-serial="TM-004">➤ Serial: TM-004</a>
+        </div>
+    </div>
 
     <div class="main-container">
         <div class="page-header">
             <div class="page-title">
                 <h1>Panel de Inspecciones Preoperacionales</h1>
                 <p>Gestión semanal de herramientas y equipos (Nube Activa)</p>
-            </div>
-            
-            <div style="position: relative; display: inline-block;">
-                <button class="btn-primary" id="btn-nuevo" style="display: none;">+ Nuevo Registro Semanal</button>
-                <div class="dropdown-menu" id="menu-nuevo">
-                    <a id="btn-menu-taladro">📋 Taladro Magnético ▼</a>
-                    <div class="submenu" id="submenu-taladro">
-                        <a class="add-serial" id="menu-TM-001" data-serial="TM-001">➤ Serial: TM-001</a>
-                        <a class="add-serial" id="menu-TM-002" data-serial="TM-002">➤ Serial: TM-002</a>
-                        <a class="add-serial" id="menu-TM-003" data-serial="TM-003">➤ Serial: TM-003</a>
-                        <a class="add-serial" id="menu-TM-004" data-serial="TM-004">➤ Serial: TM-004</a>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -152,7 +243,7 @@
         </div>
     </div>
 
-    <!-- Script de Firebase -->
+    <!-- Script de Interfaz y Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -170,11 +261,37 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        /* DATOS DEL USUARIO Y AVATAR */
         const rolUsuario = sessionStorage.getItem('hmv_user_role') || 'Invitado';
         document.getElementById('display-role').innerText = rolUsuario;
         
         const nombreUsuario = sessionStorage.getItem('hmv_user_name') || 'Usuario';
         document.getElementById('display-name').innerText = nombreUsuario;
+        
+        // Calcular e insertar iniciales
+        const iniciales = nombreUsuario.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+        document.getElementById('nav-avatar').innerText = iniciales;
+
+        /* FUNCIONES DE MENÚS DESPLEGABLES */
+        window.toggleMobileMenu = function(e) {
+            e.stopPropagation();
+            document.getElementById('mobile-menu').classList.toggle('show');
+            document.getElementById('menu-nuevo').style.display = 'none'; // Oculta el otro modal si está abierto
+        };
+
+        // Cierra los menús si se toca afuera
+        document.addEventListener('click', function(e) {
+            const mobMenu = document.getElementById('mobile-menu');
+            const menuN = document.getElementById('menu-nuevo');
+            
+            if (mobMenu.classList.contains('show') && !mobMenu.contains(e.target) && e.target.id !== 'nav-avatar') {
+                mobMenu.classList.remove('show');
+            }
+            if (menuN.style.display === 'block' && !menuN.contains(e.target) && e.target.id !== 'btn-nuevo-desktop' && e.target.id !== 'btn-nuevo-movil') {
+                menuN.style.display = 'none';
+                document.getElementById('submenu-taladro').style.display = 'none';
+            }
+        });
         
         function calcularFechasSemana() {
             const fechaActual = new Date();
@@ -234,16 +351,33 @@
             }
         });
 
+        // HABILITAR BOTÓN "NUEVO REGISTRO" SEGÚN ROL
         if(rolUsuario === 'Responsable SST' || rolUsuario === 'Oficial / Auxiliar') {
-            const btnNuevo = document.getElementById('btn-nuevo');
+            const btnNuevoDesktop = document.getElementById('btn-nuevo-desktop');
+            const btnNuevoMovil = document.getElementById('btn-nuevo-movil');
             const menuNuevo = document.getElementById('menu-nuevo');
             const btnMenuTaladro = document.getElementById('btn-menu-taladro');
             const submenuTaladro = document.getElementById('submenu-taladro');
             
-            btnNuevo.style.display = 'inline-block';
-            btnNuevo.onclick = function(e) { e.stopPropagation(); menuNuevo.style.display = menuNuevo.style.display === 'block' ? 'none' : 'block'; submenuTaladro.style.display = 'none'; };
-            btnMenuTaladro.onclick = function(e) { e.stopPropagation(); submenuTaladro.style.display = submenuTaladro.style.display === 'block' ? 'none' : 'block'; };
-            document.addEventListener('click', function(e) { if(!menuNuevo.contains(e.target) && e.target !== btnNuevo) { menuNuevo.style.display = 'none'; submenuTaladro.style.display = 'none'; } });
+            // Muestra los botones en sus respectivos menús
+            btnNuevoDesktop.style.display = 'inline-block';
+            btnNuevoMovil.style.display = 'block';
+
+            // Función para abrir el modal centrado
+            const activarModalNuevo = function(e) {
+                e.stopPropagation();
+                menuNuevo.style.display = menuNuevo.style.display === 'block' ? 'none' : 'block';
+                submenuTaladro.style.display = 'none';
+                document.getElementById('mobile-menu').classList.remove('show');
+            };
+
+            btnNuevoDesktop.onclick = activarModalNuevo;
+            btnNuevoMovil.onclick = activarModalNuevo;
+            
+            btnMenuTaladro.onclick = function(e) { 
+                e.stopPropagation(); 
+                submenuTaladro.style.display = submenuTaladro.style.display === 'block' ? 'none' : 'block'; 
+            };
             
             document.querySelectorAll('.add-serial').forEach(boton => {
                 boton.onclick = async function(e) {
