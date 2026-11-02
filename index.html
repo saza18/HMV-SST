@@ -283,6 +283,7 @@
                 padding: 30px 25px;
             }
         }
+
     </style>
 </head>
 <body id="body-main">
@@ -300,13 +301,13 @@
 <div class="login-box">
     <div class="input-group">
         <label id="lbl-user">Usuario</label>
-        <!-- SE CAMBIÓ autocomplete A "username" -->
-        <input type="text" id="log-usuario" placeholder="Ingresa tu usuario" autocomplete="username" readonly onfocus="this.removeAttribute('readonly');">
+        <!-- SE ELIMINÓ EL READONLY. Ahora es un input completamente normal -->
+        <input type="text" id="log-usuario" placeholder="Ingresa tu usuario" autocomplete="username">
     </div>
     <div class="input-group">
         <label id="lbl-pass">Contraseña</label>
-        <!-- SE CAMBIÓ autocomplete A "current-password" -->
-        <input type="password" id="log-password" placeholder="Ingresa tu contraseña" autocomplete="current-password" readonly onfocus="this.removeAttribute('readonly');">
+        <!-- SE ELIMINÓ EL READONLY -->
+        <input type="password" id="log-password" placeholder="Ingresa tu contraseña" autocomplete="current-password">
     </div>
     <button id="btn-ingresar" class="btn-principal">Ingresar</button>
 </div>
@@ -476,14 +477,21 @@
 
     actualizarTextos();
 
-    // LIMPIEZA FORZADA DE CAMPOS Y REACTIVACIÓN DEL BLOQUEO AL CARGAR O REGRESAR POR CACHÉ
+    // NUEVO SISTEMA DE DOBLE BARRIDO: Vacía las casillas de inmediato y 100ms después
+    // Esto vence el autocompletado agresivo de PC sin usar el atributo readonly
     window.addEventListener('pageshow', function() {
         const userField = document.getElementById('log-usuario');
         const passField = document.getElementById('log-password');
+        
+        // Barrido inicial
         userField.value = '';
         passField.value = '';
-        userField.setAttribute('readonly', 'readonly');
-        passField.setAttribute('readonly', 'readonly');
+        
+        // Barrido retrasado
+        setTimeout(function() {
+            userField.value = '';
+            passField.value = '';
+        }, 100);
     });
 </script>
 
