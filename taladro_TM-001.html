@@ -248,16 +248,8 @@
                         <img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 30px; margin: auto;">
                     </td>
                 </tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
                 <tr class="no-print" id="row-btn-agregar">
-                    <td colspan="3" style="text-align: center; border: none; padding-top: 5px;"><button id="btn-agregar-trabajador" style="background-color: var(--hmv-blue); color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 3px; font-size: 10px;">+ Agregar Trabajador</button></td>
+                    <td colspan="3" style="text-align: center; border: none; padding-top: 5px;"><button id="btn-agregar-trabajador" style="background-color: var(--hmv-blue); color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 3px; font-size: 10px;">+ Agregar fila</button><button id="btn-eliminar-fila" type="button" style="background-color: #d32f2f; color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 3px; font-size: 10px; margin-left: 8px;">Eliminar fila</button></td>
                 </tr>
             </tbody>
         </table>
@@ -322,15 +314,17 @@
 <div class="botones-flotantes no-print">
     <a href="panel.html" class="btn-flotante btn-regresar">⬅️ Regresar</a>
     <button id="btn-guardar-doc" class="btn-flotante btn-guardar">💾 Guardar</button>
+    <button id="btn-generar-pdf" class="btn-flotante btn-generar-pdf" type="button" style="display: none;">📄 Generar PDF</button>
 </div>
 
-<div id="firma-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
+<div id="firma-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(3px); touch-action: none; overscroll-behavior: contain;">
     <div style="background: #fff; padding: 15px; border-radius: 8px; width: 90%; max-width: 600px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.5);">
         <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--hmv-blue); font-family: sans-serif; font-size: 14px;">✍️ Espacio de Firma<br><small style="color: #666; font-size: 10px;">(Gire el celular horizontalmente si requiere más espacio)</small></h3>
         <canvas id="modal-canvas" style="border: 2px dashed #999; width: 100%; height: 250px; background: #fff; cursor: crosshair; touch-action: none; border-radius: 5px;"></canvas>
-        <div style="margin-top: 15px; display: flex; gap: 15px; justify-content: center;">
-            <button id="btn-cancel-firma" type="button" style="padding: 10px 20px; background: #888; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 45%;">Cancelar</button>
-            <button id="btn-save-firma" type="button" style="padding: 10px 20px; background: var(--hmv-blue); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 45%;">Agregar firma</button>
+        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+            <button id="btn-cancel-firma" type="button" style="padding: 10px 8px; background: #888; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1;">Cancelar</button>
+            <button id="btn-borrar-firma" type="button" style="padding: 10px 8px; background: #d32f2f; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1;">Borrar</button>
+            <button id="btn-save-firma" type="button" style="padding: 10px 8px; background: var(--hmv-blue); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1;">Agregar firma</button>
         </div>
     </div>
 </div>
@@ -357,7 +351,7 @@
     const inpSerial = document.getElementById('inp-serial');
     if(inpSerial) inpSerial.value = documentSerial;
     
-    const rolUsuario = localStorage.getItem('hmv_user_role') || 'Invitado';
+    const rolUsuario = sessionStorage.getItem('hmv_user_role') || 'Invitado';
 
     function aplicarPermisosRoles() {
         document.querySelectorAll('.btn-firmar').forEach(btn => {
@@ -383,24 +377,66 @@
         modalCtx.strokeStyle = '#000';
     }
 
+    // Mientras el cuadro de firma está abierto, el resto de la pantalla queda deshabilitado (filtro negro + sin clics, scroll ni teclado)
+    const zonasBloqueables = [document.querySelector('.contenedor-principal'), document.querySelector('.botones-flotantes')];
+    function ajustarModalAlVisor() {
+        // En el celular la hoja es más ancha que la pantalla (o el usuario hizo zoom): el cuadro se centra en la parte que se está viendo
+        const vv = window.visualViewport;
+        if (vv && (vv.scale > 1.01 || window.matchMedia('(pointer: coarse)').matches)) {
+            modal.style.left = vv.offsetLeft + 'px';
+            modal.style.top = vv.offsetTop + 'px';
+            modal.style.width = vv.width + 'px';
+            modal.style.height = vv.height + 'px';
+        } else {
+            modal.style.left = '0px';
+            modal.style.top = '0px';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+        }
+    }
+    function abrirModalFirma() {
+        modal.style.display = 'flex';
+        zonasBloqueables.forEach(z => { if (z) z.inert = true; });
+        ajustarModalAlVisor();
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', ajustarModalAlVisor);
+            window.visualViewport.addEventListener('scroll', ajustarModalAlVisor);
+        }
+    }
+    function cerrarModalFirma() {
+        modal.style.display = 'none';
+        zonasBloqueables.forEach(z => { if (z) z.inert = false; });
+        if (window.visualViewport) {
+            window.visualViewport.removeEventListener('resize', ajustarModalAlVisor);
+            window.visualViewport.removeEventListener('scroll', ajustarModalAlVisor);
+        }
+    }
+    modal.addEventListener('wheel', e => e.preventDefault(), {passive: false});
+    modal.addEventListener('touchmove', e => e.preventDefault(), {passive: false});
+
     function attachFirmaEvent(btn) {
         btn.onclick = function() {
             currentSigBtn = this;
             currentSigImg = this.nextElementSibling;
-            modal.style.display = 'flex';
+            abrirModalFirma();
             resizeCanvas();
             modalCtx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
         };
     }
     document.querySelectorAll('.btn-firmar').forEach(attachFirmaEvent);
 
-    document.getElementById('btn-cancel-firma').onclick = () => { modal.style.display = 'none'; };
-    
+    document.getElementById('btn-cancel-firma').onclick = () => { cerrarModalFirma(); };
+
+    document.getElementById('btn-borrar-firma').onclick = () => {
+        modalCtx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
+        modalCtx.beginPath();
+    };
+
     document.getElementById('btn-save-firma').onclick = () => {
         currentSigImg.src = modalCanvas.toDataURL('image/png');
         currentSigImg.style.display = 'block';
         currentSigBtn.style.display = 'none';
-        modal.style.display = 'none';
+        cerrarModalFirma();
     };
 
     let isDrawing = false;
@@ -427,8 +463,27 @@
     modalCanvas.addEventListener('touchend', stopDrawing);
 
     const btnAgregar = document.getElementById('btn-agregar-trabajador');
+    const btnEliminar = document.getElementById('btn-eliminar-fila');
     if (rolUsuario !== 'Oficial / Auxiliar' && rolUsuario !== 'Responsable SST') {
         if(btnAgregar) btnAgregar.style.display = 'none';
+        if(btnEliminar) btnEliminar.style.display = 'none';
+    }
+
+    // Botón "Generar PDF": solo lo puede usar el responsable SST
+    const btnGenerarPdf = document.getElementById('btn-generar-pdf');
+    if (btnGenerarPdf && rolUsuario === 'Responsable SST') {
+        btnGenerarPdf.style.display = 'flex';
+        btnGenerarPdf.onclick = () => { window.print(); };
+    }
+
+    // Filas de trabajadores (sin contar la fila del botón) y estado del botón "Eliminar fila"
+    function filasTrabajadores() { return document.querySelectorAll('#tbody-trabajadores tr:not(#row-btn-agregar)'); }
+    function actualizarBotonEliminar() {
+        if (!btnEliminar) return;
+        const soloUna = filasTrabajadores().length <= 1;
+        btnEliminar.disabled = soloUna;
+        btnEliminar.style.opacity = soloUna ? '0.4' : '1';
+        btnEliminar.style.cursor = soloUna ? 'not-allowed' : 'pointer';
     }
     
     if(btnAgregar) {
@@ -439,12 +494,23 @@
             const newBtn = tr.querySelector('.btn-firmar');
             if (rolUsuario !== 'Oficial / Auxiliar') { newBtn.disabled = true; newBtn.title = 'Acceso denegado.'; }
             attachFirmaEvent(newBtn);
-            tbody.insertBefore(tr, tbody.querySelector('.print-fill-row'));
+            tbody.insertBefore(tr, document.getElementById('row-btn-agregar'));
+            actualizarBotonEliminar();
         };
     }
 
+    if(btnEliminar) {
+        btnEliminar.onclick = function() {
+            const filas = filasTrabajadores();
+            if (filas.length <= 1) return; // la última fila que queda no se puede eliminar
+            filas[filas.length - 1].remove();
+            actualizarBotonEliminar();
+        };
+    }
+    actualizarBotonEliminar();
+
     document.getElementById('btn-guardar-doc').onclick = async function() {
-        let datos = { textos: [], firmas: [], btnAgregarClicks: document.querySelectorAll('#tbody-trabajadores tr').length - 10 }; 
+        let datos = { textos: [], firmas: [], btnAgregarClicks: document.querySelectorAll('#tbody-trabajadores tr:not(#row-btn-agregar)').length - 1 };
         datos.fIni = document.getElementById('fecha-ini').value;
         datos.hIni = document.getElementById('hora-ini').value;
         datos.fFin = document.getElementById('fecha-fin').value;
