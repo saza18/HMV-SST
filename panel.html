@@ -38,7 +38,7 @@
         }
         
         .navbar-left { display: flex; align-items: center; gap: 30px; }
-        .navbar-logo img { height: 45px; object-fit: contain; filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.15)); }
+        .navbar-logo { height: 45px; object-fit: contain; filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.15)); }
         
         /* MENÚ ESCRITORIO (SOLO TEXTO) */
         .desktop-nav-links { display: flex; align-items: center; gap: 20px; }
@@ -129,9 +129,9 @@
 
         /* AJUSTES CELULAR */
         @media (max-width: 768px) {
-            .desktop-nav-links { display: none; } /* Oculta botones de texto en celular */
+            .desktop-nav-links { display: none; } 
             .navbar { padding: 15px 20px; border-radius: 0 0 16px 16px; }
-            .navbar-logo img { height: 35px; }
+            .navbar-logo { height: 35px; } /* Ajuste del logo en móviles */
             .user-name { font-size: 13px; }
             .user-role { font-size: 11px; }
             .user-avatar { width: 38px; height: 38px; font-size: 12px; }
@@ -146,7 +146,7 @@
         if (window.performance) {
             const navEntries = performance.getEntriesByType("navigation");
             if (navEntries.length > 0 && navEntries[0].type === "back_forward") {
-                sessionStorage.clear(); // Destruye si usa botón atrás o abre del historial
+                sessionStorage.clear(); 
                 window.location.replace('index.html');
             }
         }
@@ -189,7 +189,7 @@
         </div>
         
         <div class="navbar-right">
-            <!-- INFO DEL USUARIO (Visible en PC y Celular) -->
+            <!-- INFO DEL USUARIO -->
             <div class="user-info">
                 <div class="user-name" id="display-name">Usuario</div>
                 <div class="user-role" id="display-role">Perfil</div>
@@ -198,7 +198,7 @@
             <!-- AVATAR TIPO ROOT CON INICIALES -->
             <div class="user-avatar" id="nav-avatar" onclick="toggleMobileMenu(event)" title="Abrir Menú">UI</div>
             
-            <!-- MENÚ DESPLEGABLE CELULAR (Se activa al tocar el avatar) -->
+            <!-- MENÚ DESPLEGABLE CELULAR -->
             <div class="mobile-menu-dropdown" id="mobile-menu">
                 <button id="btn-nuevo-movil" style="display: none;">Nuevo Registro Semanal</button>
                 <button onclick="cerrarSesionNormal()">Salir</button>
@@ -276,7 +276,7 @@
         window.toggleMobileMenu = function(e) {
             e.stopPropagation();
             document.getElementById('mobile-menu').classList.toggle('show');
-            document.getElementById('menu-nuevo').style.display = 'none'; // Oculta el otro modal si está abierto
+            document.getElementById('menu-nuevo').style.display = 'none'; 
         };
 
         // Cierra los menús si se toca afuera
@@ -359,11 +359,9 @@
             const btnMenuTaladro = document.getElementById('btn-menu-taladro');
             const submenuTaladro = document.getElementById('submenu-taladro');
             
-            // Muestra los botones en sus respectivos menús
             btnNuevoDesktop.style.display = 'inline-block';
             btnNuevoMovil.style.display = 'block';
 
-            // Función para abrir el modal centrado
             const activarModalNuevo = function(e) {
                 e.stopPropagation();
                 menuNuevo.style.display = menuNuevo.style.display === 'block' ? 'none' : 'block';
