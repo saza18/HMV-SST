@@ -29,7 +29,6 @@
             --input-border: #2a3b5c;
         }
 
-        /* ELIMINA EL RESPLANDOR AZUL EN TODOS LOS ELEMENTOS TÁCTILES */
         * {
             -webkit-tap-highlight-color: transparent;
         }
@@ -47,7 +46,6 @@
             overscroll-behavior-y: auto; 
         }
 
-        /* TRUCO CSS: Centra los elementos verticalmente si caben */
         body::before, body::after {
             content: '';
             flex: 1;
@@ -59,7 +57,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* MENÚ HAMBURGUESA Y DESPLEGABLE EN LA ESQUINA */
         .menu-container {
             position: absolute;
             top: 20px;
@@ -133,7 +130,6 @@
             background-color: var(--input-bg);
         }
 
-        /* LOGO */
         .logo-hmv {
             max-width: 300px;
             width: 80%;
@@ -142,7 +138,6 @@
             animation: fadeIn 0.4s ease-out forwards;
         }
 
-        /* CAJA PRINCIPAL */
         .login-box {
             background-color: var(--bg-box);
             width: 90%;
@@ -191,7 +186,6 @@
             border-color: var(--hmv-blue);
         }
 
-        /* BOTÓN TIPO PÍLDORA */
         .btn-principal {
             background-color: var(--hmv-blue);
             color: white;
@@ -211,7 +205,6 @@
         .btn-principal:hover { background-color: var(--hmv-blue-hover); }
         .btn-principal:active { transform: scale(0.95); } 
 
-        /* ENLACE */
         .link-amarillo {
             display: inline-block;
             color: var(--hmv-yellow);
@@ -229,7 +222,6 @@
         .link-amarillo:hover { color: var(--hmv-yellow-hover); }
         .link-amarillo:active { transform: scale(0.90); } 
 
-        /* MODAL DE SEGURIDAD */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -256,7 +248,6 @@
             border: 1px solid var(--input-border);
         }
 
-        /* AJUSTES ESPECÍFICOS PARA CELULAR */
         @media (max-width: 768px) {
             .menu-container {
                 top: 20px;
@@ -283,7 +274,6 @@
                 padding: 30px 25px;
             }
         }
-
     </style>
 </head>
 <body id="body-main">
@@ -301,12 +291,10 @@
 <div class="login-box">
     <div class="input-group">
         <label id="lbl-user">Usuario</label>
-        <!-- SE AGREGÓ READONLY QUE SE QUITA AL CLIC PARA EVITAR AUTOCOMPLETADO AGRESIVO EN PC -->
         <input type="text" id="log-usuario" placeholder="Ingresa tu usuario" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');">
     </div>
     <div class="input-group">
         <label id="lbl-pass">Contraseña</label>
-        <!-- SE AGREGÓ READONLY QUE SE QUITA AL CLIC PARA EVITAR AUTOCOMPLETADO AGRESIVO EN PC -->
         <input type="password" id="log-password" placeholder="Ingresa tu contraseña" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');">
     </div>
     <button id="btn-ingresar" class="btn-principal">Ingresar</button>
@@ -314,7 +302,6 @@
 
 <a href="recuperar.html" class="link-amarillo" id="link-forgot">¿Olvidó su contraseña?</a>
 
-<!-- MODAL ACTUALIZAR SEGURIDAD -->
 <div class="modal-overlay" id="modal-seguridad">
     <div class="modal-content" id="modal-content-box">
         <h3 id="mod-title" style="color: var(--text-color); margin-top: 0; font-size: 20px; text-align: center;">Configuración Inicial</h3>
@@ -334,7 +321,6 @@
             <input type="text" id="act-respuesta" placeholder="Escriba su respuesta secreta">
         </div>
         
-        <!-- BOTONES MODAL -->
         <div style="display: flex; gap: 10px; margin-top: 5px;">
             <button id="btn-cancelar-seguridad" class="btn-principal" style="background-color: var(--input-bg); color: var(--text-color); box-shadow: none; border: 1px solid var(--input-border);">Cancelar</button>
             <button id="btn-guardar-seguridad" class="btn-principal" style="margin-top: 0;">Guardar y Continuar</button>
@@ -429,10 +415,6 @@
     const savedTheme = localStorage.getItem('hmv_theme') || 'light';
     if (savedTheme === 'dark') document.documentElement.classList.add('dark-mode');
 
-    if (localStorage.getItem('hmv_theme') === 'dark') {
-        document.getElementById('body-main').classList.add('dark-mode');
-    }
-
     function actualizarTextoTema() {
         const isDark = document.getElementById('body-main').classList.contains('dark-mode');
         const t = traducciones[idiomaActual];
@@ -452,7 +434,6 @@
         menu.classList.toggle('show');
     }
 
-    /* CIERRE DE VENTANAS AL TOCAR POR FUERA */
     window.onclick = function(event) {
         if (!event.target.matches('.btn-hamburguesa')) {
             const dropdowns = document.getElementsByClassName("dropdown-menu");
@@ -477,7 +458,6 @@
 
     actualizarTextos();
 
-    // LIMPIEZA FORZADA DE CAMPOS Y REACTIVACIÓN DEL BLOQUEO AL CARGAR O REGRESAR POR CACHÉ
     window.addEventListener('pageshow', function() {
         const userField = document.getElementById('log-usuario');
         const passField = document.getElementById('log-password');
@@ -507,8 +487,9 @@
     let usuarioPendiente = null; 
 
     function procederLogin(user) {
-        localStorage.setItem('hmv_user_role', user.rol);
-        localStorage.setItem('hmv_user_name', user.nombre);
+        /* AHORA USA SESSIONSTORAGE PARA QUE SE AUTODESTRUYA AL CERRAR LA PESTAÑA */
+        sessionStorage.setItem('hmv_user_role', user.rol);
+        sessionStorage.setItem('hmv_user_name', user.nombre);
         
         if (user.rol === 'Administrador Root') {
             window.location.replace('panel_root.html');
