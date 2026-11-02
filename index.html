@@ -302,11 +302,13 @@
 <div class="login-box">
     <div class="input-group">
         <label id="lbl-user">Usuario</label>
-        <input type="text" id="log-usuario" placeholder="Ingresa tu usuario">
+        <!-- SE AGREGÓ autocomplete="off" -->
+        <input type="text" id="log-usuario" placeholder="Ingresa tu usuario" autocomplete="off">
     </div>
     <div class="input-group">
         <label id="lbl-pass">Contraseña</label>
-        <input type="password" id="log-password" placeholder="Ingresa tu contraseña">
+        <!-- SE AGREGÓ autocomplete="off" -->
+        <input type="password" id="log-password" placeholder="Ingresa tu contraseña" autocomplete="off">
     </div>
     <button id="btn-ingresar" class="btn-principal">Ingresar</button>
 </div>
@@ -315,7 +317,7 @@
 
 <!-- MODAL ACTUALIZAR SEGURIDAD -->
 <div class="modal-overlay" id="modal-seguridad">
-    <div class="modal-content">
+    <div class="modal-content" id="modal-content-box">
         <h3 id="mod-title" style="color: var(--text-color); margin-top: 0; font-size: 20px; text-align: center;">Configuración Inicial</h3>
         <p id="mod-desc" style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.5;">Por seguridad, debe configurar una pregunta y respuesta personal para recuperar su contraseña en el futuro.</p>
         
@@ -333,12 +335,15 @@
             <input type="text" id="act-respuesta" placeholder="Escriba su respuesta secreta">
         </div>
         
-        <button id="btn-guardar-seguridad" class="btn-principal" style="margin-top: 5px;">Guardar y Continuar</button>
+        <!-- BOTONES MODAL -->
+        <div style="display: flex; gap: 10px; margin-top: 5px;">
+            <button id="btn-cancelar-seguridad" class="btn-principal" style="background-color: var(--input-bg); color: var(--text-color); box-shadow: none; border: 1px solid var(--input-border);">Cancelar</button>
+            <button id="btn-guardar-seguridad" class="btn-principal" style="margin-top: 0;">Guardar y Continuar</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // DICCIONARIO DE TRADUCCIÓN (Actualizado con textos del modal de seguridad)
     const traducciones = {
         es: {
             userLabel: "USUARIO",
@@ -361,6 +366,7 @@
             lblA: "SU NUEVA RESPUESTA",
             actPlaceholder: "Escriba su respuesta secreta",
             btnSaveSec: "Guardar y Continuar",
+            btnCancelSec: "Cancelar",
             alertInvalidA: "❌ Ingrese una respuesta válida y diferente a la de por defecto.",
             alertSaving: "Guardando..."
         },
@@ -385,6 +391,7 @@
             lblA: "YOUR NEW ANSWER",
             actPlaceholder: "Type your secret answer",
             btnSaveSec: "Save and Continue",
+            btnCancelSec: "Cancel",
             alertInvalidA: "❌ Please enter a valid answer different from the default.",
             alertSaving: "Saving..."
         }
@@ -394,7 +401,6 @@
 
     function actualizarTextos() {
         const t = traducciones[idiomaActual];
-        // Textos del Login principal
         document.getElementById('lbl-user').innerText = t.userLabel;
         document.getElementById('log-usuario').placeholder = t.userPlaceholder;
         document.getElementById('lbl-pass').innerText = t.passLabel;
@@ -403,13 +409,13 @@
         document.getElementById('link-forgot').innerText = t.btnForgot;
         document.getElementById('btn-lang-text').innerText = t.langText;
         
-        // Textos del Modal de Seguridad
         document.getElementById('mod-title').innerText = t.modTitle;
         document.getElementById('mod-desc').innerText = t.modDesc;
         document.getElementById('lbl-q').innerText = t.lblQ;
         document.getElementById('lbl-a').innerText = t.lblA;
         document.getElementById('act-respuesta').placeholder = t.actPlaceholder;
         document.getElementById('btn-guardar-seguridad').innerText = t.btnSaveSec;
+        document.getElementById('btn-cancelar-seguridad').innerText = t.btnCancelSec;
 
         actualizarTextoTema();
     }
@@ -447,6 +453,7 @@
         menu.classList.toggle('show');
     }
 
+    /* CIERRE DE VENTANAS AL TOCAR POR FUERA */
     window.onclick = function(event) {
         if (!event.target.matches('.btn-hamburguesa')) {
             const dropdowns = document.getElementsByClassName("dropdown-menu");
@@ -456,9 +463,26 @@
                 }
             }
         }
+        
+        const modalOverlay = document.getElementById('modal-seguridad');
+        if (event.target === modalOverlay) {
+            modalOverlay.style.display = 'none';
+            usuarioPendiente = null;
+        }
+    }
+
+    document.getElementById('btn-cancelar-seguridad').onclick = function() {
+        document.getElementById('modal-seguridad').style.display = 'none';
+        usuarioPendiente = null;
     }
 
     actualizarTextos();
+
+    // LIMPIEZA FORZADA DE CAMPOS AL CARGAR O REGRESAR A LA PÁGINA MEDIANTE CACHÉ
+    window.addEventListener('pageshow', function() {
+        document.getElementById('log-usuario').value = '';
+        document.getElementById('log-password').value = '';
+    });
 </script>
 
 <script type="module">
@@ -477,17 +501,16 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    let usuarioPendiente = null; // Variable para almacenar temporalmente al usuario que debe actualizar datos
+    let usuarioPendiente = null; 
 
-    // FUNCIÓN PARA HACER LA REDIRECCIÓN OFICIAL
     function procederLogin(user) {
         localStorage.setItem('hmv_user_role', user.rol);
         localStorage.setItem('hmv_user_name', user.nombre);
         
         if (user.rol === 'Administrador Root') {
-            window.location.href = 'panel_root.html';
+            window.location.replace('panel_root.html');
         } else {
-            window.location.href = 'panel.html';
+            window.location.replace('panel.html');
         }
     }
 
@@ -521,15 +544,13 @@
                         return;
                     }
 
-                    // INTERCEPTOR DE SEGURIDAD: Verifica si la respuesta secreta sigue siendo la que da el Root ("admin")
                     if (usuarioValido.respuestaSeguridad === 'admin') {
                         usuarioPendiente = usuarioValido;
                         document.getElementById('modal-seguridad').style.display = 'flex';
                         this.innerText = originalText;
-                        return; // Se detiene aquí, no redirige aún
+                        return; 
                     }
 
-                    // Si ya la había cambiado antes, pasa directo.
                     procederLogin(usuarioValido);
                     
                 } else {
@@ -542,14 +563,12 @@
         this.innerText = originalText;
     };
 
-    // BOTÓN DE GUARDAR EN EL MODAL DE SEGURIDAD
     document.getElementById('btn-guardar-seguridad').onclick = async function() {
         const t = traducciones[idiomaActual];
         const combo = document.getElementById('act-pregunta');
         const pre = combo.options[combo.selectedIndex].text;
         const res = document.getElementById('act-respuesta').value.trim().toLowerCase();
 
-        // Evita que ponga datos vacíos o que vuelva a poner la contraseña root "admin"
         if(!res || res === 'admin') {
             alert(t.alertInvalidA);
             return;
@@ -559,13 +578,11 @@
         this.innerText = t.alertSaving;
 
         try {
-            // Actualiza en Firebase
             await update(ref(db, `usuarios/${usuarioPendiente.documento}`), {
                 preguntaSeguridad: pre,
                 respuestaSeguridad: res
             });
             
-            // Si la guardó correctamente, ahora sí entra al sistema.
             procederLogin(usuarioPendiente);
 
         } catch (error) {
