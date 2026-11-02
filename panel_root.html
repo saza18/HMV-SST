@@ -7,7 +7,7 @@
     <style>
         :root {
             --bg-body: #d6e0ea; 
-            --bg-sidebar: #0078d4; /* AZUL MÁS CLARO Y MODERNO */
+            --bg-sidebar: #5b9bd5; /* AZUL MÁS CLARO Y SUAVE */
             --bg-card: #ffffff;
             --bg-input: #f4f7fb;
             --border-color: #e5e7eb;
@@ -26,7 +26,7 @@
 
         body.dark-mode {
             --bg-body: #0c101b;
-            --bg-sidebar: #141b2d;
+            --bg-sidebar: #1a2a40; /* Tono ajustado para modo oscuro */
             --bg-card: #1f293d;
             --bg-input: #141b2d;
             --border-color: #2a3b5c;
@@ -37,6 +37,12 @@
             --status-blocked-bg: rgba(204, 0, 0, 0.2);
             --status-blocked-text: #ff4d4d;
             --sidebar-text: #ffffff;
+        }
+
+        /* ELIMINA EL FILTRO AZUL TÁCTIL EN TODOS LOS ELEMENTOS PARA MANTENER ELEGANCIA */
+        * {
+            -webkit-tap-highlight-color: transparent !important;
+            outline: none;
         }
 
         body {
@@ -124,15 +130,23 @@
             border-radius: 50px; color: var(--text-color); font-size: 14px; cursor: pointer; outline: none;
         }
         
-        /* DISEÑO FILTRO DE FECHAS MEJORADO */
         .date-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .date-label { font-size: 13px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; }
+        
+        /* BOTÓN DISCRETO ELIMINAR FILTROS */
+        .btn-limpiar {
+            background: transparent; border: none; color: var(--text-muted); 
+            font-size: 12px; cursor: pointer; text-decoration: underline; 
+            padding: 5px; margin-left: auto; transition: color 0.2s;
+        }
+        .btn-limpiar:hover { color: var(--hmv-blue); }
+        body.dark-mode .btn-limpiar:hover { color: #ffffff; }
 
         .dashboard-card { background-color: var(--bg-card); border-radius: 24px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 20px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .card-title { font-size: 22px; margin: 0; color: var(--text-color); font-weight: bold; }
 
-        .table-container { overflow-x: auto; position: relative; padding-bottom: 90px; }
+        .table-container { overflow-x: auto; position: relative; padding-bottom: 30px; }
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; font-size: 14px; min-width: 800px; }
         th { padding: 12px 16px; text-align: left; color: var(--text-muted); font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
         td { padding: 8px 16px; background-color: var(--bg-input); border-top: 1px solid transparent; border-bottom: 1px solid transparent; vertical-align: middle; transition: all 0.2s; }
@@ -140,6 +154,16 @@
         tr td:first-child { border-top-left-radius: 50px; border-bottom-left-radius: 50px; padding-left: 25px; }
         tr td:last-child { border-top-right-radius: 50px; border-bottom-right-radius: 50px; padding-right: 25px; }
         tr:hover td { background-color: rgba(255, 215, 0, 0.05); }
+
+        /* ESTILOS PAGINACIÓN ESTILO GMAIL */
+        .paginacion-container { display: flex; justify-content: flex-end; gap: 6px; margin-top: 5px; }
+        .btn-page {
+            background-color: var(--bg-input); border: 1px solid var(--border-color); 
+            color: var(--text-color); padding: 5px 12px; border-radius: 8px; 
+            cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s;
+        }
+        .btn-page:hover { background-color: var(--border-color); }
+        .btn-page.active { background-color: var(--hmv-blue); color: white; border-color: var(--hmv-blue); }
 
         .user-cell { display: flex; align-items: center; gap: 12px; }
         .user-avatar { width: 28px; height: 28px; min-width: 28px; flex-shrink: 0; border-radius: 50%; background-color: var(--hmv-blue); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; text-transform: uppercase; border: 2px solid var(--hmv-yellow); }
@@ -180,44 +204,22 @@
         .seccion-panel { display: none; }
         .seccion-panel.active { display: block; }
         
-        /* ---------------------------------------------------- */
-        /* ESTILOS DEL NUEVO PERFIL DE USUARIO Y PERMISOS (TOGGLES) */
-        /* ---------------------------------------------------- */
-        
-        .perfil-cabecera {
-            display: flex; align-items: center; gap: 20px; margin-bottom: 30px;
-            padding-bottom: 20px;
-        }
-        
-        .perfil-avatar-grande {
-            width: 70px; height: 70px; border-radius: 50%; background-color: var(--hmv-blue);
-            color: #ffffff; display: flex; justify-content: center; align-items: center;
-            font-size: 24px; font-weight: bold; border: 3px solid var(--hmv-yellow); flex-shrink: 0;
-        }
-
+        .perfil-cabecera { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; padding-bottom: 20px; }
+        .perfil-avatar-grande { width: 70px; height: 70px; border-radius: 50%; background-color: var(--hmv-blue); color: #ffffff; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; border: 3px solid var(--hmv-yellow); flex-shrink: 0; }
         .perfil-info { flex-grow: 1; }
         .perfil-info h2 { margin: 0 0 5px 0; font-size: 22px; color: var(--text-color); }
         .perfil-info p { margin: 0; font-size: 14px; color: var(--text-muted); }
         
-        .permiso-categoria { 
-            font-size: 13px; font-weight: bold; color: var(--hmv-blue); 
-            margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; 
-            border-bottom: 1px solid var(--border-color); padding-bottom: 8px;
-        }
-        .permiso-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px 0;
-        }
+        .permiso-categoria { font-size: 13px; font-weight: bold; color: var(--hmv-blue); margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .permiso-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
         .permiso-item span { font-size: 14px; color: var(--text-color); }
 
         .switch { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0;}
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        
         input:checked + .slider { background-color: var(--hmv-blue); }
         input:checked + .slider:before { transform: translateX(18px); }
-        
         body.dark-mode .slider { background-color: #4a5b7d; }
         body.dark-mode input:checked + .slider { background-color: #3b82f6; }
 
@@ -236,7 +238,6 @@
             .dropdown-menu { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 250px; box-shadow: 0 0 0 1000vw rgba(0,0,0,0.6), 0 10px 25px rgba(0,0,0,0.5); margin: 0; border-radius: 16px; z-index: 9999; text-align: center; display: none; }
             .dropdown-menu button { padding: 16px; font-size: 15px; text-align: center; border-bottom: 1px solid var(--border-color); justify-content: center; }
             .dropdown-menu button:last-child { border-bottom: none; }
-            
             .perfil-cabecera { flex-direction: column; text-align: center; gap: 10px; border-bottom: none;}
         }
     </style>
@@ -379,11 +380,12 @@
             </div>
         </section>
 
-        <!-- PESTAÑA 2: PERFIL DETALLADO Y PERMISOS ACTUALIZADOS -->
+        <!-- PESTAÑA 2: PERFIL DETALLADO Y PERMISOS -->
         <section id="tab-perfil-usuario" class="seccion-panel">
             <div class="dashboard-card" style="max-width: 600px; margin: 0 auto;">
                 
-                <button class="btn" style="background-color: var(--input-bg); color: var(--text-color); width: max-content; margin-bottom: 10px;" onclick="abrirPestaña('tab-usuarios')">⬅️ Volver a Usuarios</button>
+                <!-- SE ELIMINÓ EL EMOJI, BOTÓN MÁS SUTIL -->
+                <button class="btn" style="background-color: var(--input-bg); color: var(--text-color); width: max-content; margin-bottom: 10px;" onclick="abrirPestaña('tab-usuarios')">Volver a Usuarios</button>
                 
                 <div class="perfil-cabecera">
                     <div class="perfil-avatar-grande" id="perfil-avatar">UI</div>
@@ -406,7 +408,6 @@
                 </div>
 
                 <div id="lista-permisos">
-                    <!-- Categoría Usuarios -->
                     <div class="permiso-categoria">Permisos de Usuarios</div>
                     <div class="permiso-item">
                         <span>Consultar listado de usuarios</span>
@@ -441,14 +442,12 @@
                         <label class="switch"><input type="checkbox" id="p-del-user" onchange="marcarPersonalizado()"><span class="slider"></span></label>
                     </div>
 
-                    <!-- Categoría Actividades -->
                     <div class="permiso-categoria">Permisos de Sistema</div>
                     <div class="permiso-item">
                         <span>Consultar registro de actividad</span>
                         <label class="switch"><input type="checkbox" id="p-ver-act" onchange="marcarPersonalizado()"><span class="slider"></span></label>
                     </div>
 
-                    <!-- Categoría Preoperacionales -->
                     <div class="permiso-categoria">Permisos Preoperacionales</div>
                     <div class="permiso-item">
                         <span>Crear e interactuar con preoperacionales</span>
@@ -470,7 +469,7 @@
             </div>
         </section>
 
-        <!-- PESTAÑA 3: ACTIVIDADES CON FECHA DESDE / HASTA -->
+        <!-- PESTAÑA 3: ACTIVIDADES -->
         <section id="tab-actividades" class="seccion-panel">
             <div class="dashboard-card">
                 <div class="card-header">
@@ -481,12 +480,13 @@
                         <input type="text" id="busqueda-actividad" placeholder="Buscar actividad o autor..." oninput="filtrarActividades()">
                     </div>
                     
-                    <!-- NUEVO FILTRO DESDE / HASTA -->
                     <div class="date-filters">
                         <span class="date-label">Desde:</span>
-                        <input type="date" class="filter-select" id="filtro-fecha-desde" onchange="filtrarActividades()">
+                        <!-- EL TRUCO onfocus PERMITE MOSTRAR DD/MM/AAAA EN CELULAR HASTA QUE SE TOCA -->
+                        <input type="text" class="filter-select" id="filtro-fecha-desde" placeholder="DD/MM/AAAA" onfocus="this.type='date'" onblur="if(!this.value) this.type='text'" onchange="filtrarActividades()">
+                        
                         <span class="date-label">Hasta:</span>
-                        <input type="date" class="filter-select" id="filtro-fecha-hasta" onchange="filtrarActividades()">
+                        <input type="text" class="filter-select" id="filtro-fecha-hasta" placeholder="DD/MM/AAAA" onfocus="this.type='date'" onblur="if(!this.value) this.type='text'" onchange="filtrarActividades()">
                     </div>
 
                     <select class="filter-select" id="filtro-accion-act" onchange="filtrarActividades()">
@@ -497,8 +497,12 @@
                         <option value="BLOQUEO CUENTA">Bloqueo</option>
                         <option value="DESBLOQUEO CUENTA">Desbloqueo</option>
                     </select>
+                    
+                    <!-- BOTÓN PARA LIMPIAR FILTROS -->
+                    <button class="btn-limpiar" onclick="limpiarFiltrosAct()" title="Borrar filtros de fechas y búsqueda">Limpiar Filtros</button>
                 </div>
-                <div class="table-container">
+                
+                <div class="table-container" style="padding-bottom: 5px;">
                     <table>
                         <thead>
                             <tr>
@@ -513,6 +517,8 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- NUEVO: CONTENEDOR DE PAGINACIÓN ESTILO GMAIL -->
+                <div id="paginacion-actividades" class="paginacion-container"></div>
             </div>
         </section>
     </main>
@@ -601,41 +607,20 @@
     let usuariosActuales = {};
     let usuarioEditandoPermisos = null; 
 
-    /* PLANTILLAS DE PERMISOS REAJUSTADAS SEGÚN LA NUEVA ORDEN */
     const plantillasPermisos = {
-        'Administrador Root': { 
-            p_ver_user: true, p_crear_user: true, p_crear_root: true, p_edit_user: true, 
-            p_block_user: true, p_del_user: true, p_reset_pass: true, p_mod_roles: true, 
-            p_ver_act: true, p_ver_preop: true, p_desc_preop: true, p_del_preop: true 
-        },
-        'Administrador Limitado': { 
-            p_ver_user: true, p_crear_user: true, p_crear_root: false, p_edit_user: true, 
-            p_block_user: true, p_del_user: false, p_reset_pass: false, p_mod_roles: false, 
-            p_ver_act: false, p_ver_preop: true, p_desc_preop: false, p_del_preop: false 
-        },
-        'Responsable SST': { 
-            p_ver_user: false, p_crear_user: false, p_crear_root: false, p_edit_user: false, 
-            p_block_user: false, p_del_user: false, p_reset_pass: false, p_mod_roles: false, 
-            p_ver_act: false, p_ver_preop: true, p_desc_preop: true, p_del_preop: true 
-        },
-        'Oficial / Auxiliar': { 
-            p_ver_user: false, p_crear_user: false, p_crear_root: false, p_edit_user: false, 
-            p_block_user: false, p_del_user: false, p_reset_pass: false, p_mod_roles: false, 
-            p_ver_act: false, p_ver_preop: true, p_desc_preop: false, p_del_preop: false 
-        },
-        'Capataz': { 
-            p_ver_user: false, p_crear_user: false, p_crear_root: false, p_edit_user: false, 
-            p_block_user: false, p_del_user: false, p_reset_pass: false, p_mod_roles: false, 
-            p_ver_act: false, p_ver_preop: true, p_desc_preop: false, p_del_preop: false 
-        },
-        'Ingeniero': { 
-            p_ver_user: false, p_crear_user: false, p_crear_root: false, p_edit_user: false, 
-            p_block_user: false, p_del_user: false, p_reset_pass: false, p_mod_roles: false, 
-            p_ver_act: false, p_ver_preop: true, p_desc_preop: false, p_del_preop: false 
-        }
+        'Administrador Root': { p_ver_user: true, p_crear_user: true, p_crear_root: true, p_edit_user: true, p_block_user: true, p_del_user: true, p_reset_pass: true, p_mod_roles: true, p_ver_act: true, p_ver_preop: true, p_desc_preop: true, p_del_preop: true },
+        'Administrador Limitado': { p_ver_user: true, p_crear_user: true, p_crear_root: false, p_edit_user: true, p_block_user: true, p_del_user: false, p_reset_pass: false, p_mod_roles: false, p_ver_act: false, p_ver_preop: true, p_desc_preop: false, p_del_preop: false },
+        'Responsable SST': { p_ver_user: false, p_crear_user: false, p_crear_root: false, p_edit_user: false, p_block_user: false, p_del_user: false, p_reset_pass: false, p_mod_roles: false, p_ver_act: false, p_ver_preop: true, p_desc_preop: true, p_del_preop: true },
+        'Oficial / Auxiliar': { p_ver_user: false, p_crear_user: false, p_crear_root: false, p_edit_user: false, p_block_user: false, p_del_user: false, p_reset_pass: false, p_mod_roles: false, p_ver_act: false, p_ver_preop: true, p_desc_preop: false, p_del_preop: false },
+        'Capataz': { p_ver_user: false, p_crear_user: false, p_crear_root: false, p_edit_user: false, p_block_user: false, p_del_user: false, p_reset_pass: false, p_mod_roles: false, p_ver_act: false, p_ver_preop: true, p_desc_preop: false, p_del_preop: false },
+        'Ingeniero': { p_ver_user: false, p_crear_user: false, p_crear_root: false, p_edit_user: false, p_block_user: false, p_del_user: false, p_reset_pass: false, p_mod_roles: false, p_ver_act: false, p_ver_preop: true, p_desc_preop: false, p_del_preop: false }
     };
 
     let actividadesGlobal = [];
+    
+    // SISTEMA DE PAGINACIÓN PARA ACTIVIDADES
+    window.actividadesFiltradas = [];
+    const itemsPorPaginaAct = 10; // Muestra 10 registros por página
 
     async function registrarActividad(accion, detalle) {
         const fecha = new Date().toLocaleString('es-CO');
@@ -649,21 +634,30 @@
             const snap = await get(ref(db, 'actividades_admin'));
             if(snap.exists()) {
                 actividadesGlobal = Object.values(snap.val()).reverse(); 
-                window.renderizarTablaActividades(actividadesGlobal);
+                window.actividadesFiltradas = actividadesGlobal;
+                window.renderizarTablaActividades(window.actividadesFiltradas, 1);
             } else {
                 document.getElementById('tabla-actividades-body').innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay registro de actividades aún.</td></tr>';
             }
         } catch(e) { console.error(e); }
     }
 
-    window.renderizarTablaActividades = function(actsArray) {
+    window.renderizarTablaActividades = function(actsArray, pagina = 1) {
         const tbody = document.getElementById('tabla-actividades-body');
+        const pagContainer = document.getElementById('paginacion-actividades');
         tbody.innerHTML = '';
+        
         if(actsArray.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay coincidencias.</td></tr>';
+            pagContainer.innerHTML = '';
             return;
         }
-        actsArray.forEach(act => {
+
+        const start = (pagina - 1) * itemsPorPaginaAct;
+        const end = start + itemsPorPaginaAct;
+        const itemsA_Mostrar = actsArray.slice(start, end);
+
+        itemsA_Mostrar.forEach(act => {
             tbody.innerHTML += `<tr>
                 <td><b>${act.fecha}</b></td>
                 <td style="font-weight:bold; color:var(--text-color);">${act.autor}</td>
@@ -671,14 +665,29 @@
                 <td style="color:var(--text-muted);">${act.detalle}</td>
             </tr>`;
         });
+
+        // Crear botones de Paginación
+        const totalPaginas = Math.ceil(actsArray.length / itemsPorPaginaAct);
+        if(totalPaginas > 1) {
+            let pagHtml = '';
+            for(let i = 1; i <= totalPaginas; i++) {
+                const btnClass = i === pagina ? 'btn-page active' : 'btn-page';
+                pagHtml += `<button class="${btnClass}" onclick="window.renderizarTablaActividades(window.actividadesFiltradas, ${i})">${i}</button>`;
+            }
+            pagContainer.innerHTML = pagHtml;
+        } else {
+            pagContainer.innerHTML = '';
+        }
     };
 
-    /* NUEVA LÓGICA DE FILTRADO POR RANGO O DÍA EXACTO */
     window.filtrarActividades = function() {
         const busqueda = document.getElementById('busqueda-actividad').value.toLowerCase();
         const accionFiltro = document.getElementById('filtro-accion-act').value;
-        const fechaDesde = document.getElementById('filtro-fecha-desde').value; 
-        const fechaHasta = document.getElementById('filtro-fecha-hasta').value;
+        const inputDesde = document.getElementById('filtro-fecha-desde');
+        const inputHasta = document.getElementById('filtro-fecha-hasta');
+        
+        const fechaDesde = inputDesde.type === 'date' ? inputDesde.value : ''; 
+        const fechaHasta = inputHasta.type === 'date' ? inputHasta.value : '';
 
         let filtradas = actividadesGlobal.filter(act => {
             const cumpleBusqueda = act.autor.toLowerCase().includes(busqueda) || act.detalle.toLowerCase().includes(busqueda);
@@ -702,7 +711,26 @@
             }
             return cumpleBusqueda && cumpleAccion && cumpleFecha;
         });
-        window.renderizarTablaActividades(filtradas);
+        
+        window.actividadesFiltradas = filtradas;
+        window.renderizarTablaActividades(window.actividadesFiltradas, 1);
+    };
+
+    // NUEVO BOTÓN PARA LIMPIAR TODOS LOS FILTROS
+    window.limpiarFiltrosAct = function() {
+        document.getElementById('busqueda-actividad').value = '';
+        document.getElementById('filtro-accion-act').value = '';
+        
+        const dDesde = document.getElementById('filtro-fecha-desde');
+        const dHasta = document.getElementById('filtro-fecha-hasta');
+        
+        dDesde.value = '';
+        dDesde.type = 'text'; // Lo vuelve al modo Placeholder DD/MM/AAAA
+        
+        dHasta.value = '';
+        dHasta.type = 'text';
+        
+        window.filtrarActividades();
     };
 
     async function cargarUsuarios() {
