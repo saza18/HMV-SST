@@ -22,6 +22,7 @@
             background-color: var(--bg-body);
             margin: 0;
             padding: 20px;
+            min-width: fit-content;
             overflow-x: auto; 
         }
 
@@ -53,6 +54,7 @@
             padding: 15px 0;
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 10px;
             z-index: 1000;
             border-top: 1px solid #ccc;
@@ -78,10 +80,16 @@
             align-items: center;
             justify-content: center;
             font-family: inherit;
+            white-space: nowrap;
         }
         
         .btn-flotante:hover { opacity: 0.9; }
         .btn-regresar { background-color: #666; }
+        .btn-cerrar-preop { background-color: #37474f; }
+
+        /* Líneas que se generan al pulsar "Cerrar preoperacional" (solo SST): día de la semana sin diligenciar y Hallazgos vacío */
+        td.linea-dia { background-image: linear-gradient(#000, #000); background-repeat: no-repeat; background-position: center; background-size: 1px 100%; }
+        td.linea-hallazgos { background-image: linear-gradient(#000, #000); background-repeat: no-repeat; background-position: center; background-size: 100% 1px; }
 
         .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
         .logo-box { width: 20%; display: flex; align-items: center; justify-content: center; }
@@ -167,10 +175,7 @@
             .print-fill-row { display: table-row !important; }
             /* Las tablas de trabajadores y de criterios pueden partirse entre hojas (fila por fila) */
             #tabla-trabajadores, #tabla-seccion-3 { page-break-inside: auto; break-inside: auto; }
-            /* Reemplaza el salto de hoja obligatorio antes de la sección 3: el bloque de la hoja 1 mide lo mismo que
-               una hoja (100vh en impresión = alto útil de la hoja, sea carta, A4 o celular). Si el contenido cabe, la
-               sección 3 arranca en la hoja siguiente; si los trabajadores se pasan, la sección 3 sigue justo debajo. */
-            .pagina-uno { min-height: calc(100vh - 2px); }
+            /* La sección 3 va siempre pegada a la última fila del personal (sin salto de hoja ni alto fijo) y se reparte fila por fila entre hojas */
             /* El título y los encabezados de la sección 3 no quedan solos al final de una hoja (van con la 1ra fila de criterios) */
             #tabla-seccion-3 tr:nth-child(-n+3) { break-after: avoid; page-break-after: avoid; }
             
@@ -293,7 +298,7 @@
 
         <table>
             <tr class="title-row"><td>4. Hallazgos</td></tr>
-            <tr><td style="padding: 0;"><textarea class="save-data" style="height: 40px; padding: 5px; resize: none;"></textarea></td></tr>
+            <tr><td style="padding: 0;"><textarea id="hallazgos" class="save-data" style="height: 40px; padding: 5px; resize: none;"></textarea></td></tr>
         </table>
 
         <table>
@@ -315,6 +320,7 @@
     <a href="panel.html" class="btn-flotante btn-regresar">⬅️ Regresar</a>
     <button id="btn-guardar-doc" class="btn-flotante btn-guardar">💾 Guardar</button>
     <button id="btn-generar-pdf" class="btn-flotante btn-generar-pdf" type="button" style="display: none;">📄 Generar PDF</button>
+    <button id="btn-cerrar-preop" class="btn-flotante btn-cerrar-preop" type="button" style="display: none;">🔒 Cerrar preoperacional</button>
 </div>
 
 <div id="firma-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(3px); touch-action: none; overscroll-behavior: contain;">
@@ -476,6 +482,37 @@
         btnGenerarPdf.onclick = () => { window.print(); };
     }
 
+    // Botón "Cerrar preoperacional": solo lo puede usar el responsable SST.
+    // Traza una línea sobre cada día (LUN a DOM) que quedó totalmente en blanco, desde la firma del SST hasta el primer criterio,
+    // y una línea horizontal en Hallazgos si está vacío.
+    function cerrarPreoperacional() {
+        const filas = [...document.querySelectorAll('#tabla-seccion-3 tr')];
+        const filasCriterios = filas.filter(f => f.querySelector('.criterio-select'));
+        const filasFirmas = filas.filter(f => f.querySelector('.btn-firmar'));
+        const celdaDelDia = (fila, dia) => (fila.querySelector('.criterio-select')
+            ? fila.querySelectorAll('td.check-td')
+            : [...fila.querySelectorAll(':scope > td')].slice(-7))[dia];
+        for (let dia = 0; dia < 7; dia++) {
+            const celdas = [...filasCriterios, ...filasFirmas].map(f => celdaDelDia(f, dia));
+            const vacio = celdas.every(td => {
+                const sel = td.querySelector('.criterio-select');
+                if (sel) return sel.value === '';
+                const img = td.querySelector('.save-img');
+                const src = img ? img.getAttribute('src') : '';
+                return !(src && src.startsWith('data:image'));
+            });
+            celdas.forEach(td => td.classList.toggle('linea-dia', vacio));
+        }
+        const hallazgos = document.getElementById('hallazgos');
+        if (hallazgos) hallazgos.closest('td').classList.toggle('linea-hallazgos', hallazgos.value.trim() === '');
+        document.body.classList.add('preop-cerrado');
+    }
+    const btnCerrarPreop = document.getElementById('btn-cerrar-preop');
+    if (btnCerrarPreop && rolUsuario === 'Responsable SST') {
+        btnCerrarPreop.style.display = 'flex';
+        btnCerrarPreop.onclick = () => { cerrarPreoperacional(); };
+    }
+
     // Filas de trabajadores (sin contar la fila del botón) y estado del botón "Eliminar fila"
     function filasTrabajadores() { return document.querySelectorAll('#tbody-trabajadores tr:not(#row-btn-agregar)'); }
     function actualizarBotonEliminar() {
@@ -515,7 +552,8 @@
         datos.hIni = document.getElementById('hora-ini').value;
         datos.fFin = document.getElementById('fecha-fin').value;
         datos.hFin = document.getElementById('hora-fin').value;
-        
+        datos.cerrado = document.body.classList.contains('preop-cerrado');
+
         document.querySelectorAll('.save-data').forEach((el, index) => { datos.textos[index] = el.value || ""; });
         document.querySelectorAll('.save-img').forEach((img, index) => { 
             const srcVal = img.getAttribute('src');
@@ -571,6 +609,8 @@
                         }
                     }
                 }
+
+                if(guardado.cerrado) cerrarPreoperacional();
             }
         } catch(e) { console.error("Error al cargar:", e); }
     }
