@@ -196,14 +196,30 @@
 <body id="body-main">
 
 <script>
+    // BLOQUEO ESTRICTO DE HISTORIAL EN PC
+    if (window.performance) {
+        const navEntries = performance.getEntriesByType("navigation");
+        if (navEntries.length > 0 && navEntries[0].type === "back_forward") {
+            sessionStorage.clear(); // Destruye si usa botón atrás o abre del historial
+            window.location.replace('index.html');
+        }
+    }
+
+    // BLOQUEO CONTRA BFCACHE (Restauración de pestañas)
     window.addEventListener('pageshow', function (event) {
-        if (event.persisted) window.location.reload();
+        if (event.persisted) {
+            sessionStorage.clear();
+            window.location.replace('index.html');
+        }
     });
 
-    /* SE USA SESSIONSTORAGE PARA LA SEGURIDAD DEL ROOT */
+    // LIMPIAR CUALQUIER BASURA VIEJA EN LA MEMORIA A LARGO PLAZO
+    localStorage.removeItem('hmv_user_role');
+    localStorage.removeItem('hmv_user_name');
+
+    // VERIFICACIÓN DE ROL
     const userRole = sessionStorage.getItem('hmv_user_role');
     if (userRole !== 'Administrador Root') {
-        alert("ACCESO DENEGADO. Nivel de privilegios insuficiente.");
         window.location.replace('index.html');
     }
     
@@ -216,9 +232,7 @@
     }
     
     function cerrarSesion() {
-        /* LIMPIEZA DE SESSIONSTORAGE */
-        sessionStorage.removeItem('hmv_user_role');
-        sessionStorage.removeItem('hmv_user_name');
+        sessionStorage.clear();
         window.location.replace('index.html');
     }
 
@@ -404,7 +418,6 @@
 </div>
 
 <script>
-    /* SE USA SESSIONSTORAGE PARA RECUPERAR EL NOMBRE */
     const nameAdmin = sessionStorage.getItem('hmv_user_name') || 'Usuario Root';
     document.getElementById('saludo-admin').innerText = `Hola, ${nameAdmin}`;
 
@@ -416,7 +429,9 @@
         cerrarMenuMovil(); 
     }
 
-    function cerrarModal() { document.getElementById('modal-usuario').style.display = 'none'; }
+    function cerrarModal() {
+        document.getElementById('modal-usuario').style.display = 'none';
+    }
 </script>
 
 <script type="module">
@@ -427,7 +442,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     
-    /* SE USA SESSIONSTORAGE PARA EL AUTOR DE LA ACTIVIDAD */
     const adminLogueado = sessionStorage.getItem('hmv_user_name') || 'Admin ROOT';
 
     let actividadesGlobal = [];
@@ -572,7 +586,6 @@
     };
 
     window.eliminarUsuario = async function(doc) {
-        // Validación con SessionStorage
         if(doc === sessionStorage.getItem('hmv_user_name')) return alert("No puedes eliminar tu propia cuenta.");
         
         if(confirm(`⚠️ ¿Estás seguro de ELIMINAR COMPLETAMENTE a este usuario (CC: ${doc})? Esta acción no se puede deshacer.`)) {
