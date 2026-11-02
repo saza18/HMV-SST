@@ -301,12 +301,10 @@
 <div class="login-box">
     <div class="input-group">
         <label id="lbl-user">Usuario</label>
-        <!-- SE ELIMINÓ EL READONLY. Ahora es un input completamente normal -->
         <input type="text" id="log-usuario" placeholder="Ingresa tu usuario" autocomplete="username">
     </div>
     <div class="input-group">
         <label id="lbl-pass">Contraseña</label>
-        <!-- SE ELIMINÓ EL READONLY -->
         <input type="password" id="log-password" placeholder="Ingresa tu contraseña" autocomplete="current-password">
     </div>
     <button id="btn-ingresar" class="btn-principal">Ingresar</button>
@@ -477,20 +475,28 @@
 
     actualizarTextos();
 
-    // NUEVO SISTEMA DE DOBLE BARRIDO: Vacía las casillas de inmediato y 100ms después
-    // Esto vence el autocompletado agresivo de PC sin usar el atributo readonly
+    // ESCUDO PERSISTENTE: Bloquea las inyecciones tardías del autocompletado en PC
     window.addEventListener('pageshow', function() {
         const userField = document.getElementById('log-usuario');
         const passField = document.getElementById('log-password');
         
-        // Barrido inicial
+        // Limpieza inmediata
         userField.value = '';
         passField.value = '';
         
-        // Barrido retrasado
-        setTimeout(function() {
-            userField.value = '';
-            passField.value = '';
+        // Escudo activo por 1 segundo
+        let barridos = 0;
+        const escudo = setInterval(function() {
+            // Solo limpia si el usuario NO ha tocado los cuadros todavía
+            if (document.activeElement !== userField && document.activeElement !== passField) {
+                userField.value = '';
+                passField.value = '';
+            }
+            barridos++;
+            // Detiene el escudo después de 1 segundo (10 intentos de 100ms)
+            if (barridos >= 10) {
+                clearInterval(escudo);
+            }
         }, 100);
     });
 </script>
