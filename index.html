@@ -229,7 +229,7 @@
         .link-amarillo:hover { color: var(--hmv-yellow-hover); }
         .link-amarillo:active { transform: scale(0.90); } 
 
-        /* MODAL DE SEGURIDAD (Nuevo) */
+        /* MODAL DE SEGURIDAD */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -288,7 +288,6 @@
 </head>
 <body id="body-main">
 
-<!-- MENÚ ELEGANTE -->
 <div class="menu-container">
     <button class="btn-hamburguesa" onclick="toggleMenu()" title="Menú">☰</button>
     <div class="dropdown-menu" id="login-menu">
@@ -302,13 +301,13 @@
 <div class="login-box">
     <div class="input-group">
         <label id="lbl-user">Usuario</label>
-        <!-- SE AGREGÓ autocomplete="off" -->
-        <input type="text" id="log-usuario" placeholder="Ingresa tu usuario" autocomplete="off">
+        <!-- SE AGREGÓ READONLY QUE SE QUITA AL CLIC PARA EVITAR AUTOCOMPLETADO AGRESIVO EN PC -->
+        <input type="text" id="log-usuario" placeholder="Ingresa tu usuario" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');">
     </div>
     <div class="input-group">
         <label id="lbl-pass">Contraseña</label>
-        <!-- SE AGREGÓ autocomplete="off" -->
-        <input type="password" id="log-password" placeholder="Ingresa tu contraseña" autocomplete="off">
+        <!-- SE AGREGÓ READONLY QUE SE QUITA AL CLIC PARA EVITAR AUTOCOMPLETADO AGRESIVO EN PC -->
+        <input type="password" id="log-password" placeholder="Ingresa tu contraseña" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');">
     </div>
     <button id="btn-ingresar" class="btn-principal">Ingresar</button>
 </div>
@@ -478,10 +477,14 @@
 
     actualizarTextos();
 
-    // LIMPIEZA FORZADA DE CAMPOS AL CARGAR O REGRESAR A LA PÁGINA MEDIANTE CACHÉ
+    // LIMPIEZA FORZADA DE CAMPOS Y REACTIVACIÓN DEL BLOQUEO AL CARGAR O REGRESAR POR CACHÉ
     window.addEventListener('pageshow', function() {
-        document.getElementById('log-usuario').value = '';
-        document.getElementById('log-password').value = '';
+        const userField = document.getElementById('log-usuario');
+        const passField = document.getElementById('log-password');
+        userField.value = '';
+        passField.value = '';
+        userField.setAttribute('readonly', 'readonly');
+        passField.setAttribute('readonly', 'readonly');
     });
 </script>
 
