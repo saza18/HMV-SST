@@ -87,23 +87,12 @@
         .btn-regresar { background-color: #666; }
         .btn-cerrar-preop { background-color: #37474f; }
 
-        /* LÍNEA DE HALLAZGOS INTACTA */
-        td.linea-hallazgos { 
-            background-image: linear-gradient(to bottom right, transparent calc(50% - 1px), #000 calc(50% - 1px), #000 calc(50% + 1px), transparent calc(50% + 1px)); 
+        /* LÍNEAS DIAGONALES SEGURAS PARA IMPRESIÓN (SIN ROMPERSE) */
+        td.linea-dia, td.linea-hallazgos { 
+            background-image: linear-gradient(to bottom right, transparent calc(50% - 0.5px), #000 calc(50% - 0.5px), #000 calc(50% + 0.5px), transparent calc(50% + 0.5px)); 
             background-repeat: no-repeat; 
             background-position: center; 
             background-size: 100% 100%; 
-        }
-        
-        /* PREPARACIÓN PARA LÍNEA COLUMNA COMPLETA */
-        #tabla-seccion-3 { position: relative; }
-        
-        .linea-columna-master {
-            position: absolute;
-            background-image: linear-gradient(to bottom right, transparent calc(50% - 1px), #000 calc(50% - 1px), #000 calc(50% + 1px), transparent calc(50% + 1px));
-            background-size: 100% 100%;
-            pointer-events: none; /* No estorba clics */
-            z-index: 10;
         }
 
         .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
@@ -191,8 +180,7 @@
             #tabla-trabajadores, #tabla-seccion-3 { page-break-inside: auto; break-inside: auto; }
             #tabla-seccion-3 tr:nth-child(-n+3) { break-after: avoid; page-break-after: avoid; }
             
-            /* Ajuste de líneas en impresión */
-            .linea-columna-master { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            td.linea-dia, td.linea-hallazgos { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
@@ -275,7 +263,6 @@
         </table>
         </div>
 
-        <!-- SECCIÓN 3 DONDE SE DIBUJARÁN LAS LÍNEAS MAESTRAS -->
         <table id="tabla-seccion-3">
             <tr class="title-row"><td colspan="9">3. Condiciones de máquinas, equipos, herramientas; revisión previa</td></tr>
             <tr>
@@ -285,11 +272,7 @@
             <tr>
                 <td class="bg-header">LUN</td><td class="bg-header">MAR</td><td class="bg-header">MIE</td><td class="bg-header">JUE</td><td class="bg-header">VIE</td><td class="bg-header">SAB</td><td class="bg-header">DOM</td>
             </tr>
-            <!-- Se agregó ID a la primera fila de criterios para ubicar el inicio de la línea -->
-            <tr id="primera-fila-criterios">
-                <td colspan="2" style="vertical-align: middle;">El operador cuenta con los elementos de protección personal requeridos para la tarea (botas, gafas, protección auditiva, guantes)</td>
-                <td class="check-td dia-0"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-1"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-2"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-3"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-4"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-5"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-6"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
-            </tr>
+            <tr><td colspan="2" style="vertical-align: middle;">El operador cuenta con los elementos de protección personal requeridos para la tarea (botas, gafas, protección auditiva, guantes)</td><td class="check-td dia-0"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-1"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-2"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-3"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-4"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-5"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-6"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td></tr>
             <tr><td colspan="2" style="vertical-align: middle;">Se ajusta la mesa de acuerdo al tamaño de la pieza (verifique el tamaño de la pieza y la altura de la mesa)</td><td class="check-td dia-0"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-1"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-2"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-3"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-4"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-5"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-6"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td></tr>
             <tr><td colspan="2" style="vertical-align: middle;">Se ha puesto la broca con la ayuda de la llave de apriete del taladro (compruebe que se cuenta con llave de apriete del husillo)</td><td class="check-td dia-0"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-1"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-2"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-3"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-4"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-5"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-6"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td></tr>
             <tr><td colspan="2" style="vertical-align: middle;">El mango de sujeción se encuentra sin grietas</td><td class="check-td dia-0"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-1"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-2"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-3"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-4"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-5"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td dia-6"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td></tr>
@@ -308,10 +291,9 @@
             <tr>
                 <td rowspan="2" style="width: 45%; font-weight: bold; text-align: justify; vertical-align: top; padding: 5px;">Garantizo que el equipo, herramienta y/o maquina ha sido inspeccionada(o) y se encuentra en buen estado para su uso.</td>
                 <td style="width: 20%; font-size: 10px; color: #555; vertical-align: bottom; padding: 5px; height: 35px;">Firma del operador:</td>
-                <!-- Se agregó ID a esta fila para calcular el fin de la línea -->
                 <td class="dia-0" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-1" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-2" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-3" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-4" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-5" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-6" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
             </tr>
-            <tr id="ultima-fila-firmas">
+            <tr>
                 <td style="font-size: 10px; color: #555; vertical-align: bottom; padding: 5px; height: 35px;">Firma responsable SST:</td>
                 <td class="dia-0" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-1" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-2" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-3" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-4" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-5" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td class="dia-6" style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
             </tr>
@@ -501,7 +483,6 @@
         btnGenerarPdf.onclick = () => { window.print(); };
     }
 
-    // MODIFICACIÓN: Crear línea master de columna si el día está vacío
     function cerrarPreoperacional() {
         const filas = [...document.querySelectorAll('#tabla-seccion-3 tr')];
         const filasCriterios = filas.filter(f => f.querySelector('.criterio-select'));
@@ -510,15 +491,9 @@
             ? fila.querySelectorAll('td.check-td')
             : [...fila.querySelectorAll(':scope > td')].slice(-7))[dia];
         
-        // Fila 1 de criterios (top) y última de firmas (bottom) para calcular coordenadas
-        const filaArriba = document.getElementById('primera-fila-criterios');
-        const filaAbajo = document.getElementById('ultima-fila-firmas');
-        const tablaPadre = document.getElementById('tabla-seccion-3');
-
         for (let dia = 0; dia < 7; dia++) {
             const celdas = [...filasCriterios, ...filasFirmas].map(f => celdaDelDia(f, dia));
             
-            // Revisa si todo el día está vacío (sin selects ni firmas)
             const vacio = celdas.every(td => {
                 const sel = td.querySelector('.criterio-select');
                 if (sel) return sel.value === '';
@@ -528,34 +503,15 @@
             });
             
             if (vacio) {
-                // Inhabilitar las celdas
+                // Inhabilitar las celdas y dibujar una sola línea en cada una que coincida con la vecina para parecer continua
                 celdas.forEach(td => {
+                    td.classList.add('linea-dia');
                     td.style.pointerEvents = 'none';
                     td.querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = true);
                 });
-
-                // Dibujar línea maestra de columna
-                const celdaTop = celdaDelDia(filaArriba, dia);
-                const celdaBottom = celdaDelDia(filaAbajo, dia);
-                
-                const topRect = celdaTop.getBoundingClientRect();
-                const bottomRect = celdaBottom.getBoundingClientRect();
-                const tablaRect = tablaPadre.getBoundingClientRect();
-
-                const linea = document.createElement('div');
-                linea.classList.add('linea-columna-master');
-                
-                // Calcular posición y tamaño relativos a la tabla
-                linea.style.top = (topRect.top - tablaRect.top) + 'px';
-                linea.style.left = (topRect.left - tablaRect.left) + 'px';
-                linea.style.width = topRect.width + 'px';
-                linea.style.height = (bottomRect.bottom - topRect.top) + 'px';
-
-                tablaPadre.appendChild(linea);
             }
         }
         
-        // Hallazgos vacío
         const hallazgos = document.getElementById('hallazgos');
         if (hallazgos) {
             const tdHallazgos = hallazgos.closest('td');
@@ -672,7 +628,6 @@
                 }
 
                 if(guardado.cerrado) {
-                    // Timeout corto para asegurar que el navegador ya renderizó la tabla completa y calcula bien el alto de las líneas
                     setTimeout(() => { cerrarPreoperacional(); }, 100);
                 }
             }
