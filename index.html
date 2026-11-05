@@ -59,6 +59,53 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* BOTÓN DE ASISTENCIA POR VOZ (NUEVO) */
+        .btn-voz-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .btn-voz {
+            background-color: var(--bg-box);
+            border: 1px solid var(--input-border);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .btn-voz.activo {
+            background-color: var(--hmv-blue);
+            color: white;
+            border-color: var(--hmv-blue);
+            box-shadow: 0 0 10px rgba(0, 75, 135, 0.5);
+            animation: pulso 2s infinite;
+        }
+
+        @keyframes pulso {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Indicador visual de elemento siendo leído */
+        .leyendo-texto {
+            background-color: rgba(255, 215, 0, 0.3);
+            border-radius: 4px;
+            padding: 0 4px;
+            transition: background-color 0.3s;
+        }
+
         /* MENÚ HAMBURGUESA Y DESPLEGABLE EN LA ESQUINA */
         .menu-container {
             position: absolute;
@@ -164,7 +211,7 @@
         }
 
         .input-group label {
-            display: block;
+            display: inline-block; /* Para el highlight de lectura */
             font-size: 12px;
             font-weight: bold;
             margin-bottom: 8px;
@@ -258,41 +305,27 @@
 
         /* AJUSTES ESPECÍFICOS PARA CELULAR */
         @media (max-width: 768px) {
-            .menu-container {
-                top: 20px;
-                right: 15px;
-            }
-            .dropdown-menu {
-                top: 0;
-                right: 40px; 
-            }
-            .logo-hmv {
-                max-width: 250px;
-                margin-top: 20px; 
-                margin-bottom: 20px;
-            }
-            .login-box {
-                width: 85%;
-                max-width: 300px;
-                border-radius: 36px;
-                padding: 30px 25px;
-            }
-            .modal-content {
-                width: 85%;
-                border-radius: 36px;
-                padding: 30px 25px;
-            }
+            .btn-voz-container { top: 15px; left: 15px; }
+            .menu-container { top: 15px; right: 15px; }
+            .dropdown-menu { top: 0; right: 40px; }
+            .logo-hmv { max-width: 250px; margin-top: 20px; margin-bottom: 20px; }
+            .login-box { width: 85%; max-width: 300px; border-radius: 36px; padding: 30px 25px; }
+            .modal-content { width: 85%; border-radius: 36px; padding: 30px 25px; }
         }
-
     </style>
 </head>
 <body id="body-main">
 
+<!-- NUEVO: BOTÓN DE ASISTENCIA POR VOZ -->
+<div class="btn-voz-container">
+    <button class="btn-voz" id="btn-toggle-voz" onclick="toggleVoz()" title="Activar/Desactivar lectura en voz alta">🔊</button>
+</div>
+
 <div class="menu-container">
     <button class="btn-hamburguesa" onclick="toggleMenu()" title="Menú">☰</button>
     <div class="dropdown-menu" id="login-menu">
-        <button onclick="toggleTheme()" id="btn-theme-text">🌓 Tema</button>
-        <button onclick="toggleLanguage()" id="btn-lang-text">🌐 English</button>
+        <button onclick="toggleTheme()" id="btn-theme-text" class="elemento-leible">🌓 Tema</button>
+        <button onclick="toggleLanguage()" id="btn-lang-text" class="elemento-leible">🌐 English</button>
     </div>
 </div>
 
@@ -300,27 +333,27 @@
 
 <div class="login-box">
     <div class="input-group">
-        <label id="lbl-user">Usuario</label>
+        <label id="lbl-user" class="elemento-leible">Usuario</label>
         <input type="text" id="log-usuario" placeholder="Ingresa tu usuario" autocomplete="username">
     </div>
     <div class="input-group">
-        <label id="lbl-pass">Contraseña</label>
+        <label id="lbl-pass" class="elemento-leible">Contraseña</label>
         <input type="password" id="log-password" placeholder="Ingresa tu contraseña" autocomplete="current-password">
     </div>
-    <button id="btn-ingresar" class="btn-principal">Ingresar</button>
+    <button id="btn-ingresar" class="btn-principal elemento-leible">Ingresar</button>
 </div>
 
-<a href="recuperar.html" class="link-amarillo" id="link-forgot">¿Olvidó su contraseña?</a>
+<a href="recuperar.html" class="link-amarillo elemento-leible" id="link-forgot">¿Olvidó su contraseña?</a>
 
 <!-- MODAL ACTUALIZAR SEGURIDAD -->
 <div class="modal-overlay" id="modal-seguridad">
     <div class="modal-content" id="modal-content-box">
-        <h3 id="mod-title" style="color: var(--text-color); margin-top: 0; font-size: 20px; text-align: center;">Configuración Inicial</h3>
-        <p id="mod-desc" style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.5;">Por seguridad, debe configurar una pregunta y respuesta personal para recuperar su contraseña en el futuro.</p>
+        <h3 id="mod-title" class="elemento-leible" style="color: var(--text-color); margin-top: 0; font-size: 20px; text-align: center;">Configuración Inicial</h3>
+        <p id="mod-desc" class="elemento-leible" style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.5;">Por seguridad, debe configurar una pregunta y respuesta personal para recuperar su contraseña en el futuro.</p>
         
         <div class="input-group">
-            <label id="lbl-q">Seleccione una pregunta</label>
-            <select id="act-pregunta">
+            <label id="lbl-q" class="elemento-leible">Seleccione una pregunta</label>
+            <select id="act-pregunta" class="elemento-leible">
                 <option value="mascota">¿Cuál es el nombre de tu primera mascota?</option>
                 <option value="ciudad">¿En qué ciudad naciste?</option>
                 <option value="madre">¿Cuál es el segundo nombre de tu madre?</option>
@@ -328,14 +361,13 @@
             </select>
         </div>
         <div class="input-group">
-            <label id="lbl-a">Su nueva respuesta</label>
+            <label id="lbl-a" class="elemento-leible">Su nueva respuesta</label>
             <input type="text" id="act-respuesta" placeholder="Escriba su respuesta secreta">
         </div>
         
-        <!-- BOTONES MODAL -->
         <div style="display: flex; gap: 10px; margin-top: 5px;">
-            <button id="btn-cancelar-seguridad" class="btn-principal" style="background-color: var(--input-bg); color: var(--text-color); box-shadow: none; border: 1px solid var(--input-border);">Cancelar</button>
-            <button id="btn-guardar-seguridad" class="btn-principal" style="margin-top: 0;">Guardar y Continuar</button>
+            <button id="btn-cancelar-seguridad" class="btn-principal elemento-leible" style="background-color: var(--input-bg); color: var(--text-color); box-shadow: none; border: 1px solid var(--input-border);">Cancelar</button>
+            <button id="btn-guardar-seguridad" class="btn-principal elemento-leible" style="margin-top: 0;">Guardar y Continuar</button>
         </div>
     </div>
 </div>
@@ -365,7 +397,9 @@
             btnSaveSec: "Guardar y Continuar",
             btnCancelSec: "Cancelar",
             alertInvalidA: "❌ Ingrese una respuesta válida y diferente a la de por defecto.",
-            alertSaving: "Guardando..."
+            alertSaving: "Guardando...",
+            vozActivada: "Asistencia por voz activada. Toque los textos para escucharlos.",
+            vozDesactivada: "Asistencia por voz desactivada."
         },
         en: {
             userLabel: "USERNAME",
@@ -390,7 +424,9 @@
             btnSaveSec: "Save and Continue",
             btnCancelSec: "Cancel",
             alertInvalidA: "❌ Please enter a valid answer different from the default.",
-            alertSaving: "Saving..."
+            alertSaving: "Saving...",
+            vozActivada: "Voice assistance activated. Tap on the texts to hear them.",
+            vozDesactivada: "Voice assistance deactivated."
         }
     };
 
@@ -475,30 +511,102 @@
 
     actualizarTextos();
 
-    // ESCUDO PERSISTENTE: Bloquea las inyecciones tardías del autocompletado en PC
+    // ESCUDO PERSISTENTE (Solución Autocompletado PC)
     window.addEventListener('pageshow', function() {
         const userField = document.getElementById('log-usuario');
         const passField = document.getElementById('log-password');
         
-        // Limpieza inmediata
         userField.value = '';
         passField.value = '';
         
-        // Escudo activo por 1 segundo
         let barridos = 0;
         const escudo = setInterval(function() {
-            // Solo limpia si el usuario NO ha tocado los cuadros todavía
             if (document.activeElement !== userField && document.activeElement !== passField) {
                 userField.value = '';
                 passField.value = '';
             }
             barridos++;
-            // Detiene el escudo después de 1 segundo (10 intentos de 100ms)
-            if (barridos >= 10) {
-                clearInterval(escudo);
-            }
+            if (barridos >= 10) clearInterval(escudo);
         }, 100);
     });
+
+    /* ------------------------------------------------------------- */
+    /* NUEVO: SISTEMA DE ASISTENCIA POR VOZ BILINGÜE */
+    /* ------------------------------------------------------------- */
+    
+    let vozActiva = false;
+    const synth = window.speechSynthesis;
+
+    function leerTexto(texto) {
+        if (!vozActiva) return;
+        
+        // Cancela cualquier lectura anterior para evitar superposiciones
+        synth.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(texto);
+        
+        // Configura el idioma de la voz según el idioma actual de la página
+        utterance.lang = (idiomaActual === 'es') ? 'es-ES' : 'en-US';
+        utterance.rate = 0.9; // Velocidad un poco más pausada y clara
+        
+        synth.speak(utterance);
+    }
+
+    function toggleVoz() {
+        const btnVoz = document.getElementById('btn-toggle-voz');
+        vozActiva = !vozActiva;
+        const t = traducciones[idiomaActual];
+        
+        if (vozActiva) {
+            btnVoz.classList.add('activo');
+            leerTexto(t.vozActivada);
+        } else {
+            btnVoz.classList.remove('activo');
+            synth.cancel(); // Silenciar inmediatamente si apaga el botón
+        }
+    }
+
+    // Interceptar los clics en elementos de texto para leerlos si la voz está activa
+    document.querySelectorAll('.elemento-leible').forEach(elemento => {
+        elemento.addEventListener('click', function(e) {
+            if (vozActiva) {
+                // Prevenir que el botón haga su acción normal INMEDIATAMENTE
+                // para que el usuario pueda escuchar de qué se trata primero.
+                // Si realmente quiere ingresar, simplemente desactiva la voz o toca 2 veces rápido.
+                e.preventDefault();
+                
+                // Resaltado visual sutil mientras lee
+                this.classList.add('leyendo-texto');
+                setTimeout(() => this.classList.remove('leyendo-texto'), 1500);
+                
+                let textoALeer = this.innerText || this.textContent;
+                
+                // Limpieza especial para los botones del menú (quitar emojis)
+                textoALeer = textoALeer.replace(/[🌓☀️🌐]/g, '').trim();
+                
+                leerTexto(textoALeer);
+            }
+        });
+    });
+    
+    // Interceptar la casilla de "Opciones del Select" (Preguntas de Seguridad)
+    document.getElementById('act-pregunta').addEventListener('change', function(e) {
+        if (vozActiva) {
+            const textoSeleccionado = this.options[this.selectedIndex].text;
+            leerTexto(textoSeleccionado);
+        }
+    });
+
+    // Interceptar clics en los Inputs para leer el Placeholder (Qué debe ingresar ahí)
+    const inputsLeibles = document.querySelectorAll('input');
+    inputsLeibles.forEach(input => {
+        input.addEventListener('click', function(e) {
+            if (vozActiva && this.placeholder) {
+                leerTexto(this.placeholder);
+            }
+        });
+    });
+
 </script>
 
 <script type="module">
@@ -530,12 +638,20 @@
         }
     }
 
-    document.getElementById('btn-ingresar').onclick = async function() {
+    document.getElementById('btn-ingresar').addEventListener('click', async function(e) {
+        // Si la voz está activa, el clic se bloqueó arriba para solo leer.
+        // Si el usuario quiere entrar de verdad, debe tocar con la voz apagada o el código puede forzarse aquí si es necesario.
+        if (vozActiva) return; // Si la voz está encendida, el botón solo lee su nombre y no ejecuta el login.
+
         const usuarioInput = document.getElementById('log-usuario').value.trim();
         const passwordInput = document.getElementById('log-password').value.trim();
         const t = traducciones[idiomaActual]; 
 
-        if(!usuarioInput || !passwordInput) return alert(t.alertEmpty);
+        if(!usuarioInput || !passwordInput) {
+            alert(t.alertEmpty);
+            leerTexto(t.alertEmpty);
+            return;
+        }
 
         const originalText = this.innerText;
         this.innerText = t.alertVerifying;
@@ -556,6 +672,7 @@
                 if (usuarioValido) {
                     if(usuarioValido.bloqueado) {
                         alert(t.alertBlocked);
+                        leerTexto("Cuenta bloqueada");
                         this.innerText = originalText;
                         return;
                     }
@@ -571,15 +688,18 @@
                     
                 } else {
                     alert(t.alertError);
+                    leerTexto("Usuario o contraseña incorrectos");
                 }
             } else {
                 alert(t.alertNoUsers);
             }
         } catch (error) { alert("Error: " + error.message); }
         this.innerText = originalText;
-    };
+    });
 
-    document.getElementById('btn-guardar-seguridad').onclick = async function() {
+    document.getElementById('btn-guardar-seguridad').addEventListener('click', async function(e) {
+        if (vozActiva) return;
+
         const t = traducciones[idiomaActual];
         const combo = document.getElementById('act-pregunta');
         const pre = combo.options[combo.selectedIndex].text;
@@ -605,7 +725,7 @@
             alert("Error: " + error.message);
             this.innerText = originalText;
         }
-    };
+    });
 </script>
 </body>
 </html>
