@@ -31,7 +31,6 @@
             flex-direction: column;
             align-items: center;
             min-width: fit-content; 
-            position: relative;
         }
 
         .hoja-blanca {
@@ -44,18 +43,6 @@
             font-size: 11px;
             margin-bottom: 70px; 
             position: relative; 
-            z-index: 2;
-        }
-
-        /* CAPA CANVAS PARA LÍNEAS VERTICALES DE CIERRE (A PRUEBA DE PDF) */
-        #capa-lineas-cierre {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1; /* Se dibuja en el fondo, los bordes de la tabla quedan por encima */
         }
 
         .botones-flotantes {
@@ -108,11 +95,15 @@
             background-size: 100% 100%; 
         }
 
-        /* FONDO GRIS PARA COLUMNAS INHABILITADAS */
+        /* RESTAURADO CÓDIGO EXACTO DE CLAUDE PARA COLUMNAS INHABILITADAS */
         td.columna-anulada-bg {
-            background-color: #e0e0e0 !important;
-            background-clip: padding-box !important;
+            background-color: #e0e0e0;
+            background-image: linear-gradient(#000, #000);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 3px 100%;
         }
+        td.columna-anulada-bg .btn-firmar { visibility: hidden; } 
 
         .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
         .logo-box { width: 20%; display: flex; align-items: center; justify-content: center; }
@@ -124,7 +115,7 @@
         .box-rounded { background-color: var(--table-header-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; color: #000; height: 100%; text-align: center; }
         .box-text-small { font-size: 10px; line-height: 1.2; }
 
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background-color: transparent; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         th, td { border: 1px solid var(--border-color) !important; padding: 4px 6px; vertical-align: top; } 
         .bg-header { background-color: var(--table-header-bg); font-weight: bold; text-align: center; vertical-align: middle; }
         .title-row td { background-color: var(--table-header-bg); font-weight: bold; text-align: center; font-size: 12px; padding: 5px; vertical-align: middle; }
@@ -190,7 +181,6 @@
             #tabla-seccion-3 tr:nth-child(-n+3) { break-after: avoid; page-break-after: avoid; }
             
             td.columna-anulada-bg, td.linea-hallazgos { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            canvas#capa-lineas-cierre { display: block !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
@@ -202,8 +192,6 @@
 <body>
 <div class="contenedor-principal">
     <div class="hoja-blanca" id="documento-imprimible">
-        <!-- CAPA CANVAS PARA LÍNEAS DE CIERRE VERTICALES PERFECTAS -->
-        <canvas id="capa-lineas-cierre"></canvas>
 
         <div class="pagina-uno">
         <div class="top-header">
@@ -510,7 +498,7 @@
         btnGenerarPdf.onclick = () => { window.print(); };
     }
 
-    // EL SISTEMA DIBUJARÁ LAS LÍNEAS DE CIERRE SOLO CUANDO SE LLAME A ESTA FUNCIÓN
+    // EL SISTEMA DIBUJARÁ LAS LÍNEAS DE CIERRE USANDO EL METODO ORIGINAL DE CLAUDE
     function cerrarPreoperacional() {
         const filas = [...document.querySelectorAll('#tabla-seccion-3 tr')];
         const filasCriterios = filas.filter(f => f.querySelector('.criterio-select'));
@@ -531,7 +519,7 @@
             });
             
             if (vacio) {
-                // Inhabilitar las celdas y aplicar la clase de fondo gris
+                // Inhabilitar las celdas y aplicar la clase original de fondo gris y línea de Claude
                 celdas.forEach(td => {
                     td.classList.add('columna-anulada-bg');
                     td.style.pointerEvents = 'none';
