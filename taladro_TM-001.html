@@ -104,6 +104,19 @@
             background-clip: padding-box !important; /* Mantiene los bordes de la tabla visibles en PDF */
         }
 
+        /* AGREGADO: columnas de días en blanco al pulsar "Cerrar preoperacional" (clase que ya pone cerrarPreoperacional):
+           fondo gris + línea vertical negra de 3px (los bordes de la tabla son de 1px) centrada en la columna.
+           Todo va pintado en el fondo de cada cuadro de la columna, desde el primer criterio hasta la firma del SST, así que siempre
+           queda dentro de su columna, también en el PDF, y no se puede desalinear. */
+        td.columna-anulada-bg {
+            background-color: #e0e0e0;
+            background-image: linear-gradient(#000, #000);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 3px 100%;
+        }
+        td.columna-anulada-bg .btn-firmar { visibility: hidden; } /* el botón ✍️ inhabilitado taparía la línea */
+
         .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
         .logo-box { width: 20%; display: flex; align-items: center; justify-content: center; }
         .logo-box img { max-width: 100%; max-height: 60px; object-fit: contain; }
