@@ -104,6 +104,19 @@
             background-clip: padding-box !important; /* Mantiene los bordes de la tabla visibles en PDF */
         }
 
+        /* AGREGADO: columnas de días en blanco al pulsar "Cerrar preoperacional" (clase que ya pone cerrarPreoperacional):
+           fondo gris + línea vertical negra de 3px (los bordes de la tabla son de 1px) centrada en la columna.
+           Todo va pintado en el fondo de cada cuadro de la columna, desde el primer criterio hasta la firma del SST, así que siempre
+           queda dentro de su columna, también en el PDF, y no se puede desalinear. */
+        td.columna-anulada-bg {
+            background-color: #e0e0e0;
+            background-image: linear-gradient(#000, #000);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 3px 100%;
+        }
+        td.columna-anulada-bg .btn-firmar { visibility: hidden; } /* el botón ✍️ inhabilitado taparía la línea */
+
         .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
         .logo-box { width: 20%; display: flex; align-items: center; justify-content: center; }
         .logo-box img { max-width: 100%; max-height: 60px; object-fit: contain; }
@@ -159,6 +172,10 @@
         
         .print-fill-row { display: none; }
 
+        /* ESTILOS DEL BUSCADOR */
+        .resultado-item { padding: 12px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 6px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; transition: background 0.2s; text-align: left; }
+        .resultado-item:active { background: #e0e0e0; }
+
         @media print {
             @page { size: letter; margin: 6mm; }
             body, .contenedor-principal { background-color: #fff; padding: 0; margin: 0; display: block; min-width: 0; width: 100%; }
@@ -170,12 +187,12 @@
             th, td { border: 1px solid #000 !important; background-clip: padding-box !important; }
 
             table, tr, td, .top-header { page-break-inside: avoid; }
-            .no-print, .botones-flotantes, #firma-modal { display: none !important; }
+            .no-print, .botones-flotantes, #firma-modal, #modal-buscador { display: none !important; }
             .print-fill-row { display: table-row !important; }
             #tabla-trabajadores, #tabla-seccion-3 { page-break-inside: auto; break-inside: auto; }
             #tabla-seccion-3 tr:nth-child(-n+3) { break-after: avoid; page-break-after: avoid; }
             
-            td.linea-vertical-anulada, td.linea-hallazgos { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            td.linea-vertical-anulada, td.columna-anulada-bg, td.linea-hallazgos { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
@@ -242,8 +259,8 @@
             <tr><td class="bg-header" style="width: 50%;">Nombres y Apellidos</td><td class="bg-header" style="width: 25%;">Cédula</td><td class="bg-header" style="width: 25%;">Firma</td></tr>
             <tbody id="tbody-trabajadores">
                 <tr>
-                    <td><input type="text" class="save-data"></td>
-                    <td><input type="text" class="save-data" style="text-align: center;"></td>
+                    <td><input type="text" class="save-data input-nombre"></td>
+                    <td><input type="text" class="save-data input-cedula" style="text-align: center; cursor: pointer; color: var(--hmv-blue); font-weight: bold;" placeholder="Toca para buscar" readonly></td>
                     <td style="text-align: center; vertical-align: middle;">
                         <button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️ Firmar</button>
                         <img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 30px; margin: auto;">
@@ -335,6 +352,18 @@
     </div>
 </div>
 
+<!-- NUEVO: MODAL BUSCADOR DE TRABAJADORES -->
+<div id="modal-buscador" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(3px); touch-action: none; overscroll-behavior: contain;">
+    <div style="background: #fff; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); max-height: 80vh;">
+        <h3 style="margin: 0; color: var(--hmv-blue); font-family: sans-serif; font-size: 16px; text-align: center;">🔍 Buscar Trabajador</h3>
+        <input type="number" id="input-busqueda-cedula" placeholder="Digita la cédula..." style="width: 100%; padding: 12px; border: 2px solid var(--hmv-blue); border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; background: #f4f7fb; color: #000;">
+        <div id="lista-resultados" style="overflow-y: auto; display: flex; flex-direction: column; gap: 8px; flex-grow: 1;">
+            <!-- Resultados aquí -->
+        </div>
+        <button id="btn-cerrar-buscador" type="button" style="padding: 12px; background: #888; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; width: 100%; margin-top: 5px;">Cancelar</button>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -357,6 +386,7 @@
     const inpSerial = document.getElementById('inp-serial');
     if(inpSerial) inpSerial.value = documentSerial;
     
+    // SESIÓN ACTUALIZADA A sessionStorage PARA HABILITAR LAS FIRMAS
     const rolUsuario = sessionStorage.getItem('hmv_user_role') || 'Invitado';
 
     function aplicarPermisosRoles() {
@@ -473,14 +503,13 @@
         if(btnEliminar) btnEliminar.style.display = 'none';
     }
 
-    // EL BOTÓN DE GENERAR PDF YA NO EJECUTA EL CIERRE, SOLO IMPRIME LO QUE HAY
     const btnGenerarPdf = document.getElementById('btn-generar-pdf');
     if (btnGenerarPdf && rolUsuario === 'Responsable SST') {
         btnGenerarPdf.style.display = 'flex';
         btnGenerarPdf.onclick = () => { window.print(); };
     }
 
-    // EL SISTEMA DIBUJARÁ LAS LÍNEAS DE CIERRE SOLO CUANDO SE LLAME A ESTA FUNCIÓN
+    // EL SISTEMA DE CIERRE SE MANTIENE INTACTO PARA GARANTIZAR LA ESTABILIDAD DEL PDF
     function cerrarPreoperacional() {
         const filas = [...document.querySelectorAll('#tabla-seccion-3 tr')];
         const filasCriterios = filas.filter(f => f.querySelector('.criterio-select'));
@@ -523,15 +552,10 @@
         document.body.classList.add('preop-cerrado');
     }
     
-    // EL EVENTO CLIC DEL BOTÓN CIERRA EL PREOPERACIONAL Y LUEGO GUARDA (OPCIONAL, PERO RECOMENDADO)
     const btnCerrarPreop = document.getElementById('btn-cerrar-preop');
     if (btnCerrarPreop && rolUsuario === 'Responsable SST') {
         btnCerrarPreop.style.display = 'flex';
-        btnCerrarPreop.onclick = () => { 
-            cerrarPreoperacional(); 
-            // Opcional: puedes hacer que se guarde automáticamente al cerrar
-            // document.getElementById('btn-guardar-doc').click();
-        };
+        btnCerrarPreop.onclick = () => { cerrarPreoperacional(); };
     }
 
     function filasTrabajadores() { return document.querySelectorAll('#tbody-trabajadores tr:not(#row-btn-agregar)'); }
@@ -547,7 +571,7 @@
         btnAgregar.onclick = function() {
             const tbody = document.getElementById('tbody-trabajadores');
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td><input type="text" class="save-data"></td><td><input type="text" class="save-data" style="text-align: center;"></td><td style="text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️ Firmar</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 30px; margin: auto;"></td>`;
+            tr.innerHTML = `<td><input type="text" class="save-data input-nombre"></td><td><input type="text" class="save-data input-cedula" style="text-align: center; cursor: pointer; color: var(--hmv-blue); font-weight: bold;" placeholder="Toca para buscar" readonly></td><td style="text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️ Firmar</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 30px; margin: auto;"></td>`;
             const newBtn = tr.querySelector('.btn-firmar');
             if (rolUsuario !== 'Oficial / Auxiliar') { newBtn.disabled = true; newBtn.title = 'Acceso denegado.'; }
             attachFirmaEvent(newBtn);
@@ -565,6 +589,101 @@
         };
     }
     actualizarBotonEliminar();
+
+    // -------------------------------------------------------------
+    // NUEVA LÓGICA: BUSCADOR DE TRABAJADORES (PANTALLA COMPLETA)
+    // -------------------------------------------------------------
+    const modalBuscador = document.getElementById('modal-buscador');
+    const inputBusqueda = document.getElementById('input-busqueda-cedula');
+    const listaResultados = document.getElementById('lista-resultados');
+    let currentRowInputs = null;
+    let trabajadoresCache = null;
+
+    async function cargarTrabajadoresCiviles() {
+        if (trabajadoresCache === null) {
+            try {
+                const snap = await get(ref(db, 'trabajadores_civiles'));
+                if (snap.exists()) {
+                    trabajadoresCache = snap.val();
+                } else {
+                    trabajadoresCache = {};
+                }
+            } catch(e) {
+                console.error("Error cargando trabajadores:", e);
+                trabajadoresCache = {};
+            }
+        }
+    }
+
+    function renderizarResultados(filtro = "") {
+        listaResultados.innerHTML = "";
+        const frag = document.createDocumentFragment();
+        
+        let arr = [];
+        for(let cedula in trabajadoresCache) {
+            arr.push({ cedula: cedula, nombre: trabajadoresCache[cedula].nombre });
+        }
+
+        if(filtro) {
+            arr = arr.filter(t => t.cedula.includes(filtro));
+        }
+
+        // Mostrar maximo 25 resultados para rendimiento en celular
+        arr.slice(0, 25).forEach(t => {
+            const div = document.createElement('div');
+            div.className = 'resultado-item';
+            div.innerHTML = `<strong style="font-size: 14px; color: var(--hmv-blue);">${t.cedula}</strong><span style="font-size: 12px; color: var(--text-color);">${t.nombre}</span>`;
+            div.onclick = () => {
+                if(currentRowInputs) {
+                    currentRowInputs.cedula.value = t.cedula;
+                    currentRowInputs.nombre.value = t.nombre;
+                }
+                cerrarBuscador();
+            };
+            frag.appendChild(div);
+        });
+
+        if(arr.length === 0) {
+            listaResultados.innerHTML = `<span style="font-size: 12px; color: #666; text-align: center; padding: 10px;">No se encontraron resultados</span>`;
+        } else {
+            listaResultados.appendChild(frag);
+        }
+    }
+
+    function abrirBuscador(inputTargetCedula) {
+        const tr = inputTargetCedula.closest('tr');
+        const inputNombre = tr.querySelector('.input-nombre');
+        
+        currentRowInputs = { cedula: inputTargetCedula, nombre: inputNombre };
+        inputBusqueda.value = "";
+        
+        modalBuscador.style.display = 'flex';
+        inputBusqueda.focus(); 
+        
+        listaResultados.innerHTML = `<span style="font-size: 12px; color: #666; text-align: center; padding: 10px;">Cargando base de datos...</span>`;
+        
+        cargarTrabajadoresCiviles().then(() => {
+            renderizarResultados();
+        });
+    }
+
+    function cerrarBuscador() {
+        modalBuscador.style.display = 'none';
+        currentRowInputs = null;
+    }
+
+    document.getElementById('btn-cerrar-buscador').onclick = cerrarBuscador;
+    inputBusqueda.addEventListener('input', (e) => {
+        renderizarResultados(e.target.value.trim());
+    });
+
+    // Delegación de eventos para capturar el click en cualquier input de cédula (incluyendo nuevas filas)
+    document.getElementById('tbody-trabajadores').addEventListener('click', (e) => {
+        if(e.target.classList.contains('input-cedula') && !e.target.disabled) {
+            abrirBuscador(e.target);
+        }
+    });
+    // -------------------------------------------------------------
 
     document.getElementById('btn-guardar-doc').onclick = async function() {
         let datos = { textos: [], firmas: [], btnAgregarClicks: document.querySelectorAll('#tbody-trabajadores tr:not(#row-btn-agregar)').length - 1 };
@@ -631,7 +750,7 @@
                 }
 
                 if(guardado.cerrado) {
-                    setTimeout(() => { cerrarPreoperacional(); }, 200);
+                    setTimeout(() => { cerrarPreoperacional(); }, 100);
                 }
             }
         } catch(e) { console.error("Error al cargar:", e); }
