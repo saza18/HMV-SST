@@ -31,6 +31,7 @@
             flex-direction: column;
             align-items: center;
             min-width: fit-content; 
+            position: relative;
         }
 
         .hoja-blanca {
@@ -43,6 +44,18 @@
             font-size: 11px;
             margin-bottom: 70px; 
             position: relative; 
+            z-index: 2;
+        }
+
+        /* CAPA CANVAS PARA LÍNEAS VERTICALES DE CIERRE (A PRUEBA DE PDF) */
+        #capa-lineas-cierre {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1; /* Se dibuja en el fondo, los bordes de la tabla quedan por encima */
         }
 
         .botones-flotantes {
@@ -95,27 +108,11 @@
             background-size: 100% 100%; 
         }
 
-        /* MÉTODO INFALIBLE: LÍNEA VERTICAL DIBUJADA CON GRADIENTE Y PIXELES EXACTOS */
-        td.linea-vertical-anulada {
-            background-color: #e0e0e0 !important;
-            /* La línea negra medirá exactamente 1px de grosor (igual que los bordes) y estará anclada al centro */
-            background-image: linear-gradient(to right, transparent calc(50% - 0.5px), #000 calc(50% - 0.5px), #000 calc(50% + 0.5px), transparent calc(50% + 0.5px)) !important;
-            background-repeat: repeat-y !important;
-            background-clip: padding-box !important; /* Mantiene los bordes de la tabla visibles en PDF */
-        }
-
-        /* AGREGADO: columnas de días en blanco al pulsar "Cerrar preoperacional" (clase que ya pone cerrarPreoperacional):
-           fondo gris + línea vertical negra de 3px (los bordes de la tabla son de 1px) centrada en la columna.
-           Todo va pintado en el fondo de cada cuadro de la columna, desde el primer criterio hasta la firma del SST, así que siempre
-           queda dentro de su columna, también en el PDF, y no se puede desalinear. */
+        /* FONDO GRIS PARA COLUMNAS INHABILITADAS */
         td.columna-anulada-bg {
-            background-color: #e0e0e0;
-            background-image: linear-gradient(#000, #000);
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 3px 100%;
+            background-color: #e0e0e0 !important;
+            background-clip: padding-box !important;
         }
-        td.columna-anulada-bg .btn-firmar { visibility: hidden; } /* el botón ✍️ inhabilitado taparía la línea */
 
         .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
         .logo-box { width: 20%; display: flex; align-items: center; justify-content: center; }
@@ -127,7 +124,7 @@
         .box-rounded { background-color: var(--table-header-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; color: #000; height: 100%; text-align: center; }
         .box-text-small { font-size: 10px; line-height: 1.2; }
 
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background-color: transparent; }
         th, td { border: 1px solid var(--border-color) !important; padding: 4px 6px; vertical-align: top; } 
         .bg-header { background-color: var(--table-header-bg); font-weight: bold; text-align: center; vertical-align: middle; }
         .title-row td { background-color: var(--table-header-bg); font-weight: bold; text-align: center; font-size: 12px; padding: 5px; vertical-align: middle; }
@@ -192,7 +189,8 @@
             #tabla-trabajadores, #tabla-seccion-3 { page-break-inside: auto; break-inside: auto; }
             #tabla-seccion-3 tr:nth-child(-n+3) { break-after: avoid; page-break-after: avoid; }
             
-            td.linea-vertical-anulada, td.columna-anulada-bg, td.linea-hallazgos { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            td.columna-anulada-bg, td.linea-hallazgos { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            canvas#capa-lineas-cierre { display: block !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
@@ -204,6 +202,8 @@
 <body>
 <div class="contenedor-principal">
     <div class="hoja-blanca" id="documento-imprimible">
+        <!-- CAPA CANVAS PARA LÍNEAS DE CIERRE VERTICALES PERFECTAS -->
+        <canvas id="capa-lineas-cierre"></canvas>
 
         <div class="pagina-uno">
         <div class="top-header">
@@ -260,7 +260,7 @@
             <tbody id="tbody-trabajadores">
                 <tr>
                     <td><input type="text" class="save-data input-nombre"></td>
-                    <td><input type="text" class="save-data input-cedula" style="text-align: center; cursor: pointer; color: var(--hmv-blue); font-weight: bold;" placeholder="Toca para buscar" readonly></td>
+                    <td><input type="text" class="save-data input-cedula" style="text-align: center; cursor: pointer; color: #000; font-weight: bold;" placeholder="Toca para buscar" readonly></td>
                     <td style="text-align: center; vertical-align: middle;">
                         <button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️ Firmar</button>
                         <img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 30px; margin: auto;">
@@ -352,9 +352,9 @@
     </div>
 </div>
 
-<!-- NUEVO: MODAL BUSCADOR DE TRABAJADORES -->
+<!-- MODAL BUSCADOR DE TRABAJADORES -->
 <div id="modal-buscador" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(3px); touch-action: none; overscroll-behavior: contain;">
-    <div style="background: #fff; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); max-height: 80vh;">
+    <div style="background: #fff; padding: 15px; border-radius: 12px; width: 90%; max-width: 500px; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); max-height: 80vh; overflow: hidden;">
         <h3 style="margin: 0; color: var(--hmv-blue); font-family: sans-serif; font-size: 16px; text-align: center;">🔍 Buscar Trabajador</h3>
         <input type="number" id="input-busqueda-cedula" placeholder="Digita la cédula..." style="width: 100%; padding: 12px; border: 2px solid var(--hmv-blue); border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; background: #f4f7fb; color: #000;">
         <div id="lista-resultados" style="overflow-y: auto; display: flex; flex-direction: column; gap: 8px; flex-grow: 1;">
@@ -503,13 +503,14 @@
         if(btnEliminar) btnEliminar.style.display = 'none';
     }
 
+    // EL BOTÓN DE GENERAR PDF YA NO EJECUTA EL CIERRE, SOLO IMPRIME LO QUE HAY
     const btnGenerarPdf = document.getElementById('btn-generar-pdf');
     if (btnGenerarPdf && rolUsuario === 'Responsable SST') {
         btnGenerarPdf.style.display = 'flex';
         btnGenerarPdf.onclick = () => { window.print(); };
     }
 
-    // EL SISTEMA DE CIERRE SE MANTIENE INTACTO PARA GARANTIZAR LA ESTABILIDAD DEL PDF
+    // EL SISTEMA DIBUJARÁ LAS LÍNEAS DE CIERRE SOLO CUANDO SE LLAME A ESTA FUNCIÓN
     function cerrarPreoperacional() {
         const filas = [...document.querySelectorAll('#tabla-seccion-3 tr')];
         const filasCriterios = filas.filter(f => f.querySelector('.criterio-select'));
@@ -552,10 +553,13 @@
         document.body.classList.add('preop-cerrado');
     }
     
+    // EL EVENTO CLIC DEL BOTÓN CIERRA EL PREOPERACIONAL Y LUEGO GUARDA
     const btnCerrarPreop = document.getElementById('btn-cerrar-preop');
     if (btnCerrarPreop && rolUsuario === 'Responsable SST') {
         btnCerrarPreop.style.display = 'flex';
-        btnCerrarPreop.onclick = () => { cerrarPreoperacional(); };
+        btnCerrarPreop.onclick = () => { 
+            cerrarPreoperacional(); 
+        };
     }
 
     function filasTrabajadores() { return document.querySelectorAll('#tbody-trabajadores tr:not(#row-btn-agregar)'); }
@@ -571,7 +575,7 @@
         btnAgregar.onclick = function() {
             const tbody = document.getElementById('tbody-trabajadores');
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td><input type="text" class="save-data input-nombre"></td><td><input type="text" class="save-data input-cedula" style="text-align: center; cursor: pointer; color: var(--hmv-blue); font-weight: bold;" placeholder="Toca para buscar" readonly></td><td style="text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️ Firmar</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 30px; margin: auto;"></td>`;
+            tr.innerHTML = `<td><input type="text" class="save-data input-nombre"></td><td><input type="text" class="save-data input-cedula" style="text-align: center; cursor: pointer; color: #000; font-weight: bold;" placeholder="Toca para buscar" readonly></td><td style="text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️ Firmar</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 30px; margin: auto;"></td>`;
             const newBtn = tr.querySelector('.btn-firmar');
             if (rolUsuario !== 'Oficial / Auxiliar') { newBtn.disabled = true; newBtn.title = 'Acceso denegado.'; }
             attachFirmaEvent(newBtn);
@@ -591,7 +595,7 @@
     actualizarBotonEliminar();
 
     // -------------------------------------------------------------
-    // NUEVA LÓGICA: BUSCADOR DE TRABAJADORES (PANTALLA COMPLETA)
+    // LÓGICA: BUSCADOR DE TRABAJADORES Y AGREGADO DINÁMICO
     // -------------------------------------------------------------
     const modalBuscador = document.getElementById('modal-buscador');
     const inputBusqueda = document.getElementById('input-busqueda-cedula');
@@ -614,6 +618,31 @@
             }
         }
     }
+
+    // Función exportada globalmente para poder llamarla desde el HTML inyectado
+    window.crearTrabajadorDesdeBuscador = async function(cedulaNueva) {
+        const nombreNuevo = prompt("Ingresa el NOMBRE COMPLETO para la cédula " + cedulaNueva + ":");
+        if (!nombreNuevo || nombreNuevo.trim() === "") return; // El usuario canceló o dejó en blanco
+
+        try {
+            // Guardar directamente en Firebase
+            await set(ref(db, `trabajadores_civiles/${cedulaNueva}`), { nombre: nombreNuevo.trim() });
+            
+            // Actualizar la caché local para que no vuelva a descargarse todo
+            trabajadoresCache[cedulaNueva] = { nombre: nombreNuevo.trim() };
+            
+            // Llenar automáticamente los datos en la tabla actual
+            if (currentRowInputs) {
+                currentRowInputs.cedula.value = cedulaNueva;
+                currentRowInputs.nombre.value = nombreNuevo.trim();
+            }
+            
+            cerrarBuscador();
+            alert("Trabajador agregado exitosamente a la base de datos.");
+        } catch (error) {
+            alert("❌ Error al guardar el trabajador: " + error.message);
+        }
+    };
 
     function renderizarResultados(filtro = "") {
         listaResultados.innerHTML = "";
@@ -643,8 +672,18 @@
             frag.appendChild(div);
         });
 
+        // NUEVO: Si no hay resultados y el usuario escribió algo, le damos la opción de crear
         if(arr.length === 0) {
-            listaResultados.innerHTML = `<span style="font-size: 12px; color: #666; text-align: center; padding: 10px;">No se encontraron resultados</span>`;
+            if(filtro.trim() !== "") {
+                listaResultados.innerHTML = `
+                    <div style="text-align: center; padding: 15px;">
+                        <span style="font-size: 13px; color: #666;">La cédula <b>${filtro}</b> no está registrada en la base de datos.</span><br><br>
+                        <button type="button" onclick="window.crearTrabajadorDesdeBuscador('${filtro}')" style="background: var(--hmv-yellow); color: #000; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">➕ Agregar nuevo trabajador</button>
+                    </div>
+                `;
+            } else {
+                listaResultados.innerHTML = `<span style="font-size: 12px; color: #666; text-align: center; padding: 10px;">No se encontraron resultados</span>`;
+            }
         } else {
             listaResultados.appendChild(frag);
         }
