@@ -31,6 +31,7 @@
             flex-direction: column;
             align-items: center;
             min-width: fit-content; 
+            position: relative;
         }
 
         .hoja-blanca {
@@ -43,6 +44,18 @@
             font-size: 11px;
             margin-bottom: 70px; 
             position: relative; 
+            z-index: 2; /* Importante para que el canvas de líneas quede encima */
+        }
+
+        /* CAPA CANVAS PARA DIBUJAR LÍNEAS VERTICALES IDÉNTICAS */
+        #capa-lineas-columnas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5; /* Encima de la tabla */
         }
 
         .botones-flotantes {
@@ -95,11 +108,9 @@
             background-size: 100% 100%; 
         }
 
-        /* NUEVA LÍNEA VERTICAL CON FONDO GRIS PARA DÍAS INHABILITADOS (100% SEGURO EN PDF) */
-        td.linea-vertical-anulada {
+        /* Estilo para oscurecer ligeramente la columna inhabilitada (opcional) */
+        td.columna-anulada-bg {
             background-color: #e0e0e0 !important;
-            background-image: linear-gradient(to right, transparent 48%, #444 48%, #444 52%, transparent 52%) !important;
-            background-repeat: repeat-y !important;
         }
 
         .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
@@ -169,7 +180,8 @@
             #tabla-trabajadores, #tabla-seccion-3 { page-break-inside: auto; break-inside: auto; }
             #tabla-seccion-3 tr:nth-child(-n+3) { break-after: avoid; page-break-after: avoid; }
             
-            td.linea-vertical-anulada, td.linea-hallazgos { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            td.columna-anulada-bg, td.linea-hallazgos { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            canvas#capa-lineas-columnas { display: block !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
@@ -181,6 +193,8 @@
 <body>
 <div class="contenedor-principal">
     <div class="hoja-blanca" id="documento-imprimible">
+        <!-- CAPA CANVAS PARA LÍNEAS VERTICALES IDÉNTICAS -->
+        <canvas id="capa-lineas-columnas"></canvas>
 
         <div class="pagina-uno">
         <div class="top-header">
@@ -471,17 +485,38 @@
     const btnGenerarPdf = document.getElementById('btn-generar-pdf');
     if (btnGenerarPdf && rolUsuario === 'Responsable SST') {
         btnGenerarPdf.style.display = 'flex';
-        btnGenerarPdf.onclick = () => { window.print(); };
+        btnGenerarPdf.onclick = () => { 
+            dibujarLineasEnCanvas(); 
+            window.print(); 
+        };
     }
 
-    function cerrarPreoperacional() {
+    // NUEVA MODIFICACIÓN: DIBUJAR LÍNEAS VERTICALES PERFECTAS Y SEGURAS PARA PDF
+    function dibujarLineasEnCanvas() {
+        const hoja = document.getElementById('documento-imprimible');
+        const canvas = document.getElementById('capa-lineas-columnas');
+        const ctx = canvas.getContext('2d');
+        
+        // Ajustar el canvas exactamente al tamaño del documento completo
+        canvas.width = hoja.offsetWidth;
+        canvas.height = hoja.offsetHeight;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Configurar el grosor de la línea
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2; // Línea con buen grosor, uniforme en todos lados
+
         const filas = [...document.querySelectorAll('#tabla-seccion-3 tr')];
         const filasCriterios = filas.filter(f => f.querySelector('.criterio-select'));
         const filasFirmas = filas.filter(f => f.querySelector('.btn-firmar'));
+        
         const celdaDelDia = (fila, dia) => (fila.querySelector('.criterio-select')
             ? fila.querySelectorAll('td.check-td')
             : [...fila.querySelectorAll(':scope > td')].slice(-7))[dia];
         
+        const filaArriba = document.getElementById('primera-fila-criterios');
+        const filaAbajo = document.getElementById('ultima-fila-firmas');
+
         for (let dia = 0; dia < 7; dia++) {
             const celdas = [...filasCriterios, ...filasFirmas].map(f => celdaDelDia(f, dia));
             
@@ -494,15 +529,38 @@
             });
             
             if (vacio) {
-                // Inhabilitar las celdas y aplicar la clase de la línea vertical con fondo gris
+                // Inhabilitar y sombrear las celdas
                 celdas.forEach(td => {
-                    td.classList.add('linea-vertical-anulada');
                     td.style.pointerEvents = 'none';
                     td.querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = true);
+                    td.classList.add('columna-anulada-bg'); // Aplica fondo gris tenue opcional
                 });
+
+                const celdaTop = celdaDelDia(filaArriba, dia);
+                const celdaBottom = celdaDelDia(filaAbajo, dia);
+                
+                // Calcular coordenadas exactas relativas a la hoja
+                const hojaRect = hoja.getBoundingClientRect();
+                const topRect = celdaTop.getBoundingClientRect();
+                const bottomRect = celdaBottom.getBoundingClientRect();
+                
+                // Calcular el CENTRO EXACTO de la columna para la línea vertical
+                const centroX = (topRect.left + (topRect.width / 2)) - hojaRect.left;
+                
+                const startY = topRect.top - hojaRect.top;
+                const endY = bottomRect.bottom - hojaRect.top;
+
+                // Dibujar la línea vertical físicamente sobre el documento
+                ctx.beginPath();
+                ctx.moveTo(centroX, startY);
+                ctx.lineTo(centroX, endY);
+                ctx.stroke();
             }
         }
-        
+    }
+
+    function cerrarPreoperacional() {
+        // Ejecutamos primero la deshabilitación y limpieza de hallazgos
         const hallazgos = document.getElementById('hallazgos');
         if (hallazgos) {
             const tdHallazgos = hallazgos.closest('td');
@@ -514,7 +572,17 @@
             }
         }
         document.body.classList.add('preop-cerrado');
+        
+        // Ejecutamos el dibujo del canvas para las líneas verticales
+        dibujarLineasEnCanvas(); 
     }
+    
+    // REDIBUJAR SI SE CAMBIA EL TAMAÑO DE LA PANTALLA PARA MANTENER LAS LÍNEAS EN SU SITIO
+    window.addEventListener('resize', () => {
+        if(document.body.classList.contains('preop-cerrado')) {
+            dibujarLineasEnCanvas();
+        }
+    });
     
     const btnCerrarPreop = document.getElementById('btn-cerrar-preop');
     if (btnCerrarPreop && rolUsuario === 'Responsable SST') {
@@ -619,12 +687,13 @@
                 }
 
                 if(guardado.cerrado) {
-                    setTimeout(() => { cerrarPreoperacional(); }, 100);
+                    setTimeout(() => { cerrarPreoperacional(); }, 200);
                 }
             }
         } catch(e) { console.error("Error al cargar:", e); }
     }
     
+    // Asegurarse de que el canvas se dibuje bien cuando todas las fuentes e imágenes carguen
     window.onload = cargarDatos;
 </script>
 </body>

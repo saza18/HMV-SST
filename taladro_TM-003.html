@@ -22,6 +22,7 @@
             background-color: var(--bg-body);
             margin: 0;
             padding: 20px;
+            min-width: fit-content;
             overflow-x: auto; 
         }
 
@@ -30,6 +31,7 @@
             flex-direction: column;
             align-items: center;
             min-width: fit-content; 
+            position: relative;
         }
 
         .hoja-blanca {
@@ -42,6 +44,18 @@
             font-size: 11px;
             margin-bottom: 70px; 
             position: relative; 
+            z-index: 2; /* Importante para que el canvas de líneas quede encima */
+        }
+
+        /* CAPA CANVAS PARA DIBUJAR LÍNEAS VERTICALES IDÉNTICAS */
+        #capa-lineas-columnas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5; /* Encima de la tabla */
         }
 
         .botones-flotantes {
@@ -53,6 +67,7 @@
             padding: 15px 0;
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 10px;
             z-index: 1000;
             border-top: 1px solid #ccc;
@@ -78,10 +93,25 @@
             align-items: center;
             justify-content: center;
             font-family: inherit;
+            white-space: nowrap;
         }
         
         .btn-flotante:hover { opacity: 0.9; }
         .btn-regresar { background-color: #666; }
+        .btn-cerrar-preop { background-color: #37474f; }
+
+        /* LÍNEA DE HALLAZGOS INTACTA */
+        td.linea-hallazgos { 
+            background-image: linear-gradient(to bottom right, transparent calc(50% - 1px), #000 calc(50% - 1px), #000 calc(50% + 1px), transparent calc(50% + 1px)); 
+            background-repeat: no-repeat; 
+            background-position: center; 
+            background-size: 100% 100%; 
+        }
+
+        /* Estilo para oscurecer ligeramente la columna inhabilitada (opcional) */
+        td.columna-anulada-bg {
+            background-color: #e0e0e0 !important;
+        }
 
         .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
         .logo-box { width: 20%; display: flex; align-items: center; justify-content: center; }
@@ -93,7 +123,7 @@
         .box-rounded { background-color: var(--table-header-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; color: #000; height: 100%; text-align: center; }
         .box-text-small { font-size: 10px; line-height: 1.2; }
 
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background-color: transparent; }
         th, td { border: 1px solid var(--border-color); padding: 4px 6px; vertical-align: top; } 
         .bg-header { background-color: var(--table-header-bg); font-weight: bold; text-align: center; vertical-align: middle; }
         .title-row td { background-color: var(--table-header-bg); font-weight: bold; text-align: center; font-size: 12px; padding: 5px; vertical-align: middle; }
@@ -116,7 +146,7 @@
             font-size: 11px; 
             color: #000; 
             outline: none;
-            width: auto; /* Permite que se ajuste al texto */
+            width: auto; 
         }
         
         textarea.auto-expand {
@@ -139,54 +169,33 @@
         .print-fill-row { display: none; }
 
         @media print {
-            @page {
-                size: letter;
-                margin: 6mm; 
-            }
-            body, .contenedor-principal { 
-                background-color: #fff; 
-                padding: 0; 
-                margin: 0;
-                display: block; 
-                min-width: 0;
-                width: 100%; 
-            }
-            .hoja-blanca { 
-                box-shadow: none; 
-                margin: 0 auto !important; 
-                padding: 0; 
-                display: block; 
-                width: 98% !important; 
-                max-width: 100% !important; 
-                box-sizing: border-box;
-            }
+            @page { size: letter; margin: 6mm; }
+            body, .contenedor-principal { background-color: #fff; padding: 0; margin: 0; display: block; min-width: 0; width: 100%; }
+            .hoja-blanca { box-shadow: none; margin: 0 auto !important; padding: 0; display: block; width: 98% !important; max-width: 100% !important; box-sizing: border-box; }
             
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             table, tr, td, .top-header { page-break-inside: avoid; }
             .no-print, .botones-flotantes, #firma-modal { display: none !important; }
             .print-fill-row { display: table-row !important; }
-            /* Las tablas de trabajadores y de criterios pueden partirse entre hojas (fila por fila) */
             #tabla-trabajadores, #tabla-seccion-3 { page-break-inside: auto; break-inside: auto; }
-            /* Reemplaza el salto de hoja obligatorio antes de la sección 3: el bloque de la hoja 1 mide lo mismo que
-               una hoja (100vh en impresión = alto útil de la hoja, sea carta, A4 o celular). Si el contenido cabe, la
-               sección 3 arranca en la hoja siguiente; si los trabajadores se pasan, la sección 3 sigue justo debajo. */
-            .pagina-uno { min-height: calc(100vh - 2px); }
-            /* El título y los encabezados de la sección 3 no quedan solos al final de una hoja (van con la 1ra fila de criterios) */
             #tabla-seccion-3 tr:nth-child(-n+3) { break-after: avoid; page-break-after: avoid; }
             
+            td.columna-anulada-bg, td.linea-hallazgos { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            canvas#capa-lineas-columnas { display: block !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button, input[type="time"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button, input[type="time"]::-webkit-clear-button { display: none !important; -webkit-appearance: none !important; }
             input[type="date"], input[type="time"] { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; }
             
-            textarea.auto-expand {
-                overflow: visible !important;
-                white-space: pre-wrap;
-            }
+            textarea.auto-expand { overflow: visible !important; white-space: pre-wrap; }
         }
     </style>
 </head>
 <body>
 <div class="contenedor-principal">
-    <div class="hoja-blanca">
+    <div class="hoja-blanca" id="documento-imprimible">
+        <!-- CAPA CANVAS PARA LÍNEAS VERTICALES IDÉNTICAS -->
+        <canvas id="capa-lineas-columnas"></canvas>
+
         <div class="pagina-uno">
         <div class="top-header">
             <div class="logo-box"><img src="https://camacol.co/sites/default/files/2026-05/LOG-HMV_HMV_Color.webp" alt="HMV Logo"></div>
@@ -248,20 +257,12 @@
                         <img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 30px; margin: auto;">
                     </td>
                 </tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr class="print-fill-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
                 <tr class="no-print" id="row-btn-agregar">
-                    <td colspan="3" style="text-align: center; border: none; padding-top: 5px;"><button id="btn-agregar-trabajador" style="background-color: var(--hmv-blue); color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 3px; font-size: 10px;">+ Agregar Trabajador</button></td>
+                    <td colspan="3" style="text-align: center; border: none; padding-top: 5px;"><button id="btn-agregar-trabajador" style="background-color: var(--hmv-blue); color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 3px; font-size: 10px;">+ Agregar fila</button><button id="btn-eliminar-fila" type="button" style="background-color: #d32f2f; color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 3px; font-size: 10px; margin-left: 8px;">Eliminar fila</button></td>
                 </tr>
             </tbody>
         </table>
-        </div><!-- fin pagina-uno -->
+        </div>
 
         <table id="tabla-seccion-3">
             <tr class="title-row"><td colspan="9">3. Condiciones de máquinas, equipos, herramientas; revisión previa</td></tr>
@@ -272,7 +273,10 @@
             <tr>
                 <td class="bg-header">LUN</td><td class="bg-header">MAR</td><td class="bg-header">MIE</td><td class="bg-header">JUE</td><td class="bg-header">VIE</td><td class="bg-header">SAB</td><td class="bg-header">DOM</td>
             </tr>
-            <tr><td colspan="2" style="vertical-align: middle;">El operador cuenta con los elementos de protección personal requeridos para la tarea (botas, gafas, protección auditiva, guantes)</td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td></tr>
+            <tr id="primera-fila-criterios">
+                <td colspan="2" style="vertical-align: middle;">El operador cuenta con los elementos de protección personal requeridos para la tarea (botas, gafas, protección auditiva, guantes)</td>
+                <td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td>
+            </tr>
             <tr><td colspan="2" style="vertical-align: middle;">Se ajusta la mesa de acuerdo al tamaño de la pieza (verifique el tamaño de la pieza y la altura de la mesa)</td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td></tr>
             <tr><td colspan="2" style="vertical-align: middle;">Se ha puesto la broca con la ayuda de la llave de apriete del taladro (compruebe que se cuenta con llave de apriete del husillo)</td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td></tr>
             <tr><td colspan="2" style="vertical-align: middle;">El mango de sujeción se encuentra sin grietas</td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td><td class="check-td"><select class="criterio-select save-data"><option value=""></option><option value="✓">✓</option><option value="✖">✖</option><option value="NA">NA</option></select></td></tr>
@@ -293,7 +297,8 @@
                 <td style="width: 20%; font-size: 10px; color: #555; vertical-align: bottom; padding: 5px; height: 35px;">Firma del operador:</td>
                 <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Oficial / Auxiliar" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
             </tr>
-            <tr>
+            
+            <tr id="ultima-fila-firmas">
                 <td style="font-size: 10px; color: #555; vertical-align: bottom; padding: 5px; height: 35px;">Firma responsable SST:</td>
                 <td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td><td style="padding: 2px; text-align: center; vertical-align: middle;"><button class="btn-firmar no-print" data-auth="Responsable SST" type="button">✍️</button><img class="sig-result save-img" src="" style="display: none; max-width: 100%; max-height: 25px; margin: auto;"></td>
             </tr>
@@ -301,7 +306,7 @@
 
         <table>
             <tr class="title-row"><td>4. Hallazgos</td></tr>
-            <tr><td style="padding: 0;"><textarea class="save-data" style="height: 40px; padding: 5px; resize: none;"></textarea></td></tr>
+            <tr><td style="padding: 0;"><textarea id="hallazgos" class="save-data" style="height: 40px; padding: 5px; resize: none;"></textarea></td></tr>
         </table>
 
         <table>
@@ -322,15 +327,18 @@
 <div class="botones-flotantes no-print">
     <a href="panel.html" class="btn-flotante btn-regresar">⬅️ Regresar</a>
     <button id="btn-guardar-doc" class="btn-flotante btn-guardar">💾 Guardar</button>
+    <button id="btn-generar-pdf" class="btn-flotante btn-generar-pdf" type="button" style="display: none;">📄 Generar PDF</button>
+    <button id="btn-cerrar-preop" class="btn-flotante btn-cerrar-preop" type="button" style="display: none;">🔒 Cerrar preoperacional</button>
 </div>
 
-<div id="firma-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
+<div id="firma-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(3px); touch-action: none; overscroll-behavior: contain;">
     <div style="background: #fff; padding: 15px; border-radius: 8px; width: 90%; max-width: 600px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.5);">
         <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--hmv-blue); font-family: sans-serif; font-size: 14px;">✍️ Espacio de Firma<br><small style="color: #666; font-size: 10px;">(Gire el celular horizontalmente si requiere más espacio)</small></h3>
         <canvas id="modal-canvas" style="border: 2px dashed #999; width: 100%; height: 250px; background: #fff; cursor: crosshair; touch-action: none; border-radius: 5px;"></canvas>
-        <div style="margin-top: 15px; display: flex; gap: 15px; justify-content: center;">
-            <button id="btn-cancel-firma" type="button" style="padding: 10px 20px; background: #888; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 45%;">Cancelar</button>
-            <button id="btn-save-firma" type="button" style="padding: 10px 20px; background: var(--hmv-blue); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 45%;">Agregar firma</button>
+        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+            <button id="btn-cancel-firma" type="button" style="padding: 10px 8px; background: #888; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1;">Cancelar</button>
+            <button id="btn-borrar-firma" type="button" style="padding: 10px 8px; background: #d32f2f; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1;">Borrar</button>
+            <button id="btn-save-firma" type="button" style="padding: 10px 8px; background: var(--hmv-blue); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1;">Agregar firma</button>
         </div>
     </div>
 </div>
@@ -357,7 +365,8 @@
     const inpSerial = document.getElementById('inp-serial');
     if(inpSerial) inpSerial.value = documentSerial;
     
-    const rolUsuario = localStorage.getItem('hmv_user_role') || 'Invitado';
+    // SESIÓN ACTUALIZADA A sessionStorage PARA HABILITAR LAS FIRMAS
+    const rolUsuario = sessionStorage.getItem('hmv_user_role') || 'Invitado';
 
     function aplicarPermisosRoles() {
         document.querySelectorAll('.btn-firmar').forEach(btn => {
@@ -383,24 +392,64 @@
         modalCtx.strokeStyle = '#000';
     }
 
+    const zonasBloqueables = [document.querySelector('.contenedor-principal'), document.querySelector('.botones-flotantes')];
+    function ajustarModalAlVisor() {
+        const vv = window.visualViewport;
+        if (vv && (vv.scale > 1.01 || window.matchMedia('(pointer: coarse)').matches)) {
+            modal.style.left = vv.offsetLeft + 'px';
+            modal.style.top = vv.offsetTop + 'px';
+            modal.style.width = vv.width + 'px';
+            modal.style.height = vv.height + 'px';
+        } else {
+            modal.style.left = '0px';
+            modal.style.top = '0px';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+        }
+    }
+    function abrirModalFirma() {
+        modal.style.display = 'flex';
+        zonasBloqueables.forEach(z => { if (z) z.inert = true; });
+        ajustarModalAlVisor();
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', ajustarModalAlVisor);
+            window.visualViewport.addEventListener('scroll', ajustarModalAlVisor);
+        }
+    }
+    function cerrarModalFirma() {
+        modal.style.display = 'none';
+        zonasBloqueables.forEach(z => { if (z) z.inert = false; });
+        if (window.visualViewport) {
+            window.visualViewport.removeEventListener('resize', ajustarModalAlVisor);
+            window.visualViewport.removeEventListener('scroll', ajustarModalAlVisor);
+        }
+    }
+    modal.addEventListener('wheel', e => e.preventDefault(), {passive: false});
+    modal.addEventListener('touchmove', e => e.preventDefault(), {passive: false});
+
     function attachFirmaEvent(btn) {
         btn.onclick = function() {
             currentSigBtn = this;
             currentSigImg = this.nextElementSibling;
-            modal.style.display = 'flex';
+            abrirModalFirma();
             resizeCanvas();
             modalCtx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
         };
     }
     document.querySelectorAll('.btn-firmar').forEach(attachFirmaEvent);
 
-    document.getElementById('btn-cancel-firma').onclick = () => { modal.style.display = 'none'; };
-    
+    document.getElementById('btn-cancel-firma').onclick = () => { cerrarModalFirma(); };
+
+    document.getElementById('btn-borrar-firma').onclick = () => {
+        modalCtx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
+        modalCtx.beginPath();
+    };
+
     document.getElementById('btn-save-firma').onclick = () => {
         currentSigImg.src = modalCanvas.toDataURL('image/png');
         currentSigImg.style.display = 'block';
         currentSigBtn.style.display = 'none';
-        modal.style.display = 'none';
+        cerrarModalFirma();
     };
 
     let isDrawing = false;
@@ -427,8 +476,127 @@
     modalCanvas.addEventListener('touchend', stopDrawing);
 
     const btnAgregar = document.getElementById('btn-agregar-trabajador');
+    const btnEliminar = document.getElementById('btn-eliminar-fila');
     if (rolUsuario !== 'Oficial / Auxiliar' && rolUsuario !== 'Responsable SST') {
         if(btnAgregar) btnAgregar.style.display = 'none';
+        if(btnEliminar) btnEliminar.style.display = 'none';
+    }
+
+    const btnGenerarPdf = document.getElementById('btn-generar-pdf');
+    if (btnGenerarPdf && rolUsuario === 'Responsable SST') {
+        btnGenerarPdf.style.display = 'flex';
+        btnGenerarPdf.onclick = () => { 
+            dibujarLineasEnCanvas(); 
+            window.print(); 
+        };
+    }
+
+    // NUEVA MODIFICACIÓN: DIBUJAR LÍNEAS VERTICALES PERFECTAS Y SEGURAS PARA PDF
+    function dibujarLineasEnCanvas() {
+        const hoja = document.getElementById('documento-imprimible');
+        const canvas = document.getElementById('capa-lineas-columnas');
+        const ctx = canvas.getContext('2d');
+        
+        // Ajustar el canvas exactamente al tamaño del documento completo
+        canvas.width = hoja.offsetWidth;
+        canvas.height = hoja.offsetHeight;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Configurar el grosor de la línea
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2; // Línea con buen grosor, uniforme en todos lados
+
+        const filas = [...document.querySelectorAll('#tabla-seccion-3 tr')];
+        const filasCriterios = filas.filter(f => f.querySelector('.criterio-select'));
+        const filasFirmas = filas.filter(f => f.querySelector('.btn-firmar'));
+        
+        const celdaDelDia = (fila, dia) => (fila.querySelector('.criterio-select')
+            ? fila.querySelectorAll('td.check-td')
+            : [...fila.querySelectorAll(':scope > td')].slice(-7))[dia];
+        
+        const filaArriba = document.getElementById('primera-fila-criterios');
+        const filaAbajo = document.getElementById('ultima-fila-firmas');
+
+        for (let dia = 0; dia < 7; dia++) {
+            const celdas = [...filasCriterios, ...filasFirmas].map(f => celdaDelDia(f, dia));
+            
+            const vacio = celdas.every(td => {
+                const sel = td.querySelector('.criterio-select');
+                if (sel) return sel.value === '';
+                const img = td.querySelector('.save-img');
+                const src = img ? img.getAttribute('src') : '';
+                return !(src && src.startsWith('data:image'));
+            });
+            
+            if (vacio) {
+                // Inhabilitar y sombrear las celdas
+                celdas.forEach(td => {
+                    td.style.pointerEvents = 'none';
+                    td.querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = true);
+                    td.classList.add('columna-anulada-bg'); // Aplica fondo gris tenue opcional
+                });
+
+                const celdaTop = celdaDelDia(filaArriba, dia);
+                const celdaBottom = celdaDelDia(filaAbajo, dia);
+                
+                // Calcular coordenadas exactas relativas a la hoja
+                const hojaRect = hoja.getBoundingClientRect();
+                const topRect = celdaTop.getBoundingClientRect();
+                const bottomRect = celdaBottom.getBoundingClientRect();
+                
+                // Calcular el CENTRO EXACTO de la columna para la línea vertical
+                const centroX = (topRect.left + (topRect.width / 2)) - hojaRect.left;
+                
+                const startY = topRect.top - hojaRect.top;
+                const endY = bottomRect.bottom - hojaRect.top;
+
+                // Dibujar la línea vertical físicamente sobre el documento
+                ctx.beginPath();
+                ctx.moveTo(centroX, startY);
+                ctx.lineTo(centroX, endY);
+                ctx.stroke();
+            }
+        }
+    }
+
+    function cerrarPreoperacional() {
+        // Ejecutamos primero la deshabilitación y limpieza de hallazgos
+        const hallazgos = document.getElementById('hallazgos');
+        if (hallazgos) {
+            const tdHallazgos = hallazgos.closest('td');
+            const vacioHallazgos = hallazgos.value.trim() === '';
+            tdHallazgos.classList.toggle('linea-hallazgos', vacioHallazgos);
+            if (vacioHallazgos) {
+                tdHallazgos.style.pointerEvents = 'none';
+                hallazgos.disabled = true;
+            }
+        }
+        document.body.classList.add('preop-cerrado');
+        
+        // Ejecutamos el dibujo del canvas para las líneas verticales
+        dibujarLineasEnCanvas(); 
+    }
+    
+    // REDIBUJAR SI SE CAMBIA EL TAMAÑO DE LA PANTALLA PARA MANTENER LAS LÍNEAS EN SU SITIO
+    window.addEventListener('resize', () => {
+        if(document.body.classList.contains('preop-cerrado')) {
+            dibujarLineasEnCanvas();
+        }
+    });
+    
+    const btnCerrarPreop = document.getElementById('btn-cerrar-preop');
+    if (btnCerrarPreop && rolUsuario === 'Responsable SST') {
+        btnCerrarPreop.style.display = 'flex';
+        btnCerrarPreop.onclick = () => { cerrarPreoperacional(); };
+    }
+
+    function filasTrabajadores() { return document.querySelectorAll('#tbody-trabajadores tr:not(#row-btn-agregar)'); }
+    function actualizarBotonEliminar() {
+        if (!btnEliminar) return;
+        const soloUna = filasTrabajadores().length <= 1;
+        btnEliminar.disabled = soloUna;
+        btnEliminar.style.opacity = soloUna ? '0.4' : '1';
+        btnEliminar.style.cursor = soloUna ? 'not-allowed' : 'pointer';
     }
     
     if(btnAgregar) {
@@ -439,17 +607,29 @@
             const newBtn = tr.querySelector('.btn-firmar');
             if (rolUsuario !== 'Oficial / Auxiliar') { newBtn.disabled = true; newBtn.title = 'Acceso denegado.'; }
             attachFirmaEvent(newBtn);
-            tbody.insertBefore(tr, tbody.querySelector('.print-fill-row'));
+            tbody.insertBefore(tr, document.getElementById('row-btn-agregar'));
+            actualizarBotonEliminar();
         };
     }
 
+    if(btnEliminar) {
+        btnEliminar.onclick = function() {
+            const filas = filasTrabajadores();
+            if (filas.length <= 1) return; 
+            filas[filas.length - 1].remove();
+            actualizarBotonEliminar();
+        };
+    }
+    actualizarBotonEliminar();
+
     document.getElementById('btn-guardar-doc').onclick = async function() {
-        let datos = { textos: [], firmas: [], btnAgregarClicks: document.querySelectorAll('#tbody-trabajadores tr').length - 10 }; 
+        let datos = { textos: [], firmas: [], btnAgregarClicks: document.querySelectorAll('#tbody-trabajadores tr:not(#row-btn-agregar)').length - 1 };
         datos.fIni = document.getElementById('fecha-ini').value;
         datos.hIni = document.getElementById('hora-ini').value;
         datos.fFin = document.getElementById('fecha-fin').value;
         datos.hFin = document.getElementById('hora-fin').value;
-        
+        datos.cerrado = document.body.classList.contains('preop-cerrado');
+
         document.querySelectorAll('.save-data').forEach((el, index) => { datos.textos[index] = el.value || ""; });
         document.querySelectorAll('.save-img').forEach((img, index) => { 
             const srcVal = img.getAttribute('src');
@@ -505,10 +685,16 @@
                         }
                     }
                 }
+
+                if(guardado.cerrado) {
+                    setTimeout(() => { cerrarPreoperacional(); }, 200);
+                }
             }
         } catch(e) { console.error("Error al cargar:", e); }
     }
-    cargarDatos();
+    
+    // Asegurarse de que el canvas se dibuje bien cuando todas las fuentes e imágenes carguen
+    window.onload = cargarDatos;
 </script>
 </body>
 </html>
