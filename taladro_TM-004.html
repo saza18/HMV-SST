@@ -95,15 +95,16 @@
             background-size: 100% 100%; 
         }
 
-        /* RESTAURADO CÓDIGO EXACTO DE CLAUDE PARA COLUMNAS INHABILITADAS */
+        /* LÍNEA VERTICAL DIBUJADA CON GRADIENTE Y PIXELES EXACTOS */
         td.columna-anulada-bg {
-            background-color: #e0e0e0;
-            background-image: linear-gradient(#000, #000);
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 3px 100%;
+            background-color: #e0e0e0 !important;
+            /* Línea negra de 3px de grosor anclada exactamente al centro */
+            background-image: linear-gradient(to right, transparent calc(50% - 1.5px), #000 calc(50% - 1.5px), #000 calc(50% + 1.5px), transparent calc(50% + 1.5px)) !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            background-clip: padding-box !important; /* Mantiene los bordes de la tabla visibles en PDF */
         }
-        td.columna-anulada-bg .btn-firmar { visibility: hidden; } 
+        td.columna-anulada-bg .btn-firmar { visibility: hidden; }
 
         .top-header { display: flex; gap: 10px; margin-bottom: 10px; height: 70px; }
         .logo-box { width: 20%; display: flex; align-items: center; justify-content: center; }
@@ -491,14 +492,13 @@
         if(btnEliminar) btnEliminar.style.display = 'none';
     }
 
-    // EL BOTÓN DE GENERAR PDF YA NO EJECUTA EL CIERRE, SOLO IMPRIME LO QUE HAY
     const btnGenerarPdf = document.getElementById('btn-generar-pdf');
     if (btnGenerarPdf && rolUsuario === 'Responsable SST') {
         btnGenerarPdf.style.display = 'flex';
         btnGenerarPdf.onclick = () => { window.print(); };
     }
 
-    // EL SISTEMA DIBUJARÁ LAS LÍNEAS DE CIERRE USANDO EL METODO ORIGINAL DE CLAUDE
+    // EL SISTEMA DIBUJARÁ LAS LÍNEAS DE CIERRE USANDO EL METODO ORIGINAL
     function cerrarPreoperacional() {
         const filas = [...document.querySelectorAll('#tabla-seccion-3 tr')];
         const filasCriterios = filas.filter(f => f.querySelector('.criterio-select'));
@@ -519,7 +519,7 @@
             });
             
             if (vacio) {
-                // Inhabilitar las celdas y aplicar la clase original de fondo gris y línea de Claude
+                // Inhabilitar las celdas y aplicar la clase original de fondo gris y línea
                 celdas.forEach(td => {
                     td.classList.add('columna-anulada-bg');
                     td.style.pointerEvents = 'none';
@@ -541,7 +541,6 @@
         document.body.classList.add('preop-cerrado');
     }
     
-    // EL EVENTO CLIC DEL BOTÓN CIERRA EL PREOPERACIONAL Y LUEGO GUARDA
     const btnCerrarPreop = document.getElementById('btn-cerrar-preop');
     if (btnCerrarPreop && rolUsuario === 'Responsable SST') {
         btnCerrarPreop.style.display = 'flex';
@@ -607,19 +606,15 @@
         }
     }
 
-    // Función exportada globalmente para poder llamarla desde el HTML inyectado
     window.crearTrabajadorDesdeBuscador = async function(cedulaNueva) {
         const nombreNuevo = prompt("Ingresa el NOMBRE COMPLETO para la cédula " + cedulaNueva + ":");
-        if (!nombreNuevo || nombreNuevo.trim() === "") return; // El usuario canceló o dejó en blanco
+        if (!nombreNuevo || nombreNuevo.trim() === "") return; 
 
         try {
-            // Guardar directamente en Firebase
             await set(ref(db, `trabajadores_civiles/${cedulaNueva}`), { nombre: nombreNuevo.trim() });
             
-            // Actualizar la caché local para que no vuelva a descargarse todo
             trabajadoresCache[cedulaNueva] = { nombre: nombreNuevo.trim() };
             
-            // Llenar automáticamente los datos en la tabla actual
             if (currentRowInputs) {
                 currentRowInputs.cedula.value = cedulaNueva;
                 currentRowInputs.nombre.value = nombreNuevo.trim();
@@ -645,7 +640,6 @@
             arr = arr.filter(t => t.cedula.includes(filtro));
         }
 
-        // Mostrar maximo 25 resultados para rendimiento en celular
         arr.slice(0, 25).forEach(t => {
             const div = document.createElement('div');
             div.className = 'resultado-item';
@@ -660,7 +654,6 @@
             frag.appendChild(div);
         });
 
-        // NUEVO: Si no hay resultados y el usuario escribió algo, le damos la opción de crear
         if(arr.length === 0) {
             if(filtro.trim() !== "") {
                 listaResultados.innerHTML = `
@@ -704,7 +697,6 @@
         renderizarResultados(e.target.value.trim());
     });
 
-    // Delegación de eventos para capturar el click en cualquier input de cédula (incluyendo nuevas filas)
     document.getElementById('tbody-trabajadores').addEventListener('click', (e) => {
         if(e.target.classList.contains('input-cedula') && !e.target.disabled) {
             abrirBuscador(e.target);
