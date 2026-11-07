@@ -7,7 +7,7 @@
     <style>
         :root {
             --bg-body: #d6e0ea; 
-            --bg-sidebar: #5b9bd5; /* AZUL MÁS CLARO Y SUAVE */
+            --bg-sidebar: #5b9bd5; 
             --bg-card: #ffffff;
             --bg-input: #f4f7fb;
             --border-color: #e5e7eb;
@@ -26,7 +26,7 @@
 
         body.dark-mode {
             --bg-body: #0c101b;
-            --bg-sidebar: #1a2a40; /* Tono ajustado para modo oscuro */
+            --bg-sidebar: #1a2a40; 
             --bg-card: #1f293d;
             --bg-input: #141b2d;
             --border-color: #2a3b5c;
@@ -39,7 +39,6 @@
             --sidebar-text: #ffffff;
         }
 
-        /* ELIMINA EL FILTRO AZUL TÁCTIL EN TODOS LOS ELEMENTOS PARA MANTENER ELEGANCIA */
         * {
             -webkit-tap-highlight-color: transparent !important;
             outline: none;
@@ -133,7 +132,6 @@
         .date-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .date-label { font-size: 13px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; }
         
-        /* BOTÓN DISCRETO ELIMINAR FILTROS */
         .btn-limpiar {
             background: transparent; border: none; color: var(--text-muted); 
             font-size: 12px; cursor: pointer; text-decoration: underline; 
@@ -155,7 +153,6 @@
         tr td:last-child { border-top-right-radius: 50px; border-bottom-right-radius: 50px; padding-right: 25px; }
         tr:hover td { background-color: rgba(255, 215, 0, 0.05); }
 
-        /* ESTILOS PAGINACIÓN ESTILO GMAIL */
         .paginacion-container { display: flex; justify-content: flex-end; gap: 6px; margin-top: 5px; }
         .btn-page {
             background-color: var(--bg-input); border: 1px solid var(--border-color); 
@@ -317,6 +314,11 @@
             <button class="menu-link tab-link active" onclick="abrirPestaña('tab-usuarios')">👥 Usuarios</button>
             <button class="menu-link tab-link" onclick="abrirPestaña('tab-actividades')">📋 Actividades</button>
             <button class="menu-link" id="btn-abrir-modal-crear">➕ Crear Usuario</button>
+            
+            <!-- NUEVO BOTÓN: CARGA MASIVA CSV -->
+            <button class="menu-link" onclick="document.getElementById('input-carga-masiva').click()">📂 Carga Masiva (CSV)</button>
+            <input type="file" id="input-carga-masiva" accept=".csv" style="display: none;">
+            
             <button class="menu-link" onclick="toggleTheme()">🌓 Cambiar Tema</button>
         </nav>
         <div class="sidebar-footer">
@@ -384,7 +386,6 @@
         <section id="tab-perfil-usuario" class="seccion-panel">
             <div class="dashboard-card" style="max-width: 600px; margin: 0 auto;">
                 
-                <!-- SE ELIMINÓ EL EMOJI, BOTÓN MÁS SUTIL -->
                 <button class="btn" style="background-color: var(--input-bg); color: var(--text-color); width: max-content; margin-bottom: 10px;" onclick="abrirPestaña('tab-usuarios')">Volver a Usuarios</button>
                 
                 <div class="perfil-cabecera">
@@ -482,7 +483,6 @@
                     
                     <div class="date-filters">
                         <span class="date-label">Desde:</span>
-                        <!-- EL TRUCO onfocus PERMITE MOSTRAR DD/MM/AAAA EN CELULAR HASTA QUE SE TOCA -->
                         <input type="text" class="filter-select" id="filtro-fecha-desde" placeholder="DD/MM/AAAA" onfocus="this.type='date'" onblur="if(!this.value) this.type='text'" onchange="filtrarActividades()">
                         
                         <span class="date-label">Hasta:</span>
@@ -496,9 +496,9 @@
                         <option value="ELIMINACIÓN DE USUARIO">Eliminación</option>
                         <option value="BLOQUEO CUENTA">Bloqueo</option>
                         <option value="DESBLOQUEO CUENTA">Desbloqueo</option>
+                        <option value="CARGA MASIVA">Carga Masiva</option>
                     </select>
                     
-                    <!-- BOTÓN PARA LIMPIAR FILTROS -->
                     <button class="btn-limpiar" onclick="limpiarFiltrosAct()" title="Borrar filtros de fechas y búsqueda">Limpiar Filtros</button>
                 </div>
                 
@@ -517,7 +517,6 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- NUEVO: CONTENEDOR DE PAGINACIÓN ESTILO GMAIL -->
                 <div id="paginacion-actividades" class="paginacion-container"></div>
             </div>
         </section>
@@ -618,9 +617,8 @@
 
     let actividadesGlobal = [];
     
-    // SISTEMA DE PAGINACIÓN PARA ACTIVIDADES
     window.actividadesFiltradas = [];
-    const itemsPorPaginaAct = 10; // Muestra 10 registros por página
+    const itemsPorPaginaAct = 10; 
 
     async function registrarActividad(accion, detalle) {
         const fecha = new Date().toLocaleString('es-CO');
@@ -628,6 +626,67 @@
         await set(nuevaActividadRef, { fecha: fecha, autor: adminLogueado + ' (ROOT)', accion: accion, detalle: detalle });
         cargarActividades();
     }
+
+    /* ------------------------------------------------------------- */
+    /* LOGICA CARGA MASIVA DE CSV A LA NUBE (TRABAJADORES CIVILES) */
+    /* ------------------------------------------------------------- */
+    window.procesarCargaMasiva = async function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if(!confirm("¿Estás seguro de subir este archivo CSV para cargar el listado de Trabajadores Civiles?\n\nRecuerda: El formato debe ser 'Cédula,Nombre' por cada fila.")) {
+            event.target.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const text = e.target.result;
+            const lines = text.split('\n');
+            let count = 0;
+            
+            try {
+                const updates = {};
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line) {
+                        // Soporta delimitador por coma o punto y coma
+                        const parts = line.split(/[,;]/);
+                        if (parts.length >= 2) {
+                            const cedula = parts[0].trim();
+                            const nombre = parts.slice(1).join(' ').trim(); // Por si el nombre tiene comas intermedias
+                            
+                            // Validar que la cédula contenga números
+                            if (cedula && nombre && !isNaN(cedula.replace(/\D/g,''))) {
+                                updates['trabajadores_civiles/' + cedula.replace(/\D/g,'')] = { nombre: nombre };
+                                count++;
+                            }
+                        }
+                    }
+                }
+                
+                if (count > 0) {
+                    document.getElementById('saludo-admin').innerText = "Cargando archivo, espera...";
+                    await update(ref(db), updates);
+                    alert(`✅ ¡Carga exitosa! Se registraron ${count} trabajadores en la base de datos.`);
+                    registrarActividad("CARGA MASIVA", `Se cargaron ${count} trabajadores civiles desde un archivo CSV.`);
+                    document.getElementById('saludo-admin').innerText = `Hola, ${nameAdmin}`;
+                } else {
+                    alert("⚠️ No se encontraron datos válidos. Verifica que el archivo CSV tenga el formato: Cédula,Nombre");
+                }
+            } catch (error) {
+                alert("❌ Error al cargar: " + error.message);
+                document.getElementById('saludo-admin').innerText = `Hola, ${nameAdmin}`;
+            }
+            event.target.value = ''; 
+        };
+        reader.readAsText(file);
+    };
+    
+    // Activar listener para el input oculto del CSV
+    document.getElementById('input-carga-masiva').addEventListener('change', window.procesarCargaMasiva);
+    /* ------------------------------------------------------------- */
+
 
     async function cargarActividades() {
         try {
@@ -666,7 +725,6 @@
             </tr>`;
         });
 
-        // Crear botones de Paginación
         const totalPaginas = Math.ceil(actsArray.length / itemsPorPaginaAct);
         if(totalPaginas > 1) {
             let pagHtml = '';
@@ -716,7 +774,6 @@
         window.renderizarTablaActividades(window.actividadesFiltradas, 1);
     };
 
-    // NUEVO BOTÓN PARA LIMPIAR TODOS LOS FILTROS
     window.limpiarFiltrosAct = function() {
         document.getElementById('busqueda-actividad').value = '';
         document.getElementById('filtro-accion-act').value = '';
@@ -725,7 +782,7 @@
         const dHasta = document.getElementById('filtro-fecha-hasta');
         
         dDesde.value = '';
-        dDesde.type = 'text'; // Lo vuelve al modo Placeholder DD/MM/AAAA
+        dDesde.type = 'text'; 
         
         dHasta.value = '';
         dHasta.type = 'text';
